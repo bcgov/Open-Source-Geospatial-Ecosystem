@@ -47,7 +47,7 @@
 <br>
 <br>
 
-# Land Use Planning Feautres Map
+# Land Use Planning Features Map
 - bbox  (1112127, 743161, 1291755, 898012, "urn:ogc:def:crs:EPSG:3005")
 - map will need query/filtering
 - 
