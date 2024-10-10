@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feature Intersect</title>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h2>Upload a File to Intersect with Land Use Polygons</h2>
+    <!-- Form for uploading data -->
+    <form action="/intersect" method="POST" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".geojson,.shp,.kml" required>
+        <button type="submit">Upload and Intersect</button>
+    </form>
+
+    <!-- Folium Map -->
+    {% if map_html %}
+        <div>{{ map_html|safe }}</div>
+    {% endif %}
+
+<!-- Intersected Data Table or No Data Message -->
+    {% if intersected_data %}
+    {% if intersected_data|length > 0 %}
+        <h3>Intersected Data</h3>
+        <table>
+            <thead>
+                <tr>
+                    {% for column in intersected_data[0].keys() %}
+                        <th>{{ column }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in intersected_data %}
+                    <tr>
+                        {% for value in row.values() %}
+                            <td>{{ value }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Button to download the CSV -->
+        <a href="/download_csv"><button>Download as CSV</button></a>
+    {% else %}
+        <p>No Data - Upload a file and intersect.</p>
+    {% endif %}
+    {% else %}
+    <p>No Data - Upload a file and intersect.</p>
+    {% endif %}
+
+</body>
+</html>
