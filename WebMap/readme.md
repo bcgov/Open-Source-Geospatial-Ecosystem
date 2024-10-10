@@ -6,8 +6,9 @@ To download the Land Use Plan shapefiles as a zip folder, contact Cole
 
 ## Deliverables
 
-- An internal web application that consolidates all relevant data from British Columbia to compare against the public data (see the `data_source.xlsx` for details on layers).
-- Display and query the SRMP/LRMP layers clipped to the LUP boundary.
+- An internal web application that
+  - contains an overview map consolidating all relevant data from British Columbia to compare against the public data (see the `data_source.md` for details on layers).
+  - A map to display and query the SRMP/LRMP layers clipped to the LUP boundary (see the `data_source.md` for details on layers).
 - Ability to add a KML, geomark, shapefile, or Area of Interest (AOI) as a temporary layer to the web map.
 - Identify overlaps in the SRMP/LRMP data and potentially export the tabular data, similar to a mini status report.
 - If possible, add links on the Skeena Data Hub to centralize all information in one location.
