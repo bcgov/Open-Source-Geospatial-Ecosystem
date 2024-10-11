@@ -83,7 +83,7 @@ folium.GeoJson(aoi,
             }, ).add_to(m)
 
 #set up marker clustering
-rec_marker_cluster = MarkerCluster().add_to(m)
+rec_marker_cluster = MarkerCluster(name='Recreation Sites (Points)').add_to(m)
 #set up pop up
 rec_pop_point=folium.GeoJsonPopup(fields=rec_points[['PROJECT_NAME','FOREST_FILE_ID','MAINTAIN_STD_DESC','SITE_LOCATION', 'PROJECT_ESTABLISHED_DATE']].columns.tolist(), 
                         aliases=['Project Name', 'Forest File ID', 'Maintained Standard Description', 'Site Location','Established Date' ])
