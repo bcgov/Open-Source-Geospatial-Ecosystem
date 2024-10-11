@@ -13,7 +13,7 @@
 | Cole        | WHSE_LEGAL_ADMIN_BOUNDARIES.FNT_TREATY_AREA_SP            | TREATY = 'Nisga''a'                                              |
 | Cole        | WHSE_MINERAL_TENURE.MINPOT_MINERAL_POTENTIAL              | Apply bounding box                                               |
 | Cole        | WHSE_LAND_USE_PLANNING.RMP_STRGC_LAND_RSRCE_PLAN_SP       | STRGC_LAND_RSRCE_PLAN_ID = 97                                    |
-| Cole        | WHSE_TANTALIS.TA_CONSERVANCY_AREAS_SVW                    | WHSE_TANTALIS.TA_CONSERVANCY_AREAS_SVW                           |
+| Cole        | WHSE_TANTALIS.TA_CONSERVANCY_AREAS_SVW                    | ADMIN_AREA_SID = 5420                       |
 | Cole        | WHSE_LAND_USE_PLANNING.RMP_PLAN_NON_LEGAL_POLY            | NON_LEGAL_FEAT_OBJECTIVE = 'Water Management Units'               |
 | Emma        | WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY                | LEGAL_FEAT_OBJECTIVE = 'Water Management Units'                   |
 | Emma        | WHSE_FOREST_VEGETATION.REC_VISUAL_LANDSCAPE_INVENTORY     | Apply bounding box                                               |
