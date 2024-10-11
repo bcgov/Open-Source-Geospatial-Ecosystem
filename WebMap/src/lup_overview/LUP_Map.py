@@ -4,6 +4,7 @@ import geopandas
 import feature_download
 import os
 from folium.utilities import JsCode
+from folium.plugins import MarkerCluster
 import folium.plugins as plugins
 import branca.colormap as cm
 import logging
@@ -81,13 +82,17 @@ folium.GeoJson(aoi,
                 'weight': 5
             }, ).add_to(m)
 
+#set up marker clustering
+rec_marker_cluster = MarkerCluster().add_to(m)
+#set up pop up
 rec_pop_point=folium.GeoJsonPopup(fields=rec_points[['PROJECT_NAME','FOREST_FILE_ID','MAINTAIN_STD_DESC','SITE_LOCATION', 'PROJECT_ESTABLISHED_DATE']].columns.tolist(), 
                         aliases=['Project Name', 'Forest File ID', 'Maintained Standard Description', 'Site Location','Established Date' ])
+#set up layer
 folium.GeoJson(rec_points, 
             name='Recreation Sites (Points)',
             highlight_function=lambda x: {'fillOpacity': 0.8},
             popup=rec_pop_point,
-            zoom_on_click=True,).add_to(m)
+            zoom_on_click=True,).add_to(rec_marker_cluster)
 
 rec_pop=folium.GeoJsonPopup(rec_polys[['PROJECT_NAME','FOREST_FILE_ID','SITE_LOCATION','PROJECT_TYPE', 'PROJECT_ESTABLISHED_DATE']].columns.tolist(),
                             aliases=['Project Name', 'Forest File ID','Site Location', 'Project Type','Established Date' ])
