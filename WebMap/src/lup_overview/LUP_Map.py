@@ -48,6 +48,7 @@ m = folium.Map(
 rec_points=wfs_getter('WHSE_FOREST_TENURE.FTEN_REC_SITE_POINTS_SVW', bbox=bbox_albers)
 rec_polys=wfs_getter('WHSE_FOREST_TENURE.FTEN_RECREATION_POLY_SVW', bbox=bbox_albers)
 com_watersheds=wfs_getter('WHSE_WATER_MANAGEMENT.WLS_COMMUNITY_WS_PUB_SVW', bbox=bbox_albers)
+visual_landscape_inventory = wfs_getter('WHSE_FOREST_VEGETATION.REC_VISUAL_LANDSCAPE_INVENTORY', bbox=bbox_albers)
 
 folium.GeoJson(aoi,
             name='LUP AOI',
@@ -89,6 +90,16 @@ folium.GeoJson(com_watersheds,
             popup=cw_pop    
 ).add_to(m)
 
+vli_pop = folium.GeoJsonPopup(fields=visual_landscape_inventory[['PROJECT_NAME', 'REC_EVQO_CODE', 'RATIONALE']].columns.tolist(),
+                                aliases=['Project Name', 'E Visual Quality Objective Code', 'Rationale'])
+
+folium.GeoJson(visual_landscape_inventory,
+                name='Visual Landscape Inventory',
+                style_function=lambda feature:{
+                    "fillColor": "rgba(76, 187, 23, 0.5)",
+                    "color": "rgb(76, 187, 23)",
+                    "weight": 2
+                })
 
 #Manage tile layers
 folium.TileLayer("OpenStreetMap").add_to(m)
