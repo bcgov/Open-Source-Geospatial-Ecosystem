@@ -210,7 +210,7 @@ folium.GeoJson(hanna_tintina,
                 'fillOpacity': 0.7
             },
             popup=ht_popup
-            ).add_to(m)
+            ).add_to(m) 
 
 
 
