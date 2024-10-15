@@ -61,6 +61,9 @@ m = folium.Map(
     control_scale=True
 )
 
+#add stripes plugin in
+stripes_45 = folium.plugins.pattern.StripePattern(angle=-45).add_to(m)
+
 
 #Call WFS
 rec_points=wfs_getter('WHSE_FOREST_TENURE.FTEN_REC_SITE_POINTS_SVW', bbox=bbox_albers)
@@ -69,9 +72,10 @@ com_watersheds=wfs_getter('WHSE_WATER_MANAGEMENT.WLS_COMMUNITY_WS_PUB_SVW', bbox
 nass_WLA=wfs_getter('WHSE_LEGAL_ADMIN_BOUNDARIES.FNT_TREATY_AREA_SP', query="""TREATY = 'Nisga''a' and AREA_TYPE = 'Nass Wildlife Area'""")
 nass_area=wfs_getter('WHSE_LEGAL_ADMIN_BOUNDARIES.FNT_TREATY_AREA_SP', query="""TREATY = 'Nisga''a' and AREA_TYPE = 'Nass Area'""")
 min_pot=wfs_getter('WHSE_MINERAL_TENURE.MINPOT_MINERAL_POTENTIAL', bbox=bbox_albers)
-# kalum_srmp= wfs_getter('WHSE_LAND_USE_PLANNING.RMP_STRGC_LAND_RSRCE_PLAN_SP', query="""STRGC_LAND_RSRCE_PLAN_ID=97""") # protected B layer, no WFS, need to find another way around
+kalum_srmp= wfs_getter('WHSE_LAND_USE_PLANNING.RMP_STRGC_LAND_RSRCE_PLAN_SVW', query="""STRGC_LAND_RSRCE_PLAN_ID=149""")
+kalum_lrmp= wfs_getter('WHSE_LAND_USE_PLANNING.RMP_STRGC_LAND_RSRCE_PLAN_SVW', query="""STRGC_LAND_RSRCE_PLAN_ID=20""")
 hanna_tintina=wfs_getter('WHSE_TANTALIS.TA_CONSERVANCY_AREAS_SVW', query=""" ADMIN_AREA_SID = 5420""")
-# water_mgmt_non=wfs_getter('WHSE_LAND_USE_PLANNING.RMP_PLAN_NON_LEGAL_POLY',query="""NON_LEGAL_FEAT_OBJECTIVE = 'Water Management Units'""") # protected B layer, no WFS
+# water_mgmt_non=wfs_getter('WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW',query="""NON_LEGAL_FEAT_OBJECTIVE = 'Water Management Units'""") # all features were moved to legal plans and no longer show up in WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW
 
 #add wfs gdfs to foloium
 folium.GeoJson(aoi,
@@ -163,6 +167,52 @@ folium.GeoJson(min_pot,
                 'fillOpacity': 0.7
                 },
             popup=min_pot_pop).add_to(m)
+
+k_srmp_pop=folium.GeoJsonPopup(fields=kalum_srmp[['STRGC_LAND_RSRCE_PLAN_ID','STRGC_LAND_RSRCE_PLAN_NAME','PLAN_TYPE','PLAN_STATUS','APPROVAL_DATE','APPROVAL_LAST_AMEND_DATE','LEGALIZATION_DATE','LEGALIZATION_LAST_AMEND_DATE']].columns.tolist(),
+                            aliases=['Strgc Land Rsrce Plan Id', 'Strgc Land Rsrce Plan Name', 'Plan Type', 'Plan Status', 'Approval Date', 'Approval Last Amend Date', 'Legalization Date', 'Legalization Last Amend Date'
+])
+folium.GeoJson(kalum_srmp,
+            name= 'Kalum SRMP',
+            style_function=lambda feature:{
+                'fillColor':'#FFFFFF',
+                "fillPattern": stripes_45,
+                'color':'#FFFFFF',
+                'weight': 2,
+                'fillOpacity': 1.0
+            },
+            popup=k_srmp_pop
+            ).add_to(m)
+
+k_lrmp_pop=folium.GeoJsonPopup(fields=kalum_srmp[['STRGC_LAND_RSRCE_PLAN_ID','STRGC_LAND_RSRCE_PLAN_NAME','PLAN_TYPE','PLAN_STATUS','APPROVAL_DATE','APPROVAL_LAST_AMEND_DATE','LEGALIZATION_DATE','LEGALIZATION_LAST_AMEND_DATE']].columns.tolist(),
+                            aliases=['Strgc Land Rsrce Plan Id', 'Strgc Land Rsrce Plan Name', 'Plan Type', 'Plan Status', 'Approval Date', 'Approval Last Amend Date', 'Legalization Date', 'Legalization Last Amend Date'
+])
+folium.GeoJson(kalum_lrmp,
+            name= 'Kalum LRMP',
+            style_function=lambda feature:{
+                'fillColor':'#7B80CE',
+                "fillPattern": stripes_45,
+                'color':'#7B80CE',
+                'weight': 2,
+                'fillOpacity': 1.0
+            },
+            popup=k_lrmp_pop
+            ).add_to(m)
+
+
+ht_popup=folium.GeoJsonPopup(fields=hanna_tintina[['ADMIN_AREA_SID','CONSERVANCY_AREA_NAME','ORCS_PRIMARY','ORCS_SECONDARY','ESTABLISHMENT_DATE','OFFICIAL_AREA_HA','PARK_MANAGEMENT_PLAN_URL']].columns.tolist(),
+                             aliases=['Admin Area Sid', 'Conservancy Area Name', 'Orcs Primary', 'Orcs Secondary', 'Establishment Date', 'Official Area Ha', 'Park Management Plan Url'])
+folium.GeoJson(hanna_tintina,
+            name= 'Hanna-Tintina Conservancy',
+            style_function=lambda feature:{
+                'fillColor':'#104308',
+                'color':'#FFFFFF',
+                'weight': 2,
+                'fillOpacity': 0.7
+            },
+            popup=ht_popup
+            ).add_to(m)
+
+
 
 #Manage tile layers
 folium.TileLayer('OpenStreetMap').add_to(m)
