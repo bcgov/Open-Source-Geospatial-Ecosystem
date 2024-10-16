@@ -148,3 +148,6 @@ body {
     margin: 0 auto;
 }
 
+.leaflet-popup {
+    z-index: 9999 !important;
+}
