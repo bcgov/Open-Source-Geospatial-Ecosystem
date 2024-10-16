@@ -69,12 +69,18 @@ stripes_45 = folium.plugins.pattern.StripePattern(angle=-45).add_to(m)
 rec_points=wfs_getter('WHSE_FOREST_TENURE.FTEN_REC_SITE_POINTS_SVW', bbox=bbox_albers)
 rec_polys=wfs_getter('WHSE_FOREST_TENURE.FTEN_RECREATION_POLY_SVW', bbox=bbox_albers)
 com_watersheds=wfs_getter('WHSE_WATER_MANAGEMENT.WLS_COMMUNITY_WS_PUB_SVW', bbox=bbox_albers)
+slrp_legal = wfs_getter('WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW', query="""LEGAL_FEAT_OBJECTIVE = 'Special Habitats for General Wildlife'""")
+parcel_fabric = wfs_getter('WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW', bbox=bbox_albers) 
+uwr = wfs_getter('WHSE_WILDLIFE_MANAGEMENT.WCP_UNGULATE_WINTER_RANGE_SP', query="""SPECIES_1 = 'M-ORAM' Or SPECIES_2 = 'M-ORAM'""", bbox=bbox_albers)
+legal_ogmas = wfs_getter('WHSE_LAND_USE_PLANNING.RMP_OGMA_LEGAL_CURRENT_SVW', bbox=bbox_albers)
 nass_WLA=wfs_getter('WHSE_LEGAL_ADMIN_BOUNDARIES.FNT_TREATY_AREA_SP', query="""TREATY = 'Nisga''a' and AREA_TYPE = 'Nass Wildlife Area'""")
 nass_area=wfs_getter('WHSE_LEGAL_ADMIN_BOUNDARIES.FNT_TREATY_AREA_SP', query="""TREATY = 'Nisga''a' and AREA_TYPE = 'Nass Area'""")
 min_pot=wfs_getter('WHSE_MINERAL_TENURE.MINPOT_MINERAL_POTENTIAL', bbox=bbox_albers)
 kalum_srmp= wfs_getter('WHSE_LAND_USE_PLANNING.RMP_STRGC_LAND_RSRCE_PLAN_SVW', query="""STRGC_LAND_RSRCE_PLAN_ID=149""")
 kalum_lrmp= wfs_getter('WHSE_LAND_USE_PLANNING.RMP_STRGC_LAND_RSRCE_PLAN_SVW', query="""STRGC_LAND_RSRCE_PLAN_ID=20""")
 hanna_tintina=wfs_getter('WHSE_TANTALIS.TA_CONSERVANCY_AREAS_SVW', query=""" ADMIN_AREA_SID = 5420""")
+visual_landscape_inventory = wfs_getter('WHSE_FOREST_VEGETATION.REC_VISUAL_LANDSCAPE_INVENTORY', bbox=bbox_albers)
+rmp_plan_non_legal = wfs_getter('WHSE_LAND_USE_PLANNING.RMP_PLAN_NON_LEGAL_POLY', query="NON_LEGAL_FEAT_OBJECTIVE = 'Special Habitats for General Wildlife'")
 # water_mgmt_non=wfs_getter('WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW',query="""NON_LEGAL_FEAT_OBJECTIVE = 'Water Management Units'""") # all features were moved to legal plans and no longer show up in WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW
 
 #add wfs gdfs to foloium
@@ -135,6 +141,78 @@ folium.GeoJson(nass_WLA,
             },
             popup=nass_wla_pop).add_to(m)
 
+uwr_pop = folium.GeoJsonPopup(fields=uwr[['SPECIES_1', 'SPECIES_2']].columns.tolist(),
+                              aliases=['Species 1', 'Species 2'])
+
+folium.GeoJson(uwr, 
+               name='Ungulate Winter Range',
+               style_function=lambda feature:{
+                    "fillColor": "rgba(133, 91, 46, 0.75)",
+                    "color": "rgb(219, 123, 20)",
+                    "weight": 2                       
+               },
+               popup=uwr_pop).add_to(m)
+
+ogma_pop = folium.GeoJsonPopup(fields=legal_ogmas[['LEGAL_OGMA_PROVID', 'OGMA_TYPE', 'OGMA_PRIMARY_REASON', 'LEGALIZATION_FRPA_DATE', 'LEGALIZATION_OGAA_DATE', 'ASSOCIATED_ACT_NAME']].columns.tolist(),
+                               aliases=['OGMA ID', 'OGMA Type', 'OGMA Primary Reason', 'Date OGMA FRPA Order Approved', 'Date OGAA Order Approved', 'Associated Act Name'])
+
+folium.GeoJson(legal_ogmas,
+               name='Legal Old Growth Managment Areas',
+               style_function=lambda feature:{
+                    "fillColor": "rgba(15, 71, 33, 0.75)",
+                    "color": "rgb(15, 71, 33)",
+                    "weight": 1.5                      
+               },
+               popup=ogma_pop).add_to(m)
+
+cw_pop=folium.GeoJsonPopup(fields=com_watersheds[['CW_NAME','WATER_SYSTEM_NAME','CW_USE','CW_CODE','CW_DATE_CREATED','ORGANIZATION','POD_NUMBER','CW_LEGISLATION']].columns.tolist(),
+                        aliases=['Community Watershed Name','Water System Name','Use','Community Watershed Code','CW Date Created','Organization','POD Number','Legislation'])
+folium.GeoJson(com_watersheds,
+            name='Community Watershed',
+            style_function=lambda feature:{
+                "fillColor":"light blue",
+                "color":"blue",
+                "weight": 2
+            }, 
+            popup=cw_pop    
+).add_to(m)
+
+slrp_legal_pop = folium.GeoJsonPopup(fields=slrp_legal[['STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK']].columns.to_list(),
+                                     aliases=['Strategic Land Resource Plan Name', 'Legal Objective Type', 'Legalization Date', 'Legal Order Title', 'Enabling Document URL', 'Resource Plan Metadata Link'])
+
+folium.GeoJson(slrp_legal,
+               name='Legal Planning Objectives - Current',
+               style_function=lambda feature:{
+                    "fillColor": "rgba(141, 33, 166, 0.75)",
+                    "color": "rgb(89, 20, 105)",
+                    "weight": 2                   
+               },
+               popup=slrp_legal_pop).add_to(m)
+
+vli_pop = folium.GeoJsonPopup(fields=visual_landscape_inventory[['PROJECT_NAME', 'REC_EVQO_CODE', 'RATIONALE']].columns.tolist(),
+                                aliases=['Project Name', 'E Visual Quality Objective Code', 'Rationale'])
+
+folium.GeoJson(visual_landscape_inventory,
+                name='Visual Landscape Inventory',
+                style_function=lambda feature:{
+                    "fillColor": "rgba(76, 187, 23, 0.75)",
+                    "color": "rgb(76, 187, 23)",
+                    "weight": 0.7
+                },
+                popup=vli_pop).add_to(m)
+
+parcel_pop = folium.GeoJsonPopup(fields=parcel_fabric[['PARCEL_NAME', 'OWNER_TYPE']].columns.tolist(),
+                                 aliases=['Parcel Name', 'Owner Type'])
+
+folium.GeoJson(parcel_fabric,
+               name="Parcel Fabric",
+               style_function=lambda feature:{
+                    "fillColor": "rgba(7105, 82, 20, 0.75)",
+                    "color": "rgb(105, 82, 20)",
+                    "weight": 0.7    
+               },
+               popup=parcel_pop).add_to(m)
+
 nass_area_pop=folium.GeoJsonPopup(fields=nass_WLA[['TREATY_AREA_ID','TREATY','EFFECTIVE_DATE','FIRST_NATION_NAME','AREA_TYPE','CHAPTER_REFERENCE','APPENDIX_REFERENCE']].columns.tolist(),
                                 aliases=['Treaty Area ID', 'Treaty', 'Effective Date', 'First Nation Name', 'Area Type', 'Chapter Reference', 'Appendix Reference'])
 folium.GeoJson(nass_area,
@@ -152,6 +230,27 @@ folium.GeoJson(nass_area,
 min_pot_pop=folium.GeoJsonPopup(fields=min_pot[['TRACT_ID','TRACT_POLYGON_AREA','NUMBER_OF_MINFILE_OCCURENCES','METALLIC_MINERAL_INVENTORY','RANK_OF_INDUSTRIAL_MINERALS']].columns.tolist(),
                                 aliases=['Tract ID','Tract Polygon Area','Number Of Mine file Occurrences','Metallic Mineral Inventory','Rank Of Industrial Minerals'
 ])
+
+
+folium.GeoJson(visual_landscape_inventory,
+                name='Visual Landscape Inventory',
+                style_function=lambda feature:{
+                    "fillColor": "rgba(76, 187, 23, 0.5)",
+                    "color": "rgb(76, 187, 23)",
+                    "weight": 2
+                },
+                pop_up=vli_pop)
+
+rmp_non_legal_pop = folium.GeoJsonPopup(fields=rmp_plan_non_legal[['NON_LEGAL_FEAT_PROVID']].columns.tolist(),
+                                        aliases=[''])
+
+folium.GeoJson(rmp_plan_non_legal,
+                name='Non Legal Planning Features',
+                style_function=lambda feature:{
+                    "fillColor":"",
+                    "color":"",
+                    "weight": 2
+                })
 
 #declare color ramp and set up stuff- would be nice to get color ramp legend tied to layer vis
 min_pot_color=cm.linear.YlOrRd_04.scale(0, 800).to_step(100)
