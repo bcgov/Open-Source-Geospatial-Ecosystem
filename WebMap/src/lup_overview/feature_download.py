@@ -186,13 +186,16 @@ class WFS_downloader:
             'offset': self.offset
             }
         # build optional params
+    # build optional params
         if bbox is not None and query is not None:
             # append bbox to cql
             bbox = [str(b) for b in bbox]
             bbox_str = f'BBOX(GEOMETRY,{",".join(bbox)})'
+            bbox = [str(b) for b in bbox if b != "urn:ogc:def:crs:EPSG:3005"]
+            bbox_str = f'BBOX(GEOMETRY,{",".join(bbox)}, \'urn:ogc:def:crs:EPSG:3005\')'
             query = f'{bbox_str} AND {query}'
         elif bbox is not None:
-            bbox = [str(b) for b in bbox]
+            bbox = [str(b) for b in bbox
             params['bbox'] = ",".join(bbox)
         elif query is not None:
             params['CQL_FILTER']=query
