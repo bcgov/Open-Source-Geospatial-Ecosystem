@@ -1,4 +1,4 @@
-from flask import Flask 
+from flask import Flask, render_template
 # from blueprints.map import blueprint as overview_map
 from blueprints.intersect import blueprint as intersect
 from flask_caching import Cache
@@ -18,7 +18,7 @@ app.register_blueprint(intersect)
 @app.route("/")
 def app_root():
     #adjust message to return different request msg
-    return "API is running",200
+    return render_template('index.html')
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, threaded=True)   #debug=True
