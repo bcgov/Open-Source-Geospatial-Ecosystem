@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>FOSS4G LUP Web Map</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <!-- Top Banner -->
+    <div class="banner">
+        <p>Land Use Plan and maybe a button to go back to the main page?</p>
+    </div>
+
+    <!-- Header Section -->
+    <header class="header">
+        <h1>Land Use Plan Overview Map</h1>
+    </header>
+    <!-- map-->    
+    <section class= 'maps'>
+            <h2>Land Use Plan Overview Map</h2>
+            <div class='maps-box'>
+                <div id='maps-item'>
+                    {{ folium_map|safe }}
+                </div>
+            </div>
+    </section>
+
+</body>
+</html>

@@ -1,5 +1,5 @@
 from flask import Flask, render_template
-# from blueprints.map import blueprint as overview_map
+from blueprints.overview_map import blueprint as over_map
 from blueprints.intersect import blueprint as intersect
 from flask_caching import Cache
 
@@ -12,7 +12,7 @@ cache.init_app(app)
 
 # Set the secret key 
 app.secret_key = 'FOSS4G_Test'
-# app.register_blueprint(overview_map)
+app.register_blueprint(over_map)
 app.register_blueprint(intersect)
 
 @app.route("/")

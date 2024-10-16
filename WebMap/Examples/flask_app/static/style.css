@@ -4,20 +4,23 @@
     padding: 0;
     box-sizing: border-box;
 }
-
+/* body */
 body {
     font-family: Arial, sans-serif;
     line-height: 1.6;
-    background-color: #0b4c7a;
+    background-color: #ffffff;
+    height: auto;
+    padding-bottom: 150px;
+    border-bottom: 6.5px solid #ffc017;
 }
 
 /* Banner */
 .banner {
-    background-color: #0b4c7a;
+    background-color: #013366;
     color: white;
     text-align: center;
-    padding: 100px;
-    font-size: 1rem;
+    padding: 50px;
+    font-size: 2.5rem;
 }
 
 /* Header */
@@ -25,9 +28,11 @@ body {
     text-align: center;
     background-image: url('../static/AI_mountain.png');
     background-size: cover;
-    color: white;
+    color: #ffffff;
     padding: 50px 20px;
     position: relative;
+    border-top: 6.5px solid #ffc017;
+    border-bottom: 6.5x solid #ffc017;
 }
 
 .header .logo {
@@ -36,16 +41,16 @@ body {
 }
 
 .header h1 {
-    font-size: 2.5rem;
+    font-size: 5rem;
     margin: 20px 0;
 }
 
 .header p {
-    font-size: 1.2rem;
+    font-size: 2.5rem;
 }
 
 .header .btn {
-    background-color: #f1c40f;
+    background-color: #ffc017;
     color: #000;
     padding: 10px 20px;
     text-decoration: none;
@@ -66,7 +71,7 @@ body {
 }
 
 .services-grid {
-    max-width: 1200px; 
+    max-width: auto; 
     margin: 0 auto; 
     display: flex;
     justify-content: center;
@@ -77,7 +82,8 @@ body {
 .service-item {
     background-color: white;
     padding: 20px;
-    width: 250px;
+    width: 500px;
+    height: 800px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: left;
@@ -85,7 +91,7 @@ body {
 
 .service-item img {
     width: 100%;
-    height: 150px;
+    height: 300px;
     object-fit: cover;
     border-radius: 10px;
 }
@@ -111,3 +117,34 @@ body {
 .service-item a:hover {
     text-decoration: underline;
 }
+
+
+/* maps section */
+.maps {
+    padding: 20px 20px;
+    text-align: center;
+}
+
+/* Box that holds the maps */
+.maps-box {
+    max-width: 100%;
+    height: 1400px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+/* Individual map container */
+#maps-item {
+    background-color: white;
+    padding: 20px;
+    width: 95%; 
+    height: auto;
+    border: 2px solid #000;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    margin: 0 auto;
+}
+
