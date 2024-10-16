@@ -195,7 +195,7 @@ class WFS_downloader:
             bbox_str = f'BBOX(GEOMETRY,{",".join(bbox)}, \'urn:ogc:def:crs:EPSG:3005\')'
             query = f'{bbox_str} AND {query}'
         elif bbox is not None:
-            bbox = [str(b) for b in bbox
+            bbox = [str(b) for b in bbox]
             params['bbox'] = ",".join(bbox)
         elif query is not None:
             params['CQL_FILTER']=query
