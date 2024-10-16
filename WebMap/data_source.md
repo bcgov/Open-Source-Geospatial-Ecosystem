@@ -38,7 +38,7 @@
 | Tara        | WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW            | LEGAL_FEAT_OBJECTIVE = 'Ecosystem Network'                    |
 | Tara        | WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW            | LEGAL_FEAT_OBJECTIVE = 'Cedar Stand Reserves'                      |
 | Tara        | WHSE_LAND_USE_PLANNING.RMP_PLAN_NON_LEGAL_POLY_SVW        | NON_LEGAL_FEAT_OBJECTIVE = 'Mountain Goat Winter Range' * incorrect           |
-| Tara        | WHSE_WILDLIFE_MANAGEMENT.WCP_UNGULATE_WINTER_RANGE_SP     | SPECIES_1 LIKE %'M-ORAM' OR SPECIES_2 LIKE %'M-ORAM'             |
+| Tara        | WHSE_WILDLIFE_MANAGEMENT.WCP_UNGULATE_WINTER_RANGE_SP     | SPECIES_1 LIKE '%M-ORAM%' OR SPECIES_2 LIKE '%M-ORAM%'             |
 | Tara        | WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW                       | Apply bounding box                                               |
 | Tara        | WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY            | Apply bounding box                                               |
 | Tara        | WHSE_TERRESTRIAL_ECOLOGY.ERC_ECOSECTIONS_SP               | Apply bounding box                                               |
