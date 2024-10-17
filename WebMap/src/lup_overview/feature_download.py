@@ -104,6 +104,18 @@ class WFS_downloader:
 
         return concatenated_gdf
     
+    def clear_cache(self):
+        '''
+        Delete all cached files
+        '''
+        for file in self.CACHE_FILES:
+            try:
+                os.remove(file)
+                logging.debug(f"Deleted cached file: {file}")
+            except Exception as e:
+                logging.error(f"Error deleting cache file: {file}: {e}")
+            self.CACHE_FILES.clear()
+    
     
     def get_data(self, dataset, query=None, fields=None, bbox=None):
         '''Returns dataset in json format
@@ -163,6 +175,7 @@ class WFS_downloader:
                 self.__data_cache__(features=features)
                 features = []
             df = self.__load_cache_to_dataframe__()
+            self.clear_cache()
         else:
             df = self.features_to_df(features=features)
 
