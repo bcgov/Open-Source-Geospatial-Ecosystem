@@ -223,6 +223,10 @@ class WFS_downloader:
             logging.error(f"Error from WFS service. Status code: {r.status_code}")
             return {}
         
+        if r.status_code is 400:
+            logging.warning(f"Warning: No features returned from WFS service. Status code: {r.status_code}")
+            return {}
+        
         if not r.text:
             logging.warning("Empty response received from WFS service.")
             return {}
