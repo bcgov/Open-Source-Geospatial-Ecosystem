@@ -84,6 +84,9 @@ visual_landscape_inventory = wfs_getter('WHSE_FOREST_VEGETATION.REC_VISUAL_LANDS
 rmp_plan_non_legal = wfs_getter('WHSE_LAND_USE_PLANNING.RMP_PLAN_NON_LEGAL_POLY', query="NON_LEGAL_FEAT_OBJECTIVE = 'Special Habitats for General Wildlife'")
 # water_mgmt_non=wfs_getter('WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW',query="""NON_LEGAL_FEAT_OBJECTIVE = 'Water Management Units'""") # all features were moved to legal plans and no longer show up in WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW
 
+# filter parcels 
+private_parcels = parcel_fabric[parcel_fabric['OWNER_TYPE'] == 'Private']
+
 #add wfs gdfs to foloium
 folium.GeoJson(aoi,
             name='LUP AOI',
@@ -217,17 +220,17 @@ folium.GeoJson(visual_landscape_inventory,
                 },
                 popup=vli_pop).add_to(m)
 
-parcel_pop = folium.GeoJsonPopup(fields=parcel_fabric[['PARCEL_NAME', 'OWNER_TYPE']].columns.tolist(),
+parcel_pop = folium.GeoJsonPopup(fields=private_parcels[['PARCEL_NAME', 'OWNER_TYPE']].columns.tolist(),
                                  aliases=['Parcel Name', 'Owner Type'])
 
-folium.GeoJson(parcel_fabric,
-               name="Parcel Fabric",
-               style_function=lambda feature:{
-                    "fillColor": "rgba(7105, 82, 20, 0.75)",
-                    "color": "rgb(105, 82, 20)",
-                    "weight": 0.7    
-               },
-               popup=parcel_pop).add_to(m)
+parcel_layer = folium.GeoJson(private_parcels,
+                            name="Private Land",
+                            style_function=lambda feature:{
+                                    "fillColor": "rgba(7105, 82, 20, 0.75)",
+                                    "color": "rgb(105, 82, 20)",
+                                    "weight": 0.7    
+                            },
+                            popup=parcel_pop).add_to(m)
 
 nass_area_pop=folium.GeoJsonPopup(fields=nass_WLA[['TREATY_AREA_ID','TREATY','EFFECTIVE_DATE','FIRST_NATION_NAME','AREA_TYPE','CHAPTER_REFERENCE','APPENDIX_REFERENCE']].columns.tolist(),
                                 aliases=['Treaty Area ID', 'Treaty', 'Effective Date', 'First Nation Name', 'Area Type', 'Chapter Reference', 'Appendix Reference'])
