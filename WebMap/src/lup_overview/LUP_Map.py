@@ -69,6 +69,7 @@ stripes_45 = folium.plugins.pattern.StripePattern(angle=-45).add_to(m)
 rec_points=wfs_getter('WHSE_FOREST_TENURE.FTEN_REC_SITE_POINTS_SVW', bbox=bbox_albers)
 rec_polys=wfs_getter('WHSE_FOREST_TENURE.FTEN_RECREATION_POLY_SVW', bbox=bbox_albers)
 com_watersheds=wfs_getter('WHSE_WATER_MANAGEMENT.WLS_COMMUNITY_WS_PUB_SVW', bbox=bbox_albers)
+slrp_non_legal = wfs_getter('WHSE_LAND_USE_PLANNING.RMP_PLAN_NON_LEGAL_POLY_SVW', query="""NON_LEGAL_FEAT_OBJECTIVE = 'Special Habitats for General Wildlife'""")
 slrp_legal = wfs_getter('WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW', query="""LEGAL_FEAT_OBJECTIVE = 'Special Habitats for General Wildlife'""")
 parcel_fabric = wfs_getter('WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW', bbox=bbox_albers) 
 uwr = wfs_getter('WHSE_WILDLIFE_MANAGEMENT.WCP_UNGULATE_WINTER_RANGE_SP', query="""SPECIES_1 = 'M-ORAM' Or SPECIES_2 = 'M-ORAM'""", bbox=bbox_albers)
@@ -188,6 +189,21 @@ folium.GeoJson(slrp_legal,
                     "weight": 2                   
                },
                popup=slrp_legal_pop).add_to(m)
+
+if slrp_non_legal:
+    slrp_non_legal_pop = folium.GeoJsonPopup(fields=slrp_non_legal[['STRGC_LAND_RSRCE_PLAN_NAME', 'NON_LEGAL_FEAT_OBJECTIVE']].columns.to_list(),
+                                             aliases=['Strategic Land Resource Plan Name', 'Non-Legal Objective Type'])
+    
+    folium.GeoJson(slrp_non_legal,
+                   name='Non Legal Planning Features - Current',
+                   style_function=lambda feature:{
+                       "fillColor": "rgba(1153, 143, 156, 0.75)",
+                        "color": "rgb(89, 20, 105)",
+                        "weight": 1,  
+                        "dashArray": '5, 5' 
+                   },
+                   popup=slrp_non_legal_pop)
+
 
 vli_pop = folium.GeoJsonPopup(fields=visual_landscape_inventory[['PROJECT_NAME', 'REC_EVQO_CODE', 'RATIONALE']].columns.tolist(),
                                 aliases=['Project Name', 'E Visual Quality Objective Code', 'Rationale'])
