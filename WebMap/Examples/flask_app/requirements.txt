@@ -1,0 +1,11 @@
+Flask
+flask-caching
+Gunicorn
+requests
+geojson
+geopandas
+duckdb
+psutil
+folium
+fiona
+pyarrow

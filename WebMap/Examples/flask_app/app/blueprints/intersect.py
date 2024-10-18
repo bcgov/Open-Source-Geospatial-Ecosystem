@@ -20,7 +20,7 @@ wfs = feature_download.WFS_downloader()
 # Load the local geojson AOI file and get bbox in Albers projection
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-lup_aoi = os.path.join(BASE_DIR, '..','..', '..', 'geojson', 'aoi.geojson')
+lup_aoi = os.path.join(BASE_DIR,'..','..','data', 'geojson', 'aoi.geojson')
 aoi = gpd.read_file(lup_aoi)
 bbox_albers = wfs.create_bbox(aoi)
 aoi = aoi.to_crs(4326)  # Transform AOI to WGS 84
