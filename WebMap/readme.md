@@ -13,9 +13,17 @@ To download the Land Use Plan shapefiles as a zip folder, contact Cole
 - Identify overlaps in the SRMP/LRMP data and potentially export the tabular data, similar to a mini status report.
 - If possible, add links on the Skeena Data Hub to centralize all information in one location.
 
+## Instructions using docker
+1. change directory to WebMap/flask_app
+2. ```docker build -t wm-flask```
+3. ```docker run -p 5000:5000 wm-flask```
 
-# Create Conda Environment and Upgrade Folium, GeoPandas, and Flask
-## Be patient; the geospatial package takes a while.
+```<ctrl>c``` to exit or you can use ```docker run -d -p 5000:5000 wm-flask``` to detach docker from the terminal. 
+
+## Instructions using local environment with Conda
+
+Create Conda Environment and Upgrade Folium, GeoPandas, and Flask
+Be patient; the geospatial package takes a while.
 ```bash
 conda create -n open_geo -c conda-forge python>=3.11 geospatial folium geopandas flask
 ```
