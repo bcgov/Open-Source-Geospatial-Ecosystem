@@ -14,6 +14,7 @@ import shapely.wkt
 import json 
 from folium_glify_layer import GlifyLayer, Popup, Tooltip
 import re 
+import gzip
 # Load the local geojson AOI file and get bbox in Albers projection
 BASE_DIR = os.getcwd()
 lup_aoi = os.path.join(BASE_DIR, 'WebMap','geojson', 'aoi.geojson')
@@ -98,6 +99,11 @@ rmp_nonlegal_moose=wfs_getter('WHSE_LAND_USE_PLANNING.RMP_PLAN_NON_LEGAL_POLY_SV
 dfs.append(rmp_nonlegal_moose)
 df_names.append('rmp_nonlegal_moose')
 
+rmp_legal_moose=wfs_getter('WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW', query="""LEGAL_FEAT_OBJECTIVE = 'Moose Winter Range'  """, fields=['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK','GEOMETRY','OBJECTID'],bbox=bbox_albers)
+dfs.append(rmp_legal_moose)
+df_names.append('rmp_legal_moose')
+
+
 eca_threshold=wfs_getter('WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW', query="""LEGAL_FEAT_OBJECTIVE = 'Equivalent Clearcut Area Threshold Watersheds'""", fields=['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK','GEOMETRY','OBJECTID'],bbox=bbox_albers)
 dfs.append(eca_threshold)
 df_names.append('eca_threshold')
@@ -106,12 +112,19 @@ ecosystem_net=wfs_getter('WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW', query
 dfs.append(ecosystem_net)
 df_names.append('ecosystem_net')
 
+ecosystem_buf=wfs_getter('WHSE_LAND_USE_PLANNING.RMP_PLAN_NON_LEGAL_POLY_SVW', query="""NON_LEGAL_FEAT_OBJECTIVE = 'Ecosystem Network Buffer'""", fields=['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE','GEOMETRY','OBJECTID'])
+dfs.append(ecosystem_buf)
+df_names.append('ecosystem_buf')
+
 cedar_reserves=wfs_getter('WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW', query="""LEGAL_FEAT_OBJECTIVE = 'Cedar Stand Reserves'""", fields=['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK','GEOMETRY','OBJECTID'],bbox=bbox_albers)
 dfs.append(cedar_reserves)
 df_names.append('cedar_reserves')
 
 gc.collect()
 
+griz_wtrshd=wfs_getter('WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW', query="""LEGAL_FEAT_OBJECTIVE = 'Cedar Stand Reserves'""", fields=['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK','GEOMETRY','OBJECTID'],bbox=bbox_albers)
+dfs.append(griz_wtrshd)
+df_names.append('griz_wtrshd')
 #Call WFS
 rec_points=wfs_getter('WHSE_FOREST_TENURE.FTEN_REC_SITE_POINTS_SVW', fields=['PROJECT_NAME','FOREST_FILE_ID','MAINTAIN_STD_DESC','SITE_LOCATION', 'PROJECT_ESTABLISHED_DATE','GEOMETRY','OBJECTID'], bbox=bbox_albers)
 dfs.append(rec_points)
@@ -164,11 +177,16 @@ df_names.append('kalum_lrmp')
 
 gc.collect()
 
+cranberry_srmp= wfs_getter('WHSE_LAND_USE_PLANNING.RMP_STRGC_LAND_RSRCE_PLAN_SVW', query="""STRGC_LAND_RSRCE_PLAN_ID=151""", fields=['STRGC_LAND_RSRCE_PLAN_ID','STRGC_LAND_RSRCE_PLAN_NAME','PLAN_TYPE','PLAN_STATUS','APPROVAL_DATE','APPROVAL_LAST_AMEND_DATE','LEGALIZATION_DATE','LEGALIZATION_LAST_AMEND_DATE','GEOMETRY','OBJECTID'])
+dfs.append(cranberry_srmp)
+df_names.append('cranberry_srmp')
+
+
 hanna_tintina=wfs_getter('WHSE_TANTALIS.TA_CONSERVANCY_AREAS_SVW', query=""" ADMIN_AREA_SID = 5420""", fields=['ADMIN_AREA_SID','CONSERVANCY_AREA_NAME','ORCS_PRIMARY','ORCS_SECONDARY','ESTABLISHMENT_DATE','OFFICIAL_AREA_HA','PARK_MANAGEMENT_PLAN_URL','SHAPE','OBJECTID'])
 dfs.append(hanna_tintina)
 df_names.append('hanna_tintina')
 
-visual_landscape_inventory = wfs_getter('WHSE_FOREST_VEGETATION.REC_VISUAL_LANDSCAPE_INVENTORY', fields=['PROJECT_NAME', 'REC_EVQO_CODE','RATIONALE','GEOMETRY','OBJECTID'], bbox=bbox_albers)
+visual_landscape_inventory = wfs_getter('WHSE_FOREST_VEGETATION.REC_VISUAL_LANDSCAPE_INVENTORY', query="""REC_EVC_FINAL_VALUE_CODE IS NOT NULL""", fields=['PROJECT_NAME','REC_EVC_FINAL_VALUE_CODE', 'REC_EVQO_CODE','RATIONALE','GEOMETRY','OBJECTID'], bbox=bbox_albers)
 dfs.append(visual_landscape_inventory)
 df_names.append('visual_landscape_inventory')
 
@@ -176,8 +194,9 @@ uwr_moose=wfs_getter('WHSE_WILDLIFE_MANAGEMENT.WCP_UNGULATE_WINTER_RANGE_SP', qu
 dfs.append(uwr_moose)
 df_names.append('uwr_moose')
 
-# aquired_tenures_hist=wfs_getter('WHSE_MINERAL_TENURE.MTA_ACQUIRED_TENURE_HISTORY_SP',fields=['TENURE_HISTORY_ID', 'TENURE_NUMBER_ID','TENURE_TYPE_DESCRIPTION','REVISION_NUMBER','GEOMETRY','OBJECTID'],bbox=bbox_albers)
-# aquired_tenures_hist['geometry']=aquired_tenures_hist['geometry'].simplify(tolerance=0.01)
+
+aquired_tenures_hist=wfs_getter('WHSE_MINERAL_TENURE.MTA_ACQUIRED_TENURE_HISTORY_SP',fields=['TENURE_HISTORY_ID', 'TENURE_NUMBER_ID','TENURE_TYPE_DESCRIPTION','REVISION_NUMBER','GEOMETRY','OBJECTID'],bbox=bbox_albers)
+aquired_tenures_hist['geometry']=aquired_tenures_hist['geometry'].simplify(tolerance=0.01)
 
 aquired_tenures_curr=wfs_getter('WHSE_MINERAL_TENURE.MTA_ACQUIRED_TENURE_SVW', fields=['TENURE_NUMBER_ID', 'CLAIM_NAME','TENURE_TYPE_DESCRIPTION','TENURE_SUB_TYPE_DESCRIPTION','TITLE_TYPE_DESCRIPTION','ISSUE_DATE','GOOD_TO_DATE','AREA_IN_HECTARES','REVISION_NUMBER','GEOMETRY','OBJECTID'] ,bbox=bbox_albers)
 dfs.append(aquired_tenures_curr)
@@ -270,12 +289,12 @@ rec_marker_cluster = MarkerCluster(name='Recreation Sites (Points)').add_to(m)
 rec_pop_point=folium.GeoJsonPopup(fields=rec_points[['PROJECT_NAME','FOREST_FILE_ID','MAINTAIN_STD_DESC','SITE_LOCATION', 'PROJECT_ESTABLISHED_DATE']].columns.tolist(), 
                         aliases=['Project Name', 'Forest File ID', 'Maintained Standard Description', 'Site Location','Established Date' ])
 #set up layer
+#because rec points get added to the maker cluster show needs to = True, which is the default 
 folium.GeoJson(rec_points, 
             name='Recreation Sites (Points)',
             highlight_function=lambda x: {'fillOpacity': 0.8},
             popup=rec_pop_point,
-            zoom_on_click=True,
-            show=False
+            zoom_on_click=True
 ).add_to(rec_marker_cluster)
 
 rec_pop=folium.GeoJsonPopup(rec_polys[['PROJECT_NAME','FOREST_FILE_ID','SITE_LOCATION','PROJECT_TYPE', 'PROJECT_ESTABLISHED_DATE']].columns.tolist(),
@@ -318,7 +337,6 @@ folium.GeoJson(nass_WLA,
             },
             
             popup=nass_wla_pop,
-            show=False
 ).add_to(m)
 
 gc.collect()
@@ -329,9 +347,10 @@ uwr_pop_goat = folium.GeoJsonPopup(fields=uwr_mountain_goat[['SPECIES_1', 'SPECI
 folium.GeoJson(uwr_mountain_goat, 
                 name='Ungulate Winter Range- Mountain Goat (M-ORAM)',
                 style_function=lambda feature:{
-                    "fillColor": "rgba(133, 91, 46, 0.75)",
-                    "color": "rgb(219, 123, 20)",
-                    "weight": 2                       
+                    "fillColor": "#715B2E",
+                    "color": "#715B2E",
+                    "weight": 2,
+                    'fillOpacity': 0.7,                        
                 },
                 
                 popup=uwr_pop_goat,
@@ -344,9 +363,10 @@ ogma_pop = folium.GeoJsonPopup(fields=legal_ogmas[['LEGAL_OGMA_PROVID', 'OGMA_TY
 folium.GeoJson(legal_ogmas,
                 name='Legal Old Growth Managment Areas',
                 style_function=lambda feature:{
-                    "fillColor": "rgba(15, 71, 33, 0.75)",
-                    "color": "rgb(15, 71, 33)",
-                    "weight": 1.5                      
+                    "fillColor": "#0F4721",
+                    "color": "#0F4721",
+                    "weight": 1.5,
+                    'fillOpacity': 0.7,                         
                 },
                 
                 popup=ogma_pop,
@@ -360,9 +380,10 @@ spec_hab_pop = folium.GeoJsonPopup(fields=spec_hab[['STRGC_LAND_RSRCE_PLAN_NAME'
 folium.GeoJson(spec_hab,
                 name='Legal Planning Objectives - Special Habitats for General Wildlife',
                 style_function=lambda feature:{
-                    "fillColor": "rgba(141, 33, 166, 0.75)",
-                    "color": "rgb(89, 20, 105)",
-                    "weight": 2                   
+                    "fillColor": "#7221A6",
+                    "color": "#7221A6",
+                    "weight": 2,
+                    'fillOpacity': 0.7,                       
                 },
                 
                 popup=spec_hab_pop,
@@ -370,15 +391,16 @@ folium.GeoJson(spec_hab,
 ).add_to(m)
 
 
-vli_pop = folium.GeoJsonPopup(fields=visual_landscape_inventory[['PROJECT_NAME', 'REC_EVQO_CODE', 'RATIONALE']].columns.tolist(),
-                                aliases=['Project Name', 'E Visual Quality Objective Code', 'Rationale'])
+vli_pop = folium.GeoJsonPopup(fields=visual_landscape_inventory[['PROJECT_NAME','REC_EVC_FINAL_VALUE_CODE', 'REC_EVQO_CODE', 'RATIONALE']].columns.tolist(),
+                                aliases=['Project Name','Existing visual condition (EVC) final value', 'Visual Quality Objective Code', 'Rationale'])
 
 folium.GeoJson(visual_landscape_inventory,
                 name='Visual Landscape Inventory',
                 style_function=lambda feature:{
-                    "fillColor": "rgba(76, 187, 23, 0.75)",
-                    "color": "rgb(76, 187, 23)",
-                    "weight": 0.7
+                    "fillColor": "#4CBB17",
+                    "color": "#4CBB17",
+                    "weight": 0.7,
+                    'fillOpacity': 0.7
                 },
                 
                 popup=vli_pop,
@@ -391,9 +413,10 @@ parcel_pop = folium.GeoJsonPopup(fields=private_parcels[['PARCEL_NAME', 'OWNER_T
 parcel_layer = folium.GeoJson(private_parcels,
                 name="Private Land",
                 style_function=lambda feature:{
-                        "fillColor": "rgba(7105, 82, 20, 0.75)",
-                        "color": "rgb(105, 82, 20)",
-                        "weight": 0.7    
+                        "fillColor": "#FF5214",
+                        "color": "#FF5214",
+                        "weight": 0.7,
+                        'fillOpacity': 0.7    
                 },
                 
                 popup=parcel_pop,
@@ -412,8 +435,7 @@ folium.GeoJson(nass_area,
                 'dashArray': '5, 5'         # Dotted outline
             },
             
-            popup=nass_area_pop,
-            show=False    
+            popup=nass_area_pop,  
 ).add_to(m)
 
 
@@ -453,7 +475,7 @@ folium.GeoJson(kalum_srmp,
             },
             
             popup=k_srmp_pop,
-            show=False    
+            show=True    
 ).add_to(m)
 
 k_lrmp_pop=folium.GeoJsonPopup(fields=kalum_lrmp[['STRGC_LAND_RSRCE_PLAN_ID','STRGC_LAND_RSRCE_PLAN_NAME','PLAN_TYPE','PLAN_STATUS','APPROVAL_DATE','APPROVAL_LAST_AMEND_DATE','LEGALIZATION_DATE','LEGALIZATION_LAST_AMEND_DATE']].columns.tolist(),
@@ -470,9 +492,25 @@ folium.GeoJson(kalum_lrmp,
             },
             
             popup=k_lrmp_pop,
-            show=False    
+            show=True    
 ).add_to(m)
 
+c_lrmp_pop=folium.GeoJsonPopup(fields=cranberry_srmp[['STRGC_LAND_RSRCE_PLAN_ID','STRGC_LAND_RSRCE_PLAN_NAME','PLAN_TYPE','PLAN_STATUS','APPROVAL_DATE','APPROVAL_LAST_AMEND_DATE','LEGALIZATION_DATE','LEGALIZATION_LAST_AMEND_DATE']].columns.tolist(),
+                            aliases=['Strgc Land Rsrce Plan Id', 'Strgc Land Rsrce Plan Name', 'Plan Type', 'Plan Status', 'Approval Date', 'Approval Last Amend Date', 'Legalization Date', 'Legalization Last Amend Date'
+])
+folium.GeoJson(cranberry_srmp,
+            name= 'Cranberry SRMP',
+            style_function=lambda feature:{
+                'fillColor':'#458C78',
+                "fillPattern": stripes_45,
+                'color':'#458C78',
+                'weight': 2,
+                'fillOpacity': 1.0
+            },
+            
+            popup=c_lrmp_pop,
+            show=True    
+).add_to(m)
 
 ht_popup=folium.GeoJsonPopup(fields=hanna_tintina[['ADMIN_AREA_SID','CONSERVANCY_AREA_NAME','ORCS_PRIMARY','ORCS_SECONDARY','ESTABLISHMENT_DATE','OFFICIAL_AREA_HA','PARK_MANAGEMENT_PLAN_URL']].columns.tolist(),
                             aliases=['Admin Area Sid', 'Conservancy Area Name', 'Orcs Primary', 'Orcs Secondary', 'Establishment Date', 'Official Area Ha', 'Park Management Plan Url'])
@@ -512,9 +550,10 @@ uwr_pop_moose = folium.GeoJsonPopup(fields=uwr_moose[['SPECIES_1', 'SPECIES_2']]
 folium.GeoJson(uwr_moose, 
                 name='Ungulate Winter Range- Moose (M-ALAL)',
                 style_function=lambda feature:{
-                    "fillColor": "rgba(133, 91, 46, 0.75)",
-                    "color": "rgb(219, 123, 20)",
-                    "weight": 2                       
+                    "fillColor": "#8C0773",
+                    "color": "#8C0773",
+                    "weight": 2,
+                    'fillOpacity': 1.0                       
                 },
                 
                 popup=uwr_pop_moose,
@@ -537,17 +576,34 @@ folium.GeoJson(rmp_nonlegal_moose,
 ).add_to(m)
 
 
-# mta_hist_ten_pop=folium.GeoJsonPopup(fields=aquired_tenures_hist[['TENURE_HISTORY_ID', 'TENURE_NUMBER_ID','TENURE_TYPE_DESCRIPTION','REVISION_NUMBER']].columns.tolist(),
-#                             aliases=['Tenure History ID', 'Tenure Number ID','Tenure Type','Revision Number'])
-# folium.GeoJson(aquired_tenures_hist, 
-#                 name='MTA - Mineral, Placer and Coal Tenure History',
-#                 style_function=lambda feature:{
-#                     "fillColor": "transparent",
-#                     "color": "#ed7e49",
-#                     "weight": 2                       
-#                 },
-                 
-#                 popup=mta_hist_ten_pop).add_to(m)
+rmp_legal_moose_pop=folium.GeoJsonPopup(fields=rmp_legal_moose[['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK']].columns.tolist(),
+                                                        aliases=['Legal Feature ID','Strategic Land Resource Plan Name', 'Legal Objective Type', 'Legalization Date', 'Legal Order Title', 'Enabling Document URL', 'Resource Plan Metadata Link'])
+folium.GeoJson(rmp_legal_moose, 
+                name='Legal Planning Features - Current - Polygon: Moose Winter Range',
+                style_function=lambda feature:{
+                    "fillColor": "#829438",
+                    "color": "#829438",
+                    "weight": 2,
+                    'fillOpacity': 0.6                       
+                },
+                
+                popup=rmp_legal_moose_pop,
+                show=False
+).add_to(m)
+
+
+mta_hist_ten_pop=folium.GeoJsonPopup(fields=aquired_tenures_hist[['TENURE_HISTORY_ID', 'TENURE_NUMBER_ID','TENURE_TYPE_DESCRIPTION','REVISION_NUMBER']].columns.tolist(),
+                            aliases=['Tenure History ID', 'Tenure Number ID','Tenure Type','Revision Number'])
+folium.GeoJson(aquired_tenures_hist, 
+                name='MTA - Mineral, Placer and Coal Tenure History',
+                style_function=lambda feature:{
+                    "fillColor": "transparent",
+                    "color": "#ed7e49",
+                    "weight": 2                       
+                },
+                popup=mta_hist_ten_pop,
+                show=False
+                ).add_to(m)
 
 def tenure_style_function(feature):
     tenure_type = feature['properties']['TENURE_TYPE_CODE']
@@ -655,6 +711,21 @@ folium.GeoJson(ecosystem_net,
                 show=False    
 ).add_to(m)
 
+
+ecosystem_buf_pop=folium.GeoJsonPopup(fields=ecosystem_buf[['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE']].columns.tolist(),
+                            aliases=['Non Legal Feature ID', 'Strategic Land Resource Plan Name','Non Legal Feature Objective','Original Decision Date'])
+folium.GeoJson(ecosystem_buf, 
+                name='Non Legal Planning Objectives - Current - Polygon: Ecosystem Network Buffer',
+                style_function=lambda feature:{
+                    "fillColor": "#f1906d",
+                    "color": "#f1906d",
+                    "weight": 2,
+                    'fillOpacity': 0.6                       
+                },
+                
+                popup=ecosystem_buf_pop,
+                show=False    
+).add_to(m)
 cedar_pop=folium.GeoJsonPopup(fields=cedar_reserves[['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK']].columns.to_list(),
                                     aliases=['Legal Feature ID','Strategic Land Resource Plan Name', 'Legal Objective Type', 'Legalization Date', 'Legal Order Title', 'Enabling Document URL', 'Resource Plan Metadata Link'])
 folium.GeoJson(cedar_reserves, 
@@ -669,6 +740,24 @@ folium.GeoJson(cedar_reserves,
                 popup=cedar_pop,
                 show=False    
 ).add_to(m)
+
+
+griz_wtrshd_pop=folium.GeoJsonPopup(fields=griz_wtrshd[['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK']].columns.to_list(),
+                                    aliases=['Legal Feature ID','Strategic Land Resource Plan Name', 'Legal Objective Type', 'Legalization Date', 'Legal Order Title', 'Enabling Document URL', 'Resource Plan Metadata Link'])
+folium.GeoJson(griz_wtrshd, 
+                name='Legal Planning Objectives - Current - Polygon: Grizzly Bear Identified Watersheds',
+                style_function=lambda feature:{
+                    'fillColor':'#E65C0F',
+                    "fillPattern": stripes_135,
+                    'color':'#E65C0F',
+                    'weight': 2,
+                    'fillOpacity': 1.0
+                },
+                
+                popup=griz_wtrshd_pop,
+                show=False    
+).add_to(m)
+
 
 parks_pop=folium.GeoJsonPopup(fields=parks_reserves_protected_areas[['ADMIN_AREA_SID','PROTECTED_LANDS_NAME','PROTECTED_LANDS_DESIGNATION','PARK_CLASS','OFFICIAL_AREA_HA','PARK_MANAGEMENT_PLAN_URL']].columns.to_list(),
                                     aliases=['Admin Area ID', 'Protected Lands Name','Protected Lands Designation','Parks Class','Official Area(ha)','Park Management Plan URL'])
@@ -691,12 +780,12 @@ bec_pop=folium.GeoJsonPopup(fields=bec[['MAP_LABEL','ZONE','SUBZONE','VARIANT','
 folium.GeoJson(bec, 
                 name='Biogeoclimatic Ecosystem Classification (BEC)',
                 style_function=lambda feature:{
-                    "fillColor": "#817331",
-                    "color": "#817331",
+                    "fillColor": "#B3536A",
+                    "color": "#B3536A",
                     "weight": 2,
                     'fillOpacity': 0.6                       
                 },
-                 
+                
                 popup=bec_pop,
                 show=False
 ).add_to(m)
@@ -711,7 +800,7 @@ folium.GeoJson(ecosections,
                     "weight": 2,
                     'fillOpacity': 0.6                       
                 },
-                 
+                
                 popup=ecosect_pop,
                 show=False
 ).add_to(m)
@@ -719,10 +808,10 @@ folium.GeoJson(ecosections,
 fn_ct_pop=folium.GeoJsonPopup(fields=fn_reserves_crown_ten[['INTRID_SID','TENURE_STAGE','TENURE_STATUS','TENURE_TYPE','TENURE_SUBTYPE','TENURE_PURPOSE','CROWN_LANDS_FILE','TENURE_EXPIRY','TENURE_LEGAL_DESCRIPTION','TENURE_AREA_IN_HECTARES']].columns.to_list(),
                                     aliases=['ID','Tenure Stage','Tenure Status','Tenure Type','Tenure Sub-Type','Tenure Purpose','Crown Lands Fire', 'Tenure Expiry','Tenure Legal Description','Area(ha)'])
 folium.GeoJson(fn_reserves_crown_ten, 
-                name='Ecosections - Ecoregion Ecosystem Classification',
+                name='Treaty Settlemet Lands',
                 style_function=lambda feature:{
-                    "fillColor": "#817331",
-                    "color": "#817331",
+                    "fillColor": "#C1EA70",
+                    "color": "#C1EA70",
                     "weight": 2,
                     'fillOpacity': 0.6                       
                 },
@@ -775,3 +864,9 @@ gc.collect()
 #save html map
 # print(BASE_DIR)
 m.save(os.path.join('LUP_Overview.html')) 
+
+
+#zip html file 
+# # Save as gzipped HTML
+# with gzip.open('LUP_Overview.html.gz', 'wb') as f:
+#     f.write(rlc.encode('utf-8'))
