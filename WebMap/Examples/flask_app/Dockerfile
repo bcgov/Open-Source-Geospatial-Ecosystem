@@ -1,11 +1,8 @@
 FROM python:3.11
 
 # Set up environment variables for Python
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
-
-# Create and set the working directory
-WORKDIR /flask_app
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 # Copy only the requirements file first to leverage Docker caching
 COPY requirements.txt .
@@ -21,4 +18,5 @@ COPY data ./data
 EXPOSE 5000
 
 # Specify the command to run on container start
-CMD ["python", "app/app.py"]
+WORKDIR /app
+CMD ["gunicorn","--timeout", "500","--bind","0.0.0.0:5000","--workers","2","app:app"]
