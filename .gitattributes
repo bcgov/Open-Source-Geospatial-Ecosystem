@@ -1,0 +1,2 @@
+# ignore and prevent merging of ZoneIdentifier files
+*Zone.Identifier -crlf -diff -merge
