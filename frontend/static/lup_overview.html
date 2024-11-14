@@ -355,9 +355,10 @@
             style: { fillColor: 'transparent', color: 'black', weight: 4 }
         }).addTo(map);
 
+        const checkboxContainer = document.getElementById('checkbox-container');
+
         // Function to create checkboxes dynamically based on jsonData
-        function createCheckboxes() {
-            const checkboxContainer = document.getElementById('checkbox-container');
+        function createCheckboxes(container) {
             jsonData.forEach((layer, index) => {
                 const label = document.createElement('label');
                 label.innerHTML = `<input type="checkbox" onclick="layerToggleWFS(this, ${index})" /> ${layer.Name}`;
@@ -367,7 +368,7 @@
         }
 
         // Call the function to create checkboxes
-        createCheckboxes();
+        createCheckboxes(checkboxContainer);
 
         function toggleCheckboxContainer() {
             const checkboxContent = document.getElementById('checkboxContent');
@@ -396,36 +397,32 @@
         // Array to keep track of uploaded layers
         let uploadedLayers = [];
 
-        // Add event handler to listen for loaded file
-        control.loader.on('data:loaded', function(event) {
-            let layer = event.layer;
-            uploadedLayers.push(layer);
-
-            let checkboxContainer = document.getElementById("checkbox-container");
-
-            // Create a new checkbox for the uploaded layer
-            let label = document.createElement("label");
-            let checkbox = document.createElement("input");
+        function createCheckboxForAddedLayer(layer, fileName) {
+            const label = document.createElement("label");
+            const checkbox = document.createElement("input");
             checkbox.type = "checkbox";
             checkbox.checked = true;
 
-            // Get file name from event
-            let fileName = event.filename || "Uploaded Layer " + uploadedLayers.length;
-            label.appendChild(checkbox);
-            label.appendChild(document.createTextNode(" " + fileName));
-
-            checkbox.onclick = function() {
-                if (checkbox.checked) {
-                    map.addLayer(layer);
-                } else {
-                    map.removeLayer(layer);
-                }
+            // Checkbox click event to add or remove the layer from the map
+            checkbox.onclick = () => {
+                checkbox.checked ? map.addLayer(layer) : map.removeLayer(layer);
             };
 
+            label.appendChild(checkbox);
+            label.appendChild(document.createTextNode(" " + fileName));
             checkboxContainer.appendChild(label);
             checkboxContainer.appendChild(document.createElement("br"));
-        });
+        }
 
+        // Event handler for loaded files
+        control.loader.on('data:loaded', function(event) {
+            const layer = event.layer;
+            uploadedLayers.push(layer);
+            
+            const fileName = event.filename || "Uploaded Layer" + $uploadedLayers.length;
+            createCheckboxForAddedLayer(layer, fileName);
+        });     
+        
         // Function to generate the WFS query URL
         function wfsQuery(dataset, query = null, fields = [], startIndex = null, count = null, bbox = null) {
             const SERVICE_URL = "http://localhost:5000/wfs/";
