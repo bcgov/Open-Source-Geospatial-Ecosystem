@@ -101,14 +101,6 @@
             checkboxContainer.appendChild(document.createElement("br"));
         });
 
-        // error message if add file layer fails
-        // var control = L.Control.fileLayerLoad();
-        // control.loader.on('data:error', function(error) {
-        //     console.log("Error loading file: ", error)
-        // });
-            
-        
-
         // Function to generate the WFS query URL
         function wfsQuery(dataset, query = null, fields = [], startIndex = null, count = null, bbox = null) {
             const SERVICE_URL = "http://localhost:5000/wfs/";
