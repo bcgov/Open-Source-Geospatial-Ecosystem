@@ -14,8 +14,8 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 map_path = os.path.join(BASE_DIR, '..','..','frontend','static', 'lup_intersect.html')
 
 # URL for your WFS layers (replace with actual WFS URLs)
-WFS_LAYER_1_URL = 'https://openmaps.gov.bc.ca/geo/pub/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=pub%3AWHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW&outputFormat=json&srsName=EPSG%3A4326&sortBy=OBJECTID&limit=10000&offset=0&bbox=743161%2C1112127%2C898012%2C1291756%2Curn%3Aogc%3Adef%3Acrs%3AEPSG%3A3005'
-WFS_LAYER_2_URL = 'https://openmaps.gov.bc.ca/geo/pub/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=pub%3AWHSE_LAND_USE_PLANNING.RMP_PLAN_NON_LEGAL_POLY_SVW&outputFormat=json&srsName=EPSG%3A4326&sortBy=OBJECTID&limit=10000&offset=0&bbox=743161%2C1112127%2C898012%2C1291756%2Curn%3Aogc%3Adef%3Acrs%3AEPSG%3A3005'
+WFS_LAYER_1_URL = 'https://openmaps.gov.bc.ca/geo/pub/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=pub%3AWHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW&outputFormat=application%2Fjson&srsName=EPSG%3A4326&bbox=54.94267775412879%2C-130.02081515748938%2C56.60674270353342%2C-127.66422698319626%2Curn%3Aogc%3Adef%3Acrs%3AEPSG%3A4326&sortBy=OBJECTID&limit=10000&offset=0&propertyName=STRGC_LAND_RSRCE_PLAN_NAME%2CLEGAL_FEAT_OBJECTIVE%2CLEGALIZATION_DATE%2CENABLING_DOCUMENT_TITLE%2CENABLING_DOCUMENT_URL%2CRSRCE_PLAN_METADATA_LINK%2CGEOMETRY%2COBJECTID'
+WFS_LAYER_2_URL = 'https://openmaps.gov.bc.ca/geo/pub/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=pub%3AWHSE_LAND_USE_PLANNING.RMP_PLAN_NON_LEGAL_POLY_SVW&outputFormat=application%2Fjson&srsName=EPSG%3A4326&bbox=54.94267775412879%2C-130.02081515748938%2C56.60674270353342%2C-127.66422698319626%2Curn%3Aogc%3Adef%3Acrs%3AEPSG%3A4326&sortBy=OBJECTID&limit=10000&offset=0&propertyName=NON_LEGAL_FEAT_ID%2CSTRGC_LAND_RSRCE_PLAN_NAME%2CNON_LEGAL_FEAT_OBJECTIVE%2CORIGINAL_DECISION_DATE%2CGEOMETRY%2COBJECTID'
 
 def get_wfs_data(url):
     """
