@@ -19,7 +19,7 @@ cache.init_app(app)
 app.secret_key = 'FOSS4G_Test'
 
 # WFS endpoint
-WFS_URL = "https://openmaps.gov.bc.ca/geo/pub/ows?"
+WFS_URL = """https://openmaps.gov.bc.ca/geo/pub/ows?"""
 
 # Register blueprints
 from blueprints.overview_map import blueprint as over_map
@@ -33,7 +33,7 @@ def app_root():
     return render_template('index.html')
 
 # WFS proxy route
-@app.route('/wfs/<path:endpoint>', methods=['GET', 'POST', 'OPTIONS'])
+@app.route('/wfs<path:endpoint>', methods=['GET', 'POST', 'OPTIONS'])
 def proxy_request(endpoint):
     # Construct the URL for the WFS request
     url = f"{WFS_URL}{endpoint}"
@@ -41,6 +41,9 @@ def proxy_request(endpoint):
     # Forward the parameters from the request
     params = request.args.to_dict()
 
+    print("Requesting URL:", url)
+    print("Params:", params)
+    
     # Handle HTTP methods appropriately
     if request.method == 'OPTIONS':
         return _build_cors_preflight_response()

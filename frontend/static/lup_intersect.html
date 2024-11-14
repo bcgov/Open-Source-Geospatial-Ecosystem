@@ -51,9 +51,9 @@
 //   js functions
         // function to get wfs layers by query
         
-        function wfsQuery(dataset, query = null, fields = [], startIndex = null, count = null, bbox = null) {
-            const SERVICE_URL = "http://localhost:5000/wfs/";
-            
+        function wfsQuery(dataset, query = null, fields = [], startIndex = 0, count = null ) {
+            const SERVICE_URL = "http://localhost:5000/wfs";
+        
             const params = new URLSearchParams({
                 service: 'WFS',
                 version: '2.0.0',
@@ -61,15 +61,13 @@
                 typeName: `pub:${dataset}`,
                 outputFormat: 'application/json',
                 srsName: 'EPSG:4326',
+                bbox: [54.94267775412879,-130.02081515748938, 56.60674270353342,-127.66422698319626, 'urn:ogc:def:crs:EPSG:4326'],
                 sortBy: 'OBJECTID',
                 limit: 10000,
-                offset: 0 
+                offset: startIndex 
             });
         
-            if (bbox) {
-                const [minX, minY, maxX, maxY, srs] = bbox;
-                params.set('CQL_FILTER', `BBOX(GEOMETRY, ${minX}, ${minY}, ${maxX}, ${maxY}, '${srs}')`);
-            }
+            // Use INTERSECTS filter with a POLYGON if bbox is provided
         
             if (query) {
                 if (params.has('CQL_FILTER')) {
@@ -83,19 +81,14 @@
                 params.append('propertyName', fields.map(field => field.toUpperCase()).join(','));
             }
         
-            if (startIndex !== null) {
-                params.append('startIndex', startIndex);
-            }
-        
             if (count !== null) {
                 params.append('count', count);
             }
-
+        
             const url = `${SERVICE_URL}${params.toString()}`;
             console.log("WFS URL:", url);
             return url;
         }
-        
 
         function getRandomColor() {
             const letters = '0123456789ABCDEF';
@@ -108,7 +101,7 @@
 
 // add layer group, color, control, and whatever else to json and change popups below to match the fields 
 // empty object to add layers to for layer control 
-const bbox = [-130.70713817004415, 54.658316969110963, -127.12066348938077, 56.880992958850584, 'EPSG:4326'];
+const bbox = [743161, 1112127, 898012, 1291756, 'EPSG:4326'];
     function loadWFSData(jsonData) {
         jsonData.forEach(item => {
             const dataset = item.Dataset;
@@ -118,7 +111,7 @@ const bbox = [-130.70713817004415, 54.658316969110963, -127.12066348938077, 56.8
             const fields = JSON.parse(item.Fields.replace(/'/g, '"'));
             const popupFields = JSON.parse(item.Popup.replace(/'/g, '"'));
             
-            const url = wfsQuery(dataset, query, fields, bbox);
+            const url = wfsQuery(dataset, query, fields);
             
             fetch(url)
                 .then(response => response.json())
@@ -175,7 +168,7 @@ const bbox = [-130.70713817004415, 54.658316969110963, -127.12066348938077, 56.8
 ]
 
     loadWFSData(jsonData);
-    var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
+    var layerControl = L.control.layers(baseMaps).addTo(map);
 
     </script>
 </body>
