@@ -10,7 +10,7 @@
     <div id="overview"></div>
     
     <!-- Container to hold checkboxes for layer control -->
-    <div id="checkbox-container" style="position: absolute; top: 10px; left: 10px; background-color: white; padding: 10px; z-index: 1000;">
+    <div id="checkbox-container" style="position: absolute; top: 10px; right: 10px; background-color: white; padding: 10px; z-index: 1000;">
         <label><input type="checkbox" id="layerToggle1" onclick="layerToggleWFS(this, 0)" /> Special Habitats for General Wildlife</label><br>
         <label><input type="checkbox" id="layerToggle2" onclick="layerToggleWFS(this, 1)" /> Water Management Units</label><br>
         <label><input type="checkbox" id="layerToggle3" onclick="layerToggleWFS(this, 2)" /> Goshawk Nesting Habitat</label><br>
@@ -21,6 +21,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.5/proj4.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js"></script>
     <script src="https://unpkg.com/leaflet-wfst@2.0.1-beta.27/dist/leaflet-wfst.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/togeojson/0.16.0/togeojson.min.js"></script>
+    <script src="plugins/leaflet.filelayer.js"></script>
 
     <style>
         #overview { position: absolute; top: 0; bottom: 0; left: 0; right: 0; }
@@ -54,6 +56,58 @@
         L.geoJSON(lup_aoi, {
             style: { fillColor: 'transparent', color: 'black', weight: 4 }
         }).addTo(map);
+
+        // add file layer upload to map
+        var control = L.Control.fileLayerLoad({
+            layer: L.geoJSON,
+            layerOptions: {style: {color: getRandomColor()}},
+            addToMap: true,
+            fileSizeLimit: 1024,
+            formats: [
+                '.kml'
+            ]
+        }).addTo(map);
+
+        // Array to keep track of uploaded layers
+        let uploadedLayers = [];
+
+        // Add event handler to listen for loaded file
+        control.loader.on('data:loaded', function(event) {
+            let layer = event.layer;
+            uploadedLayers.push(layer);
+
+            let checkboxContainer = document.getElementById("checkbox-container");
+
+            // Create a new checkbox for the uploaded layer
+            let label = document.createElement("label");
+            let checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.checked = true;
+
+            // Get file name from event
+            let fileName = event.filename || "Uploaded Layer " + uploadedLayers.length;
+            label.appendChild(checkbox);
+            label.appendChild(document.createTextNode(" " + fileName));
+
+            checkbox.onclick = function() {
+                if (checkbox.checked) {
+                    map.addLayer(layer);
+                } else {
+                    map.removeLayer(layer);
+                }
+            };
+
+            checkboxContainer.appendChild(label);
+            checkboxContainer.appendChild(document.createElement("br"));
+        });
+
+        // error message if add file layer fails
+        // var control = L.Control.fileLayerLoad();
+        // control.loader.on('data:error', function(error) {
+        //     console.log("Error loading file: ", error)
+        // });
+            
+        
 
         // Function to generate the WFS query URL
         function wfsQuery(dataset, query = null, fields = [], startIndex = null, count = null, bbox = null) {
