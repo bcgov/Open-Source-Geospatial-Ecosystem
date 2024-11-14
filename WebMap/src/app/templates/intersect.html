@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feature Intersect</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h2>Upload a File to Intersect with Land Use Polygons</h2>
+    <!-- Form for uploading data -->
+    <form action="/intersect" method="POST" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".geojson,.shp,.kml" required>
+        <button type="submit">Upload and Intersect</button>
+    </form>
+
+    <!-- Map Section -->
+    <div id="map-container">
+        {{ leaflet_map | safe }}
+    </div>
+
+    <!-- Intersected Data Section -->
+    <div class="data-section">
+        {% if intersected_data_1 %}
+            <h3>Legal Planning Objective Polygons</h3>
+            <button class="minimize-btn" onclick="toggleTableVisibility('intersected-data-1')">Minimize</button>
+            <div id="intersected-data-1" class="table-container">
+                <table id="intersected-data-1-table">
+                    <thead>
+                        <tr>
+                            <th>Plan Name</th>
+                            <th>Objective</th>
+                            <th>Legalization Date</th>
+                            <th>Document Title</th>
+                            <th>Document URL</th>
+                            <th>Metadata Link</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in intersected_data_1 %}
+                            <tr>
+                                <td>{{ row['STRGC_LAND_RSRCE_PLAN_NAME'] }}</td>
+                                <td>{{ row['LEGAL_FEAT_OBJECTIVE'] }}</td>
+                                <td>{{ row['LEGALIZATION_DATE'] }}</td>
+                                <td>{{ row['ENABLING_DOCUMENT_TITLE'] }}</td>
+                                <td><a href="{{ row['ENABLING_DOCUMENT_URL'] }}" target="_blank">Link</a></td>
+                                <td><a href="{{ row['RSRCE_PLAN_METADATA_LINK'] }}" target="_blank">Link</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p>No Legal Planning Objective Polygon data found</p>
+        {% endif %}
+
+        {% if intersected_data_2 %}
+            <h3>Non-Legal Planning Objective Polygons</h3>
+            <button class="minimize-btn" onclick="toggleTableVisibility('intersected-data-2')">Minimize</button>
+            <div id="intersected-data-2" class="table-container">
+                <table id="intersected-data-2-table">
+                    <thead>
+                        <tr>
+                            <th>Feature ID</th>
+                            <th>Plan Name</th>
+                            <th>Objective</th>
+                            <th>Decision Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in intersected_data_2 %}
+                            <tr>
+                                <td>{{ row['NON_LEGAL_FEAT_ID'] }}</td>
+                                <td>{{ row['STRGC_LAND_RSRCE_PLAN_NAME'] }}</td>
+                                <td>{{ row['NON_LEGAL_FEAT_OBJECTIVE'] }}</td>
+                                <td>{{ row['ORIGINAL_DECISION_DATE'] }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p>No Non-Legal Planning Objective Polygon data found</p>
+        {% endif %}
+    </div>
+
+    {% if not intersected_data_1 and not intersected_data_2 %}
+        <p>No Data - Upload a file and intersect.</p>
+    {% endif %}
+
+    <!-- Add these two buttons to download separate CSVs -->
+    {% if intersected_data_1 %}
+        <button class="download-btn" onclick="downloadTableAsCSV('intersected-data-1-table', 'legal_data.csv')">Download Legal Planning CSV</button>
+    {% endif %}
+    {% if intersected_data_2 %}
+        <button class="download-btn" onclick="downloadTableAsCSV('intersected-data-2-table', 'non_legal_data.csv')">Download Non-Legal Planning CSV</button>
+    {% endif %}
+
+    <script>
+        // JavaScript to toggle the visibility of the tables
+        function toggleTableVisibility(tableId) {
+            const tableContainer = document.getElementById(tableId);
+            if (tableContainer.style.display === "none") {
+                tableContainer.style.display = "block";
+            } else {
+                tableContainer.style.display = "none";
+            }
+        }
+
+        function downloadTableAsCSV(tableId, filename) {
+            const table = document.getElementById(tableId);
+            let csv = [];
+            
+            // Get the table headers
+            const headers = [];
+            const headerRow = table.querySelectorAll('th');
+            headerRow.forEach(header => {
+                headers.push(header.innerText);
+            });
+            csv.push(headers.join(',')); // Join headers as the first row
+        
+            // Get the table rows
+            const rows = table.querySelectorAll('tr');
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length > 0) {
+                    let rowData = [];
+                    cells.forEach(cell => {
+                        rowData.push(cell.innerText);
+                    });
+                    csv.push(rowData.join(',')); // Join cells for each row
+                }
+            });
+        
+            // Create CSV file and trigger download
+            const csvString = csv.join('\n');
+            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            if (link.download !== undefined) {
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', filename); // Use the provided filename
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+    </script>
+</body>
+</html>
