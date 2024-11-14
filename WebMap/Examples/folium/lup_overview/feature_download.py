@@ -244,7 +244,7 @@ class WFS_downloader:
             logging.warning("Empty response received from WFS service.")
             return {}
         
-        return r.json()
+        return r.url 
        
        
     def features_to_df(self,features) -> geopandas.GeoDataFrame:
@@ -286,3 +286,9 @@ class WFS_downloader:
         with open(geojson_file,'r') as f:
             obj = geojson.load(f)
         return obj
+
+df=geopandas.read_file('/home/cfolkers/gitanyow_lup/Open-Source-Geospatial-Ecosystem/WebMap/geojson/aoi.geojson')
+WFSdownloader = WFS_downloader()
+bba=WFSdownloader.create_bbox(df)
+print(WFSdownloader.wfs_query(dataset='WHSE_LAND_USE_PLANNING.RMP_PLAN_NON_LEGAL_POLY_SVW',
+                        bbox=bba))

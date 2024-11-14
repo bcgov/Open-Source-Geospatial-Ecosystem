@@ -16,21 +16,24 @@
     <script src="https://cdn.jsdelivr.net/npm/leaflet-filelayer@1.2.0/src/leaflet.filelayer.min.js"></script>
 
     <style>
-        #overview { position: absolute; top: 0; bottom: 0; left: 0; right: 0; }
+        #overview {
+            width: 100%;
+            height: 100vh; /* Adjust to fit the entire viewport */
+            position: relative;
+        }
     </style>
 
     <script>
-        // Initialize the map
+//call map variable 
         var map = L.map('overview').setView([55.781113, -128.867888], 7);
-    
-        // Add the base map layer
+
+// base map stuff 
         var CartoDB_Positron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
             subdomains: 'abcd',
             maxZoom: 20
         });
         CartoDB_Positron.addTo(map);
-    // aoi geojson structure
         var lup_aoi= 
         {
             "type": "FeatureCollection",
@@ -40,20 +43,17 @@
             { "type": "Feature", "properties": { "OBJECTID": 3.0, "SHAPE_Leng": 908959.60400000215, "SHAPE_Area": 51484492817.909615, "X_Max": null, "X_Min": null, "Y_Max": null, "Y_Min": null, "centerx": null, "centery": null, "Lat_Max": -127.12066348938077, "Lat_Min": -130.70713817004415, "Lon_Max": 56.880992958850584, "Lon_Min": 54.658316969110963 }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ -128.877519335263372, 56.854459870751043 ], [ -128.47103084514157, 56.862845226243849 ], [ -127.182976424146929, 56.880987675036366 ], [ -127.120645609878679, 54.734177239127789 ], [ -130.459733007391407, 54.658312163230242 ], [ -130.707118882745391, 56.800867888548048 ], [ -128.877519335263372, 56.854459870751043 ] ] ] ] } }
             ]
         };
+        // object for basemap layers to add to layer control 
+        var baseMaps={
+            'CartoDB Positron':CartoDB_Positron
+        };
 
-        L.geoJSON(lup_aoi,{
-            style: {
-                fillColor: 'transparent',
-                color: 'black',
-                weight: 4}
-        }).addTo(map);
+//   js functions
+        // function to get wfs layers by query
         
-
         function wfsQuery(dataset, query = null, fields = [], startIndex = null, count = null, bbox = null) {
-            // Base URL for the WFS service
             const SERVICE_URL = "http://localhost:5000/wfs/";
-        
-            // Initialize base parameters
+            
             const params = new URLSearchParams({
                 service: 'WFS',
                 version: '2.0.0',
@@ -97,82 +97,86 @@
         }
         
 
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
 
-        fetch("http://localhost:5000/wfs/service=WFS&version=2.0.0&request=GetFeature&typeName=pub%3AWHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW&outputFormat=application/json&srsName=EPSG%3A4326&sortBy=OBJECTID&limit=10000&offset=0&CQL_FILTER=LEGAL_FEAT_OBJECTIVE+%3D+%27Special+Habitats+for+General+Wildlife%27&propertyName=STRGC_LAND_RSRCE_PLAN_NAME%2CLEGAL_FEAT_OBJECTIVE%2CLEGALIZATION_DATE%2CENABLING_DOCUMENT_TITLE%2CENABLING_DOCUMENT_URL%2CRSRCE_PLAN_METADATA_LINK%2CGEOMETRY%2COBJECTID")
-        .then(response => response.json())
-        .then(data => {
-            L.geoJSON(data, {
-                style: {
-                    color: 'blue',
-                    weight: 2
-                },
-                onEachFeature: function (feature, layer) {
-                    if (feature.properties) {
-                        layer.bindPopup(
-                            `<strong>Plan Name:</strong> ${feature.properties.STRGC_LAND_RSRCE_PLAN_NAME}<br>` +
-                            `<strong>Objective:</strong> ${feature.properties.LEGAL_FEAT_OBJECTIVE}<br>` +
-                            `<strong>Date:</strong> ${feature.properties.LEGALIZATION_DATE}`
-                        );
-                    }
-                }
-            }).addTo(map);
-        })
-    
-
-        var dataset = 'WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW';
-        var query = "LEGAL_FEAT_OBJECTIVE = 'Water Management Units'";
-        var fields = [
-            'STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE',
-            'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE',
-            'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK',
-            'GEOMETRY', 'OBJECTID'
-        ];
-        var bbox = [-130, 55, -128, 57, 'urn:ogc:def:crs:EPSG:3005'];
-
-        var wtr_mgmt_url = wfsQuery(dataset, query, fields, bbox);
-        console.log(wtr_mgmt_url);
-
-        fetch(wtr_mgmt_url)
-        .then(response => response.json())
-        .then(data => {
-            L.geoJSON(data, {
-                style: {
-                    color: 'red',
-                    weight: 2
-                },
-                onEachFeature: function (feature, layer) {
-                    if (feature.properties) {
-                        layer.bindPopup(
-                            `<strong>Plan Name:</strong> ${feature.properties.STRGC_LAND_RSRCE_PLAN_NAME}<br>` +
-                            `<strong>Objective:</strong> ${feature.properties.LEGAL_FEAT_OBJECTIVE}<br>` +
-                            `<strong>Date:</strong> ${feature.properties.LEGALIZATION_DATE}`
-                        );
-                    }
-                }
-            }).addTo(map);
-        })
-        .catch(error => console.error("Error fetching WFS data:", error));
-
-        L.Control.fileLayerLoad({
-            layer: L.geoJson,
-            layerOptions: {style: {color: 'green', weight: 2}},
-            addToMap: true,
-            fileSizeLimit: 4096,  // Set file size limit in KB
-            formats: ['.geojson', '.kml']  // Allowed formats
-        }).addTo(map);
-
-        var control = L.Control.fileLayerLoad();
-        control.loader.on('data:loaded', function (event) {
-            // event.layer gives you access to the layers you just uploaded!
-
-            // Add to map layer switcher
-            layerswitcher.addOverlay(event.layer, event.filename);
+// add layer group, color, control, and whatever else to json and change popups below to match the fields 
+// empty object to add layers to for layer control 
+const bbox = [-130.70713817004415, 54.658316969110963, -127.12066348938077, 56.880992958850584, 'EPSG:4326'];
+    function loadWFSData(jsonData) {
+        jsonData.forEach(item => {
+            const dataset = item.Dataset;
+            const query = item.Query;
+            const name= item.Name
+            const colors=item.Color
+            const fields = JSON.parse(item.Fields.replace(/'/g, '"'));
+            const popupFields = JSON.parse(item.Popup.replace(/'/g, '"'));
+            
+            const url = wfsQuery(dataset, query, fields, bbox);
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    L.geoJSON(data, {
+                        style: {
+                            color: colors,
+                            weight: 2
+                        },
+                        onEachFeature: function (feature, layer) {
+                            if (feature.properties) {
+                                const popupContent = popupFields.map(field => 
+                                `<strong>${field.replace(/_/g, ' ')}:</strong> ${feature.properties[field] || 'N/A'}`
+                            ).join('<br>');
+                            layer.bindPopup(popupContent);
+                            }
+                        }
+                    }).addTo(map);
+                })
+                .catch(error => {
+                    console.error('Error fetching WFS data:', error);
+                });
         });
-        var control = L.Control.fileLayerLoad();
-        control.loader.on('data:error', function (error) {
-            // Do something usefull with the error!
-            console,error(error);
-        });
+    }
+// plugins 
+
+// add layers to map 
+    L.geoJSON(lup_aoi,{
+        style: {
+            fillColor: 'transparent',
+            color: 'black',
+            weight: 4}
+    }).addTo(map);
+
+
+    //create json of layers for the map still needs to be altered to add fields for popups, colors, other properties?
+    const jsonData = [
+    {
+        "Dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW",
+        "Query": "",
+        "Fields": "['STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK','GEOMETRY','OBJECTID']",
+        "Name": "'Legal Planning Objective Polygons",
+        "Popup":"['STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK']",
+        "Color":"#FF5733"
+    },
+    {
+        "Dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_NON_LEGAL_POLY_SVW",
+        "Query": "",
+        "Fields": "['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE','GEOMETRY','OBJECTID']",
+        "Name" :"Non Legal Planning Objective Polygons",
+        "Popup":"['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE']",
+        "Color":"#FF33A1"
+    },
+]
+
+    loadWFSData(jsonData);
+    var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
+
     </script>
 </body>
 </html>

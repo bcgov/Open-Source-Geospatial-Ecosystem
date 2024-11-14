@@ -1,167 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LUP Overview</title>
-</head>
-<body>
-    <div id="overview"></div>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.5/proj4.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js"></script>
-    <script src="https://unpkg.com/leaflet-wfst@2.0.1-beta.27/dist/leaflet-wfst.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/leaflet-filelayer@1.2.0/src/leaflet.filelayer.min.js"></script>
-
-    <style>
-        #overview { position: absolute; top: 0; bottom: 0; left: 0; right: 0; }
-    </style>
-
-    <script>
-//call map variable 
-        var map = L.map('overview').setView([55.781113, -128.867888], 7);
-
-// base map stuff 
-        var CartoDB_Positron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-            subdomains: 'abcd',
-            maxZoom: 20
-        });
-        CartoDB_Positron.addTo(map);
-        var lup_aoi= 
-        {
-            "type": "FeatureCollection",
-            "name": "aoi",
-            "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::4326" } },
-            "features": [
-            { "type": "Feature", "properties": { "OBJECTID": 3.0, "SHAPE_Leng": 908959.60400000215, "SHAPE_Area": 51484492817.909615, "X_Max": null, "X_Min": null, "Y_Max": null, "Y_Min": null, "centerx": null, "centery": null, "Lat_Max": -127.12066348938077, "Lat_Min": -130.70713817004415, "Lon_Max": 56.880992958850584, "Lon_Min": 54.658316969110963 }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ -128.877519335263372, 56.854459870751043 ], [ -128.47103084514157, 56.862845226243849 ], [ -127.182976424146929, 56.880987675036366 ], [ -127.120645609878679, 54.734177239127789 ], [ -130.459733007391407, 54.658312163230242 ], [ -130.707118882745391, 56.800867888548048 ], [ -128.877519335263372, 56.854459870751043 ] ] ] ] } }
-            ]
-        };
-        // object for basemap layers to add to layer control 
-        var baseMaps={
-            'CartoDB Positron':CartoDB_Positron
-        };
-
-//   js functions
-        // function to get wfs layers by query
-        
-        function wfsQuery(dataset, query = null, fields = [], startIndex = null, count = null, bbox = null) {
-            const SERVICE_URL = "http://localhost:5000/wfs/";
-            
-            const params = new URLSearchParams({
-                service: 'WFS',
-                version: '2.0.0',
-                request: 'GetFeature',
-                typeName: `pub:${dataset}`,
-                outputFormat: 'application/json',
-                srsName: 'EPSG:4326',
-                sortBy: 'OBJECTID',
-                limit: 10000,
-                offset: 0 
-            });
-        
-            if (bbox) {
-                const [minX, minY, maxX, maxY, srs] = bbox;
-                params.set('CQL_FILTER', `BBOX(GEOMETRY, ${minX}, ${minY}, ${maxX}, ${maxY}, '${srs}')`);
-            }
-        
-            if (query) {
-                if (params.has('CQL_FILTER')) {
-                    params.set('CQL_FILTER', `${params.get('CQL_FILTER')} AND ${query}`);
-                } else {
-                    params.set('CQL_FILTER', query);
-                }
-            }
-        
-            if (fields && fields.length > 0) {
-                params.append('propertyName', fields.map(field => field.toUpperCase()).join(','));
-            }
-        
-            if (startIndex !== null) {
-                params.append('startIndex', startIndex);
-            }
-        
-            if (count !== null) {
-                params.append('count', count);
-            }
-
-            const url = `${SERVICE_URL}${params.toString()}`;
-            console.log("WFS URL:", url);
-            return url;
-        }
-        
-
-        function getRandomColor() {
-            const letters = '0123456789ABCDEF';
-            let color = '#';
-            for (let i = 0; i < 6; i++) {
-                color += letters[Math.floor(Math.random() * 16)];
-            }
-            return color;
-        }
-
-// add layer group, color, control, and whatever else to json and change popups below to match the fields 
-// empty object to add layers to for layer control 
-const bbox = [-130.70713817004415, 54.658316969110963, -127.12066348938077, 56.880992958850584, 'EPSG:4326'];
-    function loadWFSData(jsonData) {
-        jsonData.forEach(item => {
-            const dataset = item.Dataset;
-            const query = item.Query;
-            const name= item.Name
-            const colors=item.Color
-            const fields = JSON.parse(item.Fields.replace(/'/g, '"'));
-            const popupFields = JSON.parse(item.Popup.replace(/'/g, '"'));
-            
-            const url = wfsQuery(dataset, query, fields, bbox);
-            
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    L.geoJSON(data, {
-                        style: {
-                            color: colors,
-                            weight: 2
-                        },
-                        onEachFeature: function (feature, layer) {
-                            if (feature.properties) {
-                                const popupContent = popupFields.map(field => 
-                                `<strong>${field.replace(/_/g, ' ')}:</strong> ${feature.properties[field] || 'N/A'}`
-                            ).join('<br>');
-                            layer.bindPopup(popupContent);
-                            }
-                        }
-                    }).addTo(map);
-                })
-                .catch(error => {
-                    console.error('Error fetching WFS data:', error);
-                });
-        });
-    }
-// plugins 
-
-
-
-// add layers to map 
-    L.geoJSON(lup_aoi,{
-        style: {
-            fillColor: 'transparent',
-            color: 'black',
-            weight: 4}
-    }).addTo(map);
-
-    
-
-    //create json of layers for the map still needs to be altered to add fields for popups, colors, other properties?
-    const jsonData = [
+[
     {
         "Dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW",
         "Query": "LEGAL_FEAT_OBJECTIVE = 'Special Habitats for General Wildlife'",
         "Fields": "['STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK','GEOMETRY','OBJECTID']",
-        "Name": "'Legal Planning Objectives - Special Habitats for General Wildlife'",
+        "Name": "Legal Planning Objectives - Special Habitats for General Wildlife",
         "Popup":"['STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK']",
         "Color":"#FF5733"
+
     },
     {
         "Dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW",
@@ -305,7 +150,7 @@ const bbox = [-130.70713817004415, 54.658316969110963, -127.12066348938077, 56.8
         "Fields": "['TRACT_ID','TRACT_POLYGON_AREA','NUMBER_OF_MINFILE_OCCURENCES','METALLIC_MINERAL_INVENTORY','RANK_OF_INDUSTRIAL_MINERALS','GEOMETRY','OBJECTID']",
         "Name" :"Mineral Potential",
         "Popup":"['TRACT_ID','TRACT_POLYGON_AREA','NUMBER_OF_MINFILE_OCCURENCES','METALLIC_MINERAL_INVENTORY','RANK_OF_INDUSTRIAL_MINERALS']",
-        "Color":"#2d3cd6" // could be classified by rank?
+        "Color":"#2d3cd6"
     },
     {
         "Dataset": "WHSE_LAND_USE_PLANNING.RMP_STRGC_LAND_RSRCE_PLAN_SVW",
@@ -365,9 +210,9 @@ const bbox = [-130.70713817004415, 54.658316969110963, -127.12066348938077, 56.8
     },
     {
         "Dataset": "WHSE_MINERAL_TENURE.MTA_ACQUIRED_TENURE_SVW",
-        "Query": "MTA - Mineral, Placer and Coal Tenure",
+        "Query": "",
         "Fields": "['TENURE_NUMBER_ID', 'CLAIM_NAME','TENURE_TYPE_DESCRIPTION','TENURE_SUB_TYPE_DESCRIPTION','TITLE_TYPE_DESCRIPTION','ISSUE_DATE','GOOD_TO_DATE','AREA_IN_HECTARES','REVISION_NUMBER','GEOMETRY','OBJECTID']",
-        "Name" :"",
+        "Name" :"MTA - Mineral, Placer and Coal Tenure",
         "Popup":"['TENURE_NUMBER_ID', 'CLAIM_NAME','TENURE_TYPE_DESCRIPTION','TENURE_SUB_TYPE_DESCRIPTION','TITLE_TYPE_DESCRIPTION','ISSUE_DATE','GOOD_TO_DATE','AREA_IN_HECTARES','REVISION_NUMBER',]",
         "Color":"#fd5023"
     },
@@ -418,11 +263,5 @@ const bbox = [-130.70713817004415, 54.658316969110963, -127.12066348938077, 56.8
         "Name" :"Private Parcels",
         "Popup":"['PARCEL_NAME', 'OWNER_TYPE']",
         "Color":"#b8263e"
-    }];
-
-    loadWFSData(jsonData);
-    var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
-
-    </script>
-</body>
-</html>
+    }
+]

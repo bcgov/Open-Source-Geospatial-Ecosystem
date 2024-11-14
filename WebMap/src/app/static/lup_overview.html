@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUP Overview</title>
+</head>
+<body>
+    <div id="overview"></div>
+    
+    <!-- Container to hold checkboxes for layer control -->
+
+    <!-- Toggle button and container for dynamic checkboxes -->
+    <div id="checkbox-container" style="position: absolute; top: 10px; right: 10px; background-color: white; padding: 10px; z-index: 1000; border: 1px solid #ccc; border-radius: 4px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+        <button id="toggleCheckboxContainer" onclick="toggleCheckboxContainer()" style="background: none; border: none; cursor: pointer; font-size: 16px;">▲</button>
+        <div id="checkboxContent">
+            <!-- Checkboxes will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.5/proj4.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js"></script>
+    <script src="https://unpkg.com/leaflet-wfst@2.0.1-beta.27/dist/leaflet-wfst.min.js"></script>
+
+    <style>
+        #overview {
+            width: 100%;
+            height: 100vh; /* Adjust to fit the entire viewport */
+            position: relative;
+        }
+        
+        #layerContainer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 200px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+    
+        #layerContent {
+            display: block; /* Visible by default */
+        }
+    
+        /* Style the toggle button */
+        #toggleButton {
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            float: right;
+        }
+    </style>
+
+    <script>
+        // Initialize the map
+        var map = L.map('overview').setView([55.781113, -128.867888], 7);
+
+        // Base layer setup
+        var CartoDB_Positron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            subdomains: 'abcd',
+            maxZoom: 20
+        }).addTo(map);
+
+        // WFS data source URL
+        const SERVICE_URL = "http://localhost:5000/wfs/";
+
+        // A simple GeoJSON layer example for AOI (Area of Interest)
+        var lup_aoi= 
+        {
+            "type": "FeatureCollection",
+            "name": "aoi",
+            "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::4326" } },
+            "features": [
+            { "type": "Feature", "properties": { "OBJECTID": 3.0, "SHAPE_Leng": 908959.60400000215, "SHAPE_Area": 51484492817.909615, "X_Max": null, "X_Min": null, "Y_Max": null, "Y_Min": null, "centerx": null, "centery": null, "Lat_Max": -127.12066348938077, "Lat_Min": -130.70713817004415, "Lon_Max": 56.880992958850584, "Lon_Min": 54.658316969110963 }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ -128.877519335263372, 56.854459870751043 ], [ -128.47103084514157, 56.862845226243849 ], [ -127.182976424146929, 56.880987675036366 ], [ -127.120645609878679, 54.734177239127789 ], [ -130.459733007391407, 54.658312163230242 ], [ -130.707118882745391, 56.800867888548048 ], [ -128.877519335263372, 56.854459870751043 ] ] ] ] } }
+            ]
+        };
+        // Example JSON data for layers
+        const jsonData = [
+        {
+            "Dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW",
+            "Query": "LEGAL_FEAT_OBJECTIVE = 'Special Habitats for General Wildlife'",
+            "Fields": "['STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK','GEOMETRY','OBJECTID']",
+            "Name": "Legal Planning Objectives - Special Habitats for General Wildlife",
+            "Popup":"['STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK']",
+            "Color":"#FF5733"
+    
+        },
+        {
+            "Dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW",
+            "Query": "LEGAL_FEAT_OBJECTIVE = 'Water Management Units'",
+            "Fields": "['STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK','GEOMETRY','OBJECTID']",
+            "Name": "Legal Planning Objectives -Water Management Units",
+            "Popup":"['STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK']",
+            "Color":"#FF5733"
+        },
+        {
+            "Dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW",
+            "Query": "LEGAL_FEAT_OBJECTIVE = 'Goshawk Nesting/Post-Fledging Habitat' And STRGC_LAND_RSRCE_PLAN_NAME IN ('Cranberry Sustainable Resource Management Plan', 'Nass South Sustainable Resource Management Plan')",
+            "Fields": "['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK','GEOMETRY','OBJECTID']",
+            "Name" :"Legal Planning Objectives - Current - Polygon: Goshawk Nesting and Fledging Areas",
+            "Popup":"['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK']",
+            "Color":"#5733FF"
+        },
+        {
+            "Dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_NON_LEGAL_POLY_SVW",
+            "Query": "NON_LEGAL_FEAT_OBJECTIVE = 'Goshawk Nesting/Post-Fledging Habitat' And STRGC_LAND_RSRCE_PLAN_NAME IN ('Cranberry Sustainable Resource Management Plan', 'Nass South Sustainable Resource Management Plan')",
+            "Fields": "['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE','GEOMETRY','OBJECTID']",
+            "Name" :"Non Legal Planning Objectives - Current - Polygon: Goshawk Nesting and Fledging Areas",
+            "Popup":"['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE']",
+            "Color":"#FF33A1"
+        },
+        {
+            "Dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_NON_LEGAL_POLY_SVW",
+            "Query": "NON_LEGAL_FEAT_OBJECTIVE = 'Moose Winter Range'",
+            "Fields": "['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE','GEOMETRY','OBJECTID']",
+            "Name" :"Non Legal Planning Objectives - Current - Polygon: Moose Winter Range",
+            "Popup":"['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE']",
+            "Color":"#33A1FF"
+        },
+        {
+            "Dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW",
+            "Query": "LEGAL_FEAT_OBJECTIVE = 'Moose Winter Range'",
+            "Fields": "['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK','GEOMETRY','OBJECTID']",
+            "Name" :"Legal Planning Objectives - Current - Polygon: Moose Winter Range",
+            "Popup":"['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK']",
+            "Color":"#FFA133"
+        },
+        {
+            "Dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW",
+            "Query": "LEGAL_FEAT_OBJECTIVE = 'Equivalent Clearcut Area Threshold Watersheds'",
+            "Fields": "['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK','GEOMETRY','OBJECTID']",
+            "Name" :"Legal Planning Objectives - Current - Polygon: Equivalent Clearcut Area Threshold Watersheds",
+            "Popup":"['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK']",
+            "Color":"#A1FF33"
+        },
+        {
+            "Dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW",
+            "Query": "LEGAL_FEAT_OBJECTIVE = 'Ecosystem Network'",
+            "Fields": "['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK','GEOMETRY','OBJECTID']",
+            "Name" :"Legal Planning Objectives - Current - Polygon: Ecosystem Network",
+            "Popup":"['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK']",
+            "Color":"#FF33D4"
+        },
+        {
+            "Dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_NON_LEGAL_POLY_SVW",
+            "Query": "NON_LEGAL_FEAT_OBJECTIVE = 'Ecosystem Network Buffer'",
+            "Fields": "['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE','GEOMETRY','OBJECTID']",
+            "Name" :"Non Legal Planning Objectives - Current - Polygon: Ecosystem Network Buffer",
+            "Popup":"['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE']",
+            "Color":"#33FFD4"
+        },
+        {
+            "Dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW",
+            "Query": "LEGAL_FEAT_OBJECTIVE = 'Cedar Stand Reserves'",
+            "Fields": "['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK','GEOMETRY','OBJECTID']",
+            "Name" :"Legal Planning Objectives - Current - Polygon: Cedar Stand Reserves",
+            "Popup":"['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK']",
+            "Color":"#A133FF"
+        },
+        {
+            "Dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW",
+            "Query": "LEGAL_FEAT_OBJECTIVE = 'Grizzly Bear Identified Watersheds'",
+            "Fields": "['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK','GEOMETRY','OBJECTID']",
+            "Name" :"Legal Planning Objectives - Current - Polygon: Grizzly Bear Identified Watersheds",
+            "Popup":"['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK']",
+            "Color":"#3ae1ed"
+        },
+        {
+            "Dataset": "WHSE_FOREST_TENURE.FTEN_REC_SITE_POINTS_SVW",
+            "Query": "",
+            "Fields": "['PROJECT_NAME','FOREST_FILE_ID','MAINTAIN_STD_DESC','SITE_LOCATION', 'PROJECT_ESTABLISHED_DATE','GEOMETRY','OBJECTID']",
+            "Name" :"Recreation Sites (Points)",
+            "Popup":"['PROJECT_NAME','FOREST_FILE_ID','MAINTAIN_STD_DESC','SITE_LOCATION', 'PROJECT_ESTABLISHED_DATE']",
+            "Color":"#c66fd6"
+        },    
+        {
+            "Dataset": "WHSE_FOREST_TENURE.FTEN_RECREATION_POLY_SVW",
+            "Query": "",
+            "Fields": "['PROJECT_NAME','FOREST_FILE_ID','SITE_LOCATION','PROJECT_TYPE', 'PROJECT_ESTABLISHED_DATE','GEOMETRY','OBJECTID']",
+            "Name" :"Recreation Sites (Polygons)",
+            "Popup":"['PROJECT_NAME','FOREST_FILE_ID','SITE_LOCATION','PROJECT_TYPE', 'PROJECT_ESTABLISHED_DATE']",
+            "Color":"#ebff73"
+        },
+        {
+            "Dataset": "WHSE_WATER_MANAGEMENT.WLS_COMMUNITY_WS_PUB_SVW",
+            "Query": "",
+            "Fields": "['CW_NAME','WATER_SYSTEM_NAME','CW_USE','CW_CODE','CW_DATE_CREATED','ORGANIZATION','POD_NUMBER','CW_LEGISLATION','SHAPE','OBJECTID']",
+            "Name" :"Community Watersheds",
+            "Popup":"['CW_NAME','WATER_SYSTEM_NAME','CW_USE','CW_CODE','CW_DATE_CREATED','ORGANIZATION','POD_NUMBER','CW_LEGISLATION']",
+            "Color":"#0ca9cf"
+        },
+        {
+            "Dataset": "WHSE_WILDLIFE_MANAGEMENT.WCP_UNGULATE_WINTER_RANGE_SP",
+            "Query": "SPECIES_1 = 'M-ORAM' Or SPECIES_2 = 'M-ORAM'",
+            "Fields": "['SPECIES_1', 'SPECIES_2','UWR_NUMBER','UWR_UNIT_NUMBER',GEOMETRY','OBJECTID']",
+            "Name" :"Mountain Goat: Ungulate Winter Range - Approved",
+            "Popup":"['SPECIES_1', 'SPECIES_2','UWR_NUMBER','UWR_UNIT_NUMBER']",
+            "Color":"#34bfde"
+        },
+        {
+            "Dataset": "WHSE_LAND_USE_PLANNING.RMP_OGMA_LEGAL_CURRENT_SVW",
+            "Query": "",
+            "Fields": "['LEGAL_OGMA_PROVID', 'OGMA_TYPE', 'OGMA_PRIMARY_REASON', 'LEGALIZATION_FRPA_DATE', 'LEGALIZATION_OGAA_DATE', 'ASSOCIATED_ACT_NAME','GEOMETRY','OBJECTID']",
+            "Name" :"Old Growth Management Areas - Legal - Current",
+            "Popup":"['LEGAL_OGMA_PROVID', 'OGMA_TYPE', 'OGMA_PRIMARY_REASON', 'LEGALIZATION_FRPA_DATE', 'LEGALIZATION_OGAA_DATE', 'ASSOCIATED_ACT_NAME']",
+            "Color":"#bb8e37"
+        },
+        {
+            "Dataset": "WHSE_LEGAL_ADMIN_BOUNDARIES.FNT_TREATY_AREA_SP",
+            "Query": "TREATY = 'Nisga''a' and AREA_TYPE = 'Nass Wildlife Area'",
+            "Fields": "['TREATY_AREA_ID','TREATY','EFFECTIVE_DATE','FIRST_NATION_NAME','AREA_TYPE','CHAPTER_REFERENCE','APPENDIX_REFERENCE','GEOMETRY','OBJECTID']",
+            "Name" :"Nass Wildlife Area",
+            "Popup":"['TREATY_AREA_ID','TREATY','EFFECTIVE_DATE','FIRST_NATION_NAME','AREA_TYPE','CHAPTER_REFERENCE','APPENDIX_REFERENCE']",
+            "Color":"#7ccc8d"
+        },
+        {
+            "Dataset": "WHSE_LEGAL_ADMIN_BOUNDARIES.FNT_TREATY_AREA_SP",
+            "Query": "TREATY = 'Nisga''a' and AREA_TYPE = 'Nass Area'",
+            "Fields": "['TREATY_AREA_ID','TREATY','EFFECTIVE_DATE','FIRST_NATION_NAME','AREA_TYPE','CHAPTER_REFERENCE','APPENDIX_REFERENCE','GEOMETRY','OBJECTID']",
+            "Name" :"Nass Area",
+            "Popup":"['TREATY_AREA_ID','TREATY','EFFECTIVE_DATE','FIRST_NATION_NAME','AREA_TYPE','CHAPTER_REFERENCE','APPENDIX_REFERENCE']",
+            "Color":"#3af49d"
+        },
+        {
+            "Dataset": "WHSE_MINERAL_TENURE.MINPOT_MINERAL_POTENTIAL",
+            "Query": "",
+            "Fields": "['TRACT_ID','TRACT_POLYGON_AREA','NUMBER_OF_MINFILE_OCCURENCES','METALLIC_MINERAL_INVENTORY','RANK_OF_INDUSTRIAL_MINERALS','GEOMETRY','OBJECTID']",
+            "Name" :"Mineral Potential",
+            "Popup":"['TRACT_ID','TRACT_POLYGON_AREA','NUMBER_OF_MINFILE_OCCURENCES','METALLIC_MINERAL_INVENTORY','RANK_OF_INDUSTRIAL_MINERALS']",
+            "Color":"#2d3cd6" // could be classified by rank?
+        },
+        {
+            "Dataset": "WHSE_LAND_USE_PLANNING.RMP_STRGC_LAND_RSRCE_PLAN_SVW",
+            "Query": "STRGC_LAND_RSRCE_PLAN_ID=149",
+            "Fields": "['STRGC_LAND_RSRCE_PLAN_ID','STRGC_LAND_RSRCE_PLAN_NAME','PLAN_TYPE','PLAN_STATUS','APPROVAL_DATE','APPROVAL_LAST_AMEND_DATE','LEGALIZATION_DATE','LEGALIZATION_LAST_AMEND_DATE','GEOMETRY','OBJECTID']",
+            "Name" :"Kalum SRMP",
+            "Popup":"['STRGC_LAND_RSRCE_PLAN_ID','STRGC_LAND_RSRCE_PLAN_NAME','PLAN_TYPE','PLAN_STATUS','APPROVAL_DATE','APPROVAL_LAST_AMEND_DATE','LEGALIZATION_DATE','LEGALIZATION_LAST_AMEND_DATE']",
+            "Color":"#8985ea"
+        },
+        {
+            "Dataset": "WHSE_LAND_USE_PLANNING.RMP_STRGC_LAND_RSRCE_PLAN_SVW",
+            "Query": "STRGC_LAND_RSRCE_PLAN_ID=20",
+            "Fields": "['STRGC_LAND_RSRCE_PLAN_ID','STRGC_LAND_RSRCE_PLAN_NAME','PLAN_TYPE','PLAN_STATUS','APPROVAL_DATE','APPROVAL_LAST_AMEND_DATE','LEGALIZATION_DATE','LEGALIZATION_LAST_AMEND_DATE','GEOMETRY','OBJECTID']",
+            "Name" :"Kalum LRMP",
+            "Popup":"['STRGC_LAND_RSRCE_PLAN_ID','STRGC_LAND_RSRCE_PLAN_NAME','PLAN_TYPE','PLAN_STATUS','APPROVAL_DATE','APPROVAL_LAST_AMEND_DATE','LEGALIZATION_DATE','LEGALIZATION_LAST_AMEND_DATE']",
+            "Color":"#ee2965"
+        },
+        {
+            "Dataset": "WHSE_LAND_USE_PLANNING.RMP_STRGC_LAND_RSRCE_PLAN_SVW",
+            "Query": "STRGC_LAND_RSRCE_PLAN_ID=151",
+            "Fields": "['STRGC_LAND_RSRCE_PLAN_ID','STRGC_LAND_RSRCE_PLAN_NAME','PLAN_TYPE','PLAN_STATUS','APPROVAL_DATE','APPROVAL_LAST_AMEND_DATE','LEGALIZATION_DATE','LEGALIZATION_LAST_AMEND_DATE','GEOMETRY','OBJECTID']",
+            "Name" :"Cranberry SRMP",
+            "Popup":"['STRGC_LAND_RSRCE_PLAN_ID','STRGC_LAND_RSRCE_PLAN_NAME','PLAN_TYPE','PLAN_STATUS','APPROVAL_DATE','APPROVAL_LAST_AMEND_DATE','LEGALIZATION_DATE','LEGALIZATION_LAST_AMEND_DATE']",
+            "Color":"#fae093"
+        },
+        {
+            "Dataset": "WHSE_TANTALIS.TA_CONSERVANCY_AREAS_SVW",
+            "Query": " ADMIN_AREA_SID = 5420",
+            "Fields": "['ADMIN_AREA_SID','CONSERVANCY_AREA_NAME','ORCS_PRIMARY','ORCS_SECONDARY','ESTABLISHMENT_DATE','OFFICIAL_AREA_HA','PARK_MANAGEMENT_PLAN_URL','SHAPE','OBJECTID']",
+            "Name" :"Hanna-Tintina Conservancy",
+            "Popup":"['ADMIN_AREA_SID','CONSERVANCY_AREA_NAME','ORCS_PRIMARY','ORCS_SECONDARY','ESTABLISHMENT_DATE','OFFICIAL_AREA_HA','PARK_MANAGEMENT_PLAN_URL']",
+            "Color":"#eaf698"
+        },
+        {
+            "Dataset": "WHSE_FOREST_VEGETATION.REC_VISUAL_LANDSCAPE_INVENTORY",
+            "Query": "REC_EVC_FINAL_VALUE_CODE IS NOT NULL",
+            "Fields": "['PROJECT_NAME','REC_EVC_FINAL_VALUE_CODE', 'REC_EVQO_CODE','RATIONALE','GEOMETRY','OBJECTID']",
+            "Name" :"Visual Landscape Inventory",
+            "Popup":"['PROJECT_NAME','REC_EVC_FINAL_VALUE_CODE', 'REC_EVQO_CODE','RATIONALE']",
+            "Color":"#c61277"
+        },
+        {
+            "Dataset": "WHSE_WILDLIFE_MANAGEMENT.WCP_UNGULATE_WINTER_RANGE_SP",
+            "Query": "SPECIES_1 IN ('M-ALAL', 'M-ALAL;M-CEEL;M-ODHE;M-ODVI') Or SPECIES_2 IN ('M-ALAL', 'M-ODHE; M-ALAL')",
+            "Fields": "['SPECIES_1', 'SPECIES_2','UWR_NUMBER','UWR_UNIT_NUMBER',GEOMETRY','OBJECTID']",
+            "Name" :"Moose: Ungulate Winter Range - Approved",
+            "Popup":"['SPECIES_1', 'SPECIES_2','UWR_NUMBER','UWR_UNIT_NUMBER']",
+            "Color":"#9f6fe0"
+        },
+        {
+            "Dataset": "WHSE_MINERAL_TENURE.MTA_ACQUIRED_TENURE_HISTORY_SP",
+            "Query": "",
+            "Fields": "['TENURE_HISTORY_ID', 'TENURE_NUMBER_ID','TENURE_TYPE_DESCRIPTION','REVISION_NUMBER','GEOMETRY','OBJECTID']",
+            "Name" :"MTA - Mineral, Placer and Coal Tenure History",
+            "Popup":"['TENURE_HISTORY_ID', 'TENURE_NUMBER_ID','TENURE_TYPE_DESCRIPTION','REVISION_NUMBER']",
+            "Color":"#b6244d"
+        },
+        {
+            "Dataset": "WHSE_MINERAL_TENURE.MTA_ACQUIRED_TENURE_SVW",
+            "Query": "",
+            "Fields": "['TENURE_NUMBER_ID', 'CLAIM_NAME','TENURE_TYPE_DESCRIPTION','TENURE_SUB_TYPE_DESCRIPTION','TITLE_TYPE_DESCRIPTION','ISSUE_DATE','GOOD_TO_DATE','AREA_IN_HECTARES','REVISION_NUMBER','GEOMETRY','OBJECTID']",
+            "Name" :"MTA - Mineral, Placer and Coal Tenure",
+            "Popup":"['TENURE_NUMBER_ID', 'CLAIM_NAME','TENURE_TYPE_DESCRIPTION','TENURE_SUB_TYPE_DESCRIPTION','TITLE_TYPE_DESCRIPTION','ISSUE_DATE','GOOD_TO_DATE','AREA_IN_HECTARES','REVISION_NUMBER',]",
+            "Color":"#fd5023"
+        },
+        {
+            "Dataset": "WHSE_WILDLIFE_MANAGEMENT.WCP_WILDLIFE_HABITAT_AREA_POLY",
+            "Query": "COMMON_SPECIES_NAME = 'Grizzly Bear'",
+            "Fields": "['HABITAT_AREA_ID', 'TAG','APPROVAL_DATE','FEATURE_NOTES','COMMON_SPECIES_NAME','LEGISLATION_ACT_NAME','TIMBER_HARVEST_CODE','HECTARES','GEOMETRY','OBJECTID']",
+            "Name" :"Grizzly Bear: Wildlife Habitat Areas - Approved",
+            "Popup":"['HABITAT_AREA_ID', 'TAG','APPROVAL_DATE','FEATURE_NOTES','COMMON_SPECIES_NAME','LEGISLATION_ACT_NAME','TIMBER_HARVEST_CODE','HECTARES']",
+            "Color":"#9e8679"
+        },
+        {
+            "Dataset": "WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW",
+            "Query": "",
+            "Fields": "['ADMIN_AREA_SID','PROTECTED_LANDS_NAME','PROTECTED_LANDS_DESIGNATION','PARK_CLASS','OFFICIAL_AREA_HA','PARK_MANAGEMENT_PLAN_URL','SHAPE','OBJECTID']",
+            "Name" :"BC Parks, Ecological Reserves, and Protected Areas",
+            "Popup":"['ADMIN_AREA_SID','PROTECTED_LANDS_NAME','PROTECTED_LANDS_DESIGNATION','PARK_CLASS','OFFICIAL_AREA_HA','PARK_MANAGEMENT_PLAN_URL']",
+            "Color":"#be5464"
+        },
+        {
+            "Dataset": "WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY",
+            "Query": "",
+            "Fields": "['MAP_LABEL','ZONE','SUBZONE','VARIANT','PHASE','NATURAL_DISTURBANCE','GEOMETRY','OBJECTID']",
+            "Name" :"Biogeoclimatic Ecosystem Classification (BEC)",
+            "Popup":"['MAP_LABEL','ZONE','SUBZONE','VARIANT','PHASE','NATURAL_DISTURBANCE']",
+            "Color":"#5b7058"
+        },
+        {
+            "Dataset": "WHSE_TERRESTRIAL_ECOLOGY.ERC_ECOSECTIONS_SP",
+            "Query": "",
+            "Fields": "['ECOSECTION_CODE','ECOSECTION_NAME','EFFECTIVE_DATE','EXPIRY_DATE','GEOMETRY','OBJECTID']",
+            "Name" :"Ecosections - Ecoregion Ecosystem Classification of British Columbia",
+            "Popup":"['ECOSECTION_CODE','ECOSECTION_NAME','EFFECTIVE_DATE','EXPIRY_DATE']",
+            "Color":"#09df6c"
+        },
+        {
+            "Dataset": "WHSE_TANTALIS.TA_CROWN_TENURES_SVW",
+            "Query": "TENURE_TYPE = 'RESERVE/NOTATION'",
+            "Fields": "['INTRID_SID','TENURE_STAGE','TENURE_STATUS','TENURE_TYPE','TENURE_SUBTYPE','TENURE_PURPOSE','CROWN_LANDS_FILE','TENURE_EXPIRY','TENURE_LEGAL_DESCRIPTION','TENURE_AREA_IN_HECTARES','SHAPE','OBJECTID']",
+            "Name" :"RESERVE/NOTATION: Crown Tenures",
+            "Popup":"['INTRID_SID','TENURE_STAGE','TENURE_STATUS','TENURE_TYPE','TENURE_SUBTYPE','TENURE_PURPOSE','CROWN_LANDS_FILE','TENURE_EXPIRY','TENURE_LEGAL_DESCRIPTION','TENURE_AREA_IN_HECTARES']",
+            "Color":"#cbfb6f"
+        },
+        {
+            "Dataset": "WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW",
+            "Query": "OWNER_TYPE='Private'",
+            "Fields": "['PARCEL_NAME', 'OWNER_TYPE','SHAPE','OBJECTID']",
+            "Name" :"Private Parcels",
+            "Popup":"['PARCEL_NAME', 'OWNER_TYPE']",
+            "Color":"#b8263e"
+        }];
+
+        L.geoJSON(lup_aoi, {
+            style: { fillColor: 'transparent', color: 'black', weight: 4 }
+        }).addTo(map);
+
+
+
+        // Function to create checkboxes dynamically based on jsonData
+        function createCheckboxes() {
+            const checkboxContainer = document.getElementById('checkbox-container');
+            jsonData.forEach((layer, index) => {
+                const label = document.createElement('label');
+                label.innerHTML = `<input type="checkbox" onclick="layerToggleWFS(this, ${index})" /> ${layer.Name}`;
+                checkboxContainer.appendChild(label);
+                checkboxContainer.appendChild(document.createElement('br'));
+            });
+        }
+
+        // Call the function to create checkboxes
+        createCheckboxes();
+
+        function toggleCheckboxContainer() {
+            const checkboxContent = document.getElementById('checkboxContent');
+            const toggleButton = document.getElementById('toggleCheckboxContainer');
+        
+            if (checkboxContent.style.display === "none") {
+                checkboxContent.style.display = "block";
+                toggleButton.textContent = "▲"; // Upward arrow to indicate expanded state
+            } else {
+                checkboxContent.style.display = "none";
+                toggleButton.textContent = "▼"; // Downward arrow to indicate minimized state
+            }
+        }
+
+        // Function to generate the WFS query URL
+        function wfsQuery(dataset, query = null, fields = [], startIndex = null, count = null, bbox = null) {
+            const SERVICE_URL = "http://localhost:5000/wfs/";
+
+            const params = new URLSearchParams({
+                service: 'WFS',
+                version: '2.0.0',
+                request: 'GetFeature',
+                typeName: `pub:${dataset}`,
+                outputFormat: 'application/json',
+                srsName: 'EPSG:4326',
+                sortBy: 'OBJECTID',
+                limit: 10000,
+                offset: 0 
+            });
+
+            if (bbox) {
+                const [minX, minY, maxX, maxY, srs] = bbox;
+                params.set('CQL_FILTER', `BBOX(GEOMETRY, ${minX}, ${minY}, ${maxX}, ${maxY}, '${srs}')`);
+            }
+
+            if (query) {
+                if (params.has('CQL_FILTER')) {
+                    params.set('CQL_FILTER', `${params.get('CQL_FILTER')} AND ${query}`);
+                } else {
+                    params.set('CQL_FILTER', query);
+                }
+            }
+
+            if (fields && fields.length > 0) {
+                params.append('propertyName', fields.map(field => field.toUpperCase()).join(','));
+            }
+
+            if (startIndex !== null) {
+                params.append('startIndex', startIndex);
+            }
+        
+            if (count !== null) {
+                params.append('count', count);
+            }
+
+            const url = `${SERVICE_URL}${params.toString()}`;
+            console.log("WFS URL:", url);
+            return url;
+        }
+        // store active layers as an object keyed by layer name
+        var activeLayers = {};
+
+        // Fetch the WFS data and add it as a GeoJSON layer
+        async function loadWFSData(dataset, query, fields, popupFields, color) {
+            const url = wfsQuery(dataset, query, fields);
+        
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                const geoJsonLayer = L.geoJSON(data, {
+                    style: {
+                        color: color, // Use the color specified in jsonData
+                        weight: 2
+                    },
+                    onEachFeature: function(feature, layer) {
+                        if (feature.properties) {
+                            // Construct the popup content dynamically based on the popupFields
+                            let popupContent = "";
+                            popupFields.forEach(field => {
+                                if (feature.properties[field]) {
+                                    popupContent += `<strong>${field}:</strong> ${feature.properties[field]}<br>`;
+                                }
+                            });
+                            layer.bindPopup(popupContent);
+                        }
+                    }
+                }).addTo(map);
+        
+                activeLayers[dataset] = geoJsonLayer;
+                return geoJsonLayer;
+            } catch (error) {
+                console.error("Error loading WFS data: ", error);
+                return null;
+            }
+        }
+        // Function to generate random color for styling layers
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        // Toggle layer function updated to pass Popup and Color
+        async function layerToggleWFS(checkbox, index) {
+            const layerData = jsonData[index];
+            const dataset = layerData.Dataset;
+            const query = layerData.Query;
+            const fields = JSON.parse(layerData.Fields.replace(/'/g, '"'));
+            const popupFields = JSON.parse(layerData.Popup.replace(/'/g, '"')); // Convert to array
+            const color = layerData.Color; // Get the color
+
+            if (checkbox.checked) {
+                if (!activeLayers[dataset]) {
+                    const geoJsonLayer = await loadWFSData(dataset, query, fields, popupFields, color);
+                    activeLayers[dataset] = geoJsonLayer;
+                }
+            } else {
+                // Remove layer if unchecked
+                if (activeLayers[dataset]) {
+                    map.removeLayer(activeLayers[dataset]);
+                    delete activeLayers[dataset];
+                }
+            }
+        }
+
+
+
+    </script>
+</body>
+</html>
