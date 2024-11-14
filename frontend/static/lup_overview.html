@@ -23,6 +23,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.5/proj4.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js"></script>
     <script src="https://unpkg.com/leaflet-wfst@2.0.1-beta.27/dist/leaflet-wfst.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/togeojson/0.16.0/togeojson.min.js"></script>
+    <script src="../plugins/leaflet.filelayer.js"></script>
 
     <style>
         #overview {
@@ -353,8 +355,6 @@
             style: { fillColor: 'transparent', color: 'black', weight: 4 }
         }).addTo(map);
 
-
-
         // Function to create checkboxes dynamically based on jsonData
         function createCheckboxes() {
             const checkboxContainer = document.getElementById('checkbox-container');
@@ -381,6 +381,50 @@
                 toggleButton.textContent = "▼"; // Downward arrow to indicate minimized state
             }
         }
+
+        // add file layer upload to map
+        var control = L.Control.fileLayerLoad({
+            layer: L.geoJSON,
+            layerOptions: {style: {color: getRandomColor()}},
+            addToMap: true,
+            fileSizeLimit: 1024,
+            formats: [
+                '.kml'
+            ]
+        }).addTo(map);
+
+        // Array to keep track of uploaded layers
+        let uploadedLayers = [];
+
+        // Add event handler to listen for loaded file
+        control.loader.on('data:loaded', function(event) {
+            let layer = event.layer;
+            uploadedLayers.push(layer);
+
+            let checkboxContainer = document.getElementById("checkbox-container");
+
+            // Create a new checkbox for the uploaded layer
+            let label = document.createElement("label");
+            let checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.checked = true;
+
+            // Get file name from event
+            let fileName = event.filename || "Uploaded Layer " + uploadedLayers.length;
+            label.appendChild(checkbox);
+            label.appendChild(document.createTextNode(" " + fileName));
+
+            checkbox.onclick = function() {
+                if (checkbox.checked) {
+                    map.addLayer(layer);
+                } else {
+                    map.removeLayer(layer);
+                }
+            };
+
+            checkboxContainer.appendChild(label);
+            checkboxContainer.appendChild(document.createElement("br"));
+        });
 
         // Function to generate the WFS query URL
         function wfsQuery(dataset, query = null, fields = [], startIndex = null, count = null, bbox = null) {
