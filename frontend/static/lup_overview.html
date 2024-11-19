@@ -24,7 +24,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js"></script>
     <script src="https://unpkg.com/leaflet-wfst@2.0.1-beta.27/dist/leaflet-wfst.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/togeojson/0.16.0/togeojson.min.js"></script>
-    <script src="../plugins/leaflet.filelayer.js"></script>
+    <script src="/plugins/leaflet.filelayer.js"></script>
 
     <style>
         #overview {
@@ -390,7 +390,8 @@
             addToMap: true,
             fileSizeLimit: 1024,
             formats: [
-                '.kml'
+                '.kml',
+                '.geojson'
             ]
         }).addTo(map);
 
@@ -424,46 +425,42 @@
         });     
         
         // Function to generate the WFS query URL
-        function wfsQuery(dataset, query = null, fields = [], startIndex = null, count = null, bbox = null) {
-            const SERVICE_URL = "http://localhost:5000/wfs/";
-
+        function wfsQuery(dataset, query = null, fields = [], startIndex = 0, count = null ) {
+            const SERVICE_URL = "http://localhost:5000/wfs";
+        
             const params = new URLSearchParams({
+            
                 service: 'WFS',
                 version: '2.0.0',
                 request: 'GetFeature',
                 typeName: `pub:${dataset}`,
                 outputFormat: 'application/json',
                 srsName: 'EPSG:4326',
+                bbox: [54.94267775412879,-130.02081515748938, 56.60674270353342,-127.66422698319626, 'urn:ogc:def:crs:EPSG:4326'],
                 sortBy: 'OBJECTID',
                 limit: 10000,
-                offset: 0 
+                offset: startIndex 
             });
-
-            if (bbox) {
-                const [minX, minY, maxX, maxY, srs] = bbox;
-                params.set('CQL_FILTER', `BBOX(GEOMETRY, ${minX}, ${minY}, ${maxX}, ${maxY}, '${srs}')`);
-            }
-
+        
+            // Use INTERSECTS filter with a POLYGON if bbox is provided
+        
             if (query) {
+                params.delete('bbox');
                 if (params.has('CQL_FILTER')) {
                     params.set('CQL_FILTER', `${params.get('CQL_FILTER')} AND ${query}`);
                 } else {
                     params.set('CQL_FILTER', query);
                 }
             }
-
+        
             if (fields && fields.length > 0) {
                 params.append('propertyName', fields.map(field => field.toUpperCase()).join(','));
-            }
-
-            if (startIndex !== null) {
-                params.append('startIndex', startIndex);
             }
         
             if (count !== null) {
                 params.append('count', count);
             }
-
+        
             const url = `${SERVICE_URL}${params.toString()}`;
             console.log("WFS URL:", url);
             return url;
