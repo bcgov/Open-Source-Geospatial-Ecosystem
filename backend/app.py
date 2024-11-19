@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, Response
+from flask import Flask, render_template, request, jsonify, Response, send_from_directory
 from flask_cors import CORS
 from flask_caching import Cache
 import requests
@@ -31,6 +31,10 @@ app.register_blueprint(intersect)
 def app_root():
     # Render the main page
     return render_template('index.html')
+
+@app.route('/plugins/<path:filename>')
+def serve_node_modules(filename):
+    return send_from_directory('../frontend/plugins/', filename)
 
 # WFS proxy route
 @app.route('/wfs<path:endpoint>', methods=['GET', 'POST', 'OPTIONS'])
