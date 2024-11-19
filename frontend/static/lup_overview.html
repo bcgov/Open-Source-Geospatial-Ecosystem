@@ -110,11 +110,33 @@
 
         // Function to create checkboxes dynamically based on jsonData
         function createCheckboxes(container) {
-            jsonData.forEach((layer, index) => {
-                const label = document.createElement('label');
-                label.innerHTML = `<input type="checkbox" onclick="layerToggleWFS(this, ${index})" /> ${layer.Name}`;
-                checkboxContainer.appendChild(label);
-                checkboxContainer.appendChild(document.createElement('br'));
+            // Group layers by their "group" property
+            const groups = jsonData.reduce((acc, layer) => {
+                if (!acc[layer.group]) {
+                    acc[layer.group] = [];
+                }
+                acc[layer.group].push(layer);
+                return acc;
+            }, {});
+        
+            // Iterate over each group and create a section for it
+            Object.entries(groups).forEach(([groupName, layers]) => {
+                // Create a heading for the group
+                const groupHeading = document.createElement('h4');
+                groupHeading.textContent = groupName;
+                groupHeading.style.marginBottom = '5px';
+                container.appendChild(groupHeading);
+        
+                // Create checkboxes for each layer in the group
+                layers.forEach((layer, index) => {
+                    const label = document.createElement('label');
+                    label.style.display = 'block'; // Make each label a block element for better alignment
+                    label.innerHTML = `<input type="checkbox" onclick="layerToggleWFS(this, ${index})" /> ${layer.name}`;
+                    container.appendChild(label);
+                });
+        
+                // Add some spacing after each group
+                container.appendChild(document.createElement('br'));
             });
         }
 
@@ -267,8 +289,8 @@
             const layerData = jsonData[index];
             const dataset = layerData.Dataset;
             const query = layerData.Query;
-            const fields = JSON.parse(layerData.Fields.replace(/'/g, '"'));
-            const popupFields = JSON.parse(layerData.Popup.replace(/'/g, '"')); // Convert to array
+            const fields = JSON.parse(layerData.fields.replace(/'/g, '"'));
+            const popupFields = JSON.parse(layerData.popup.replace(/'/g, '"')); // Convert to array
             const color = layerData.Color; // Get the color
 
             if (checkbox.checked) {
