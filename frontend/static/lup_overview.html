@@ -287,11 +287,11 @@
         // Toggle layer function updated to pass Popup and Color
         async function layerToggleWFS(checkbox, index) {
             const layerData = jsonData[index];
-            const dataset = layerData.Dataset;
-            const query = layerData.Query;
+            const dataset = layerData.dataset;
+            const query = layerData.query;
             const fields = JSON.parse(layerData.fields.replace(/'/g, '"'));
             const popupFields = JSON.parse(layerData.popup.replace(/'/g, '"')); // Convert to array
-            const color = layerData.Color; // Get the color
+            const color = layerData.color; // Get the color
 
             if (checkbox.checked) {
                 if (!activeLayers[dataset]) {
