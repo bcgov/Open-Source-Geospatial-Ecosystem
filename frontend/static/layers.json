@@ -6,8 +6,8 @@
         "Name": "Legal Planning Objectives - Special Habitats for General Wildlife",
         "Popup":"['STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK']",
         "Color":"#FF5733"
-
     },
+
     {
         "Dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW",
         "Query": "LEGAL_FEAT_OBJECTIVE = 'Water Management Units'",
@@ -24,22 +24,24 @@
         "Popup":"['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK']",
         "Color":"#5733FF"
     },
+
     {
-        "Dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_NON_LEGAL_POLY_SVW",
-        "Query": "NON_LEGAL_FEAT_OBJECTIVE = 'Goshawk Nesting/Post-Fledging Habitat' And STRGC_LAND_RSRCE_PLAN_NAME IN ('Cranberry Sustainable Resource Management Plan', 'Nass South Sustainable Resource Management Plan')",
-        "Fields": "['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE','GEOMETRY','OBJECTID']",
-        "Name" :"Non Legal Planning Objectives - Current - Polygon: Goshawk Nesting and Fledging Areas",
-        "Popup":"['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE']",
-        "Color":"#FF33A1"
+        "Dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW",
+        "Query": "LEGAL_FEAT_OBJECTIVE = 'Cedar Stand Reserves'",
+        "Fields": "['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK','GEOMETRY','OBJECTID']",
+        "Name" :"Legal Planning Objectives - Current - Polygon: Cedar Stand Reserves",
+        "Popup":"['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK']",
+        "Color":"#A133FF"
     },
     {
-        "Dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_NON_LEGAL_POLY_SVW",
-        "Query": "NON_LEGAL_FEAT_OBJECTIVE = 'Moose Winter Range'",
-        "Fields": "['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE','GEOMETRY','OBJECTID']",
-        "Name" :"Non Legal Planning Objectives - Current - Polygon: Moose Winter Range",
-        "Popup":"['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE']",
-        "Color":"#33A1FF"
+        "Dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW",
+        "Query": "LEGAL_FEAT_OBJECTIVE = 'Grizzly Bear Identified Watersheds'",
+        "Fields": "['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK','GEOMETRY','OBJECTID']",
+        "Name" :"Legal Planning Objectives - Current - Polygon: Grizzly Bear Identified Watersheds",
+        "Popup":"['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK']",
+        "Color":"#3ae1ed"
     },
+
     {
         "Dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW",
         "Query": "LEGAL_FEAT_OBJECTIVE = 'Moose Winter Range'",
@@ -66,35 +68,38 @@
     },
     {
         "Dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_NON_LEGAL_POLY_SVW",
+        "Query": "NON_LEGAL_FEAT_OBJECTIVE = 'Goshawk Nesting/Post-Fledging Habitat' And STRGC_LAND_RSRCE_PLAN_NAME IN ('Cranberry Sustainable Resource Management Plan', 'Nass South Sustainable Resource Management Plan')",
+        "Fields": "['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE','GEOMETRY','OBJECTID']",
+        "Name" :"Non Legal Planning Objectives - Current - Polygon: Goshawk Nesting and Fledging Areas",
+        "Popup":"['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE']",
+        "Color":"#FF33A1"
+    },
+    {
+        "Dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_NON_LEGAL_POLY_SVW",
+        "Query": "NON_LEGAL_FEAT_OBJECTIVE = 'Moose Winter Range'",
+        "Fields": "['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE','GEOMETRY','OBJECTID']",
+        "Name" :"Non Legal Planning Objectives - Current - Polygon: Moose Winter Range",
+        "Popup":"['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE']",
+        "Color":"#33A1FF"
+    },
+
+    {
+        "Dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_NON_LEGAL_POLY_SVW",
         "Query": "NON_LEGAL_FEAT_OBJECTIVE = 'Ecosystem Network Buffer'",
         "Fields": "['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE','GEOMETRY','OBJECTID']",
         "Name" :"Non Legal Planning Objectives - Current - Polygon: Ecosystem Network Buffer",
         "Popup":"['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE']",
         "Color":"#33FFD4"
     },
-    {
-        "Dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW",
-        "Query": "LEGAL_FEAT_OBJECTIVE = 'Cedar Stand Reserves'",
-        "Fields": "['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK','GEOMETRY','OBJECTID']",
-        "Name" :"Legal Planning Objectives - Current - Polygon: Cedar Stand Reserves",
-        "Popup":"['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK']",
-        "Color":"#A133FF"
-    },
-    {
-        "Dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW",
-        "Query": "LEGAL_FEAT_OBJECTIVE = 'Grizzly Bear Identified Watersheds'",
-        "Fields": "['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK','GEOMETRY','OBJECTID']",
-        "Name" :"Legal Planning Objectives - Current - Polygon: Grizzly Bear Identified Watersheds",
-        "Popup":"['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK']",
-        "Color":"#3ae1ed"
-    },
+
     {
         "Dataset": "WHSE_FOREST_TENURE.FTEN_REC_SITE_POINTS_SVW",
         "Query": "",
         "Fields": "['PROJECT_NAME','FOREST_FILE_ID','MAINTAIN_STD_DESC','SITE_LOCATION', 'PROJECT_ESTABLISHED_DATE','GEOMETRY','OBJECTID']",
         "Name" :"Recreation Sites (Points)",
         "Popup":"['PROJECT_NAME','FOREST_FILE_ID','MAINTAIN_STD_DESC','SITE_LOCATION', 'PROJECT_ESTABLISHED_DATE']",
-        "Color":"#c66fd6"
+        "Color":"#c66fd6",
+        "icon_url":""
     },    
     {
         "Dataset": "WHSE_FOREST_TENURE.FTEN_RECREATION_POLY_SVW",
@@ -115,11 +120,21 @@
     {
         "Dataset": "WHSE_WILDLIFE_MANAGEMENT.WCP_UNGULATE_WINTER_RANGE_SP",
         "Query": "SPECIES_1 = 'M-ORAM' Or SPECIES_2 = 'M-ORAM'",
-        "Fields": "['SPECIES_1', 'SPECIES_2','UWR_NUMBER','UWR_UNIT_NUMBER',GEOMETRY','OBJECTID']",
+        "Fields": "['SPECIES_1', 'SPECIES_2','UWR_NUMBER','UWR_UNIT_NUMBER','GEOMETRY','OBJECTID']",
         "Name" :"Mountain Goat: Ungulate Winter Range - Approved",
         "Popup":"['SPECIES_1', 'SPECIES_2','UWR_NUMBER','UWR_UNIT_NUMBER']",
         "Color":"#34bfde"
     },
+
+    {
+        "Dataset": "WHSE_WILDLIFE_MANAGEMENT.WCP_UNGULATE_WINTER_RANGE_SP",
+        "Query": "SPECIES_1 IN ('M-ALAL', 'M-ALAL;M-CEEL;M-ODHE;M-ODVI') Or SPECIES_2 IN ('M-ALAL', 'M-ODHE; M-ALAL')",
+        "Fields": "['SPECIES_1', 'SPECIES_2','UWR_NUMBER','UWR_UNIT_NUMBER',GEOMETRY','OBJECTID']",
+        "Name" :"Moose: Ungulate Winter Range - Approved",
+        "Popup":"['SPECIES_1', 'SPECIES_2','UWR_NUMBER','UWR_UNIT_NUMBER']",
+        "Color":"#9f6fe0"
+    },
+
     {
         "Dataset": "WHSE_LAND_USE_PLANNING.RMP_OGMA_LEGAL_CURRENT_SVW",
         "Query": "",
@@ -192,14 +207,7 @@
         "Popup":"['PROJECT_NAME','REC_EVC_FINAL_VALUE_CODE', 'REC_EVQO_CODE','RATIONALE']",
         "Color":"#c61277"
     },
-    {
-        "Dataset": "WHSE_WILDLIFE_MANAGEMENT.WCP_UNGULATE_WINTER_RANGE_SP",
-        "Query": "SPECIES_1 IN ('M-ALAL', 'M-ALAL;M-CEEL;M-ODHE;M-ODVI') Or SPECIES_2 IN ('M-ALAL', 'M-ODHE; M-ALAL')",
-        "Fields": "['SPECIES_1', 'SPECIES_2','UWR_NUMBER','UWR_UNIT_NUMBER',GEOMETRY','OBJECTID']",
-        "Name" :"Moose: Ungulate Winter Range - Approved",
-        "Popup":"['SPECIES_1', 'SPECIES_2','UWR_NUMBER','UWR_UNIT_NUMBER']",
-        "Color":"#9f6fe0"
-    },
+
     {
         "Dataset": "WHSE_MINERAL_TENURE.MTA_ACQUIRED_TENURE_HISTORY_SP",
         "Query": "",
@@ -263,5 +271,13 @@
         "Name" :"Private Parcels",
         "Popup":"['PARCEL_NAME', 'OWNER_TYPE']",
         "Color":"#b8263e"
+    },
+    {
+        "Dataset": "WHSE_LAND_USE_PLANNING.RMP_STRGC_LAND_RSRCE_PLAN_SVW",
+        "Query": "",
+        "Fields": "['STRGC_LAND_RSRCE_PLAN_ID', 'STRGC_LAND_RSRCE_PLAN_PROVID','STRGC_LAND_RSRCE_PLAN_NAME','PLAN_TYPE','PLAN_STATUS','GEOMETRY','OBJECTID']",
+        "Name" :"Strategic Land and Resource Plans - Current",
+        "Popup":"['STRGC LAND RSRCE PLAN ID', 'STRGC LAND RSRCE PLAN PROVID','PLAN NAME','PLAN TYPE',' PLAN STATUS']",
+        "Color":"#5e8f09"
     }
 ]
