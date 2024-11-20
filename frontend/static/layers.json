@@ -1,0 +1,351 @@
+[
+    {
+        "dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW",
+        "type": "polygon",
+        "name": "Special Habitats for General Wildlife",
+        "group":"Legal Planning Objectives",
+        "query": "LEGAL_FEAT_OBJECTIVE = 'Special Habitats for General Wildlife'",
+        "fields": "['STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK','GEOMETRY','OBJECTID']",
+        "popup":"['STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK']",
+        "color":"#FF5733"
+    },
+
+    {
+        "dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW",
+        "type": "polygon",
+        "name": "Water Management Units",
+        "group":"Legal Planning Objectives",
+        "query": "LEGAL_FEAT_OBJECTIVE = 'Water Management Units'",
+        "fields": "['STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK','GEOMETRY','OBJECTID']",
+        "popup":"['STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK']",
+        "color":"#FF5733"
+    },
+    {
+        "dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW",
+        "type": "polygon",
+        "name" :"Current - Polygon: Goshawk Nesting and Fledging Areas",
+        "group":"Legal Planning Objectives",
+        "query": "LEGAL_FEAT_OBJECTIVE = 'Goshawk Nesting/Post-Fledging Habitat' And STRGC_LAND_RSRCE_PLAN_NAME IN ('Cranberry Sustainable Resource Management Plan', 'Nass South Sustainable Resource Management Plan')",
+        "fields": "['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK','GEOMETRY','OBJECTID']",
+        "popup":"['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK']",
+        "color":"#5733FF"
+    },
+
+    {
+        "dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW",
+        "type": "polygon",
+        "name" :"Cedar Stand Reserves",
+        "group":"Legal Planning Objectives",
+        "query": "LEGAL_FEAT_OBJECTIVE = 'Cedar Stand Reserves'",
+        "fields": "['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK','GEOMETRY','OBJECTID']",
+        "popup":"['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK']",
+        "color":"#A133FF"
+    },
+    {
+        "dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW",
+        "type": "polygon",
+        "name" :"Grizzly Bear Identified Watersheds",
+        "group":"Legal Planning Objectives",
+        "query": "LEGAL_FEAT_OBJECTIVE = 'Grizzly Bear Identified Watersheds'",
+        "fields": "['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK','GEOMETRY','OBJECTID']",
+        "popup":"['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK']",
+        "color":"#3ae1ed"
+    },
+
+    {
+        "dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW",
+        "type": "polygon",
+        "name" :"Moose Winter Range",
+        "group":"Legal Planning Objectives",
+        "query": "LEGAL_FEAT_OBJECTIVE = 'Moose Winter Range'",
+        "fields": "['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK','GEOMETRY','OBJECTID']",
+        "popup":"['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK']",
+        "color":"#FFA133"
+    },
+    {
+        "dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW",
+        "type": "polygon",
+        "name" :"Equivalent Clearcut Area Threshold Watersheds",
+        "group":"Legal Planning Objectives",
+        "query": "LEGAL_FEAT_OBJECTIVE = 'Equivalent Clearcut Area Threshold Watersheds'",
+        "fields": "['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK','GEOMETRY','OBJECTID']",
+        "popup":"['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK']",
+        "color":"#A1FF33"
+    },
+    {
+        "dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW",
+        "type": "polygon",
+        "name" :"Ecosystem Network",
+        "group":"Legal Planning Objectives",
+        "query": "LEGAL_FEAT_OBJECTIVE = 'Ecosystem Network'",
+        "fields": "['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK','GEOMETRY','OBJECTID']",
+        "popup":"['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK']",
+        "color":"#FF33D4"
+    },
+    {
+        "dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_NON_LEGAL_POLY_SVW",
+        "type": "polygon",
+        "name" :"Goshawk Nesting and Fledging Areas",
+        "group":"Non Legal Planning Objectives",
+        "query": "NON_LEGAL_FEAT_OBJECTIVE = 'Goshawk Nesting/Post-Fledging Habitat' And STRGC_LAND_RSRCE_PLAN_NAME IN ('Cranberry Sustainable Resource Management Plan', 'Nass South Sustainable Resource Management Plan')",
+        "fields": "['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE','GEOMETRY','OBJECTID']",
+        "popup":"['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE']",
+        "color":"#FF33A1"
+    },
+    {
+        "dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_NON_LEGAL_POLY_SVW",
+        "type": "polygon",
+        "name" :"Moose Winter Range",
+        "group":"Non Legal Planning Objectives",
+        "query": "NON_LEGAL_FEAT_OBJECTIVE = 'Moose Winter Range'",
+        "fields": "['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE','GEOMETRY','OBJECTID']",
+        "popup":"['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE']",
+        "color":"#33A1FF"
+    },
+
+    {
+        "dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_NON_LEGAL_POLY_SVW",
+        "type": "polygon",
+        "name" :"Ecosystem Network Buffer",
+        "group":"Non Legal Planning Objectives",
+        "query": "NON_LEGAL_FEAT_OBJECTIVE = 'Ecosystem Network Buffer'",
+        "fields": "['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE','GEOMETRY','OBJECTID']",
+        "popup":"['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE']",
+        "color":"#33FFD4"
+    },
+
+    {
+        "dataset": "WHSE_FOREST_TENURE.FTEN_REC_SITE_POINTS_SVW",
+        "type": "point",
+        "name" :"Recreation Sites (Points)",
+        "group":"Rec Sites",
+        "query": "",
+        "fields": "['PROJECT_NAME','FOREST_FILE_ID','MAINTAIN_STD_DESC','SITE_LOCATION', 'PROJECT_ESTABLISHED_DATE','GEOMETRY','OBJECTID']",
+        "popup":"['PROJECT_NAME','FOREST_FILE_ID','MAINTAIN_STD_DESC','SITE_LOCATION', 'PROJECT_ESTABLISHED_DATE']",
+        "color":"#c66fd6",
+        "icon_url":""
+    },    
+    {
+        "dataset": "WHSE_FOREST_TENURE.FTEN_RECREATION_POLY_SVW",
+        "type": "polygon",
+        "name" :"Recreation Sites (Polygons)",
+        "group":"Rec Sites",
+        "query": "",
+        "fields": "['PROJECT_NAME','FOREST_FILE_ID','SITE_LOCATION','PROJECT_TYPE', 'PROJECT_ESTABLISHED_DATE','GEOMETRY','OBJECTID']",
+        "popup":"['PROJECT_NAME','FOREST_FILE_ID','SITE_LOCATION','PROJECT_TYPE', 'PROJECT_ESTABLISHED_DATE']",
+        "color":"#ebff73"
+    },
+    {
+        "dataset": "WHSE_WATER_MANAGEMENT.WLS_COMMUNITY_WS_PUB_SVW",
+        "type": "polygon",
+        "name" :"Community Watersheds",
+        "group":"Water",
+        "query": "",
+        "fields": "['CW_NAME','WATER_SYSTEM_NAME','CW_USE','CW_CODE','CW_DATE_CREATED','ORGANIZATION','POD_NUMBER','CW_LEGISLATION','SHAPE','OBJECTID']",
+        "popup":"['CW_NAME','WATER_SYSTEM_NAME','CW_USE','CW_CODE','CW_DATE_CREATED','ORGANIZATION','POD_NUMBER','CW_LEGISLATION']",
+        "color":"#0ca9cf"
+    },
+    {
+        "dataset": "WHSE_WILDLIFE_MANAGEMENT.WCP_UNGULATE_WINTER_RANGE_SP",
+        "type": "polygon",
+        "name" :"Mountain Goat: Ungulate Winter Range - Approved",
+        "group":"Wildlife",
+        "query": "SPECIES_1 = 'M-ORAM' Or SPECIES_2 = 'M-ORAM'",
+        "fields": "['SPECIES_1', 'SPECIES_2','UWR_NUMBER','UWR_UNIT_NUMBER','GEOMETRY','OBJECTID']",
+        "popup":"['SPECIES_1', 'SPECIES_2','UWR_NUMBER','UWR_UNIT_NUMBER']",
+        "color":"#34bfde"
+    },
+
+    {
+        "dataset": "WHSE_WILDLIFE_MANAGEMENT.WCP_UNGULATE_WINTER_RANGE_SP",
+        "type": "polygon",
+        "name" :"Moose: Ungulate Winter Range - Approved",
+        "group":"Wildlife",
+        "query": "SPECIES_1 IN ('M-ALAL', 'M-ALAL;M-CEEL;M-ODHE;M-ODVI') Or SPECIES_2 IN ('M-ALAL', 'M-ODHE; M-ALAL')",
+        "fields": "['SPECIES_1', 'SPECIES_2','UWR_NUMBER','UWR_UNIT_NUMBER',GEOMETRY','OBJECTID']",
+        "popup":"['SPECIES_1', 'SPECIES_2','UWR_NUMBER','UWR_UNIT_NUMBER']",
+        "color":"#9f6fe0"
+    },
+
+    {
+        "dataset": "WHSE_LAND_USE_PLANNING.RMP_OGMA_LEGAL_CURRENT_SVW",
+        "type": "polygon",
+        "name" :"Old Growth Management Areas - Legal - Current",
+        "group":"Landscape",
+        "query": "",
+        "fields": "['LEGAL_OGMA_PROVID', 'OGMA_TYPE', 'OGMA_PRIMARY_REASON', 'LEGALIZATION_FRPA_DATE', 'LEGALIZATION_OGAA_DATE', 'ASSOCIATED_ACT_NAME','GEOMETRY','OBJECTID']",
+        "popup":"['LEGAL_OGMA_PROVID', 'OGMA_TYPE', 'OGMA_PRIMARY_REASON', 'LEGALIZATION_FRPA_DATE', 'LEGALIZATION_OGAA_DATE', 'ASSOCIATED_ACT_NAME']",
+        "color":"#bb8e37"
+    },
+    {
+        "dataset": "WHSE_LEGAL_ADMIN_BOUNDARIES.FNT_TREATY_AREA_SP",
+        "type": "polygon",
+        "name" :"Nass Wildlife Area",
+        "group":"Boundaries",
+        "query": "TREATY = 'Nisga''a' and AREA_TYPE = 'Nass Wildlife Area'",
+        "fields": "['TREATY_AREA_ID','TREATY','EFFECTIVE_DATE','FIRST_NATION_NAME','AREA_TYPE','CHAPTER_REFERENCE','APPENDIX_REFERENCE','GEOMETRY','OBJECTID']",
+        "popup":"['TREATY_AREA_ID','TREATY','EFFECTIVE_DATE','FIRST_NATION_NAME','AREA_TYPE','CHAPTER_REFERENCE','APPENDIX_REFERENCE']",
+        "color":"#7ccc8d"
+    },
+    {
+        "dataset": "WHSE_LEGAL_ADMIN_BOUNDARIES.FNT_TREATY_AREA_SP",
+        "type": "polygon",
+        "name" :"Nass Area",
+        "group":"Boundaries",
+        "query": "TREATY = 'Nisga''a' and AREA_TYPE = 'Nass Area'",
+        "fields": "['TREATY_AREA_ID','TREATY','EFFECTIVE_DATE','FIRST_NATION_NAME','AREA_TYPE','CHAPTER_REFERENCE','APPENDIX_REFERENCE','GEOMETRY','OBJECTID']",
+        "popup":"['TREATY_AREA_ID','TREATY','EFFECTIVE_DATE','FIRST_NATION_NAME','AREA_TYPE','CHAPTER_REFERENCE','APPENDIX_REFERENCE']",
+        "color":"#3af49d"
+    },
+    {
+        "dataset": "WHSE_MINERAL_TENURE.MINPOT_MINERAL_POTENTIAL",
+        "type": "polygon",
+        "name" :"Mineral Potential",
+        "group":"Mining",
+        "query": "",
+        "fields": "['TRACT_ID','TRACT_POLYGON_AREA','NUMBER_OF_MINFILE_OCCURENCES','METALLIC_MINERAL_INVENTORY','RANK_OF_INDUSTRIAL_MINERALS','GEOMETRY','OBJECTID']",
+        "popup":"['TRACT_ID','TRACT_POLYGON_AREA','NUMBER_OF_MINFILE_OCCURENCES','METALLIC_MINERAL_INVENTORY','RANK_OF_INDUSTRIAL_MINERALS']",
+        "color":"#2d3cd6"
+    },
+    {
+        "dataset": "WHSE_LAND_USE_PLANNING.RMP_STRGC_LAND_RSRCE_PLAN_SVW",
+        "type": "polygon",
+        "name" :"Kalum SRMP",
+        "group":"Boundaries",
+        "query": "STRGC_LAND_RSRCE_PLAN_ID=149",
+        "fields": "['STRGC_LAND_RSRCE_PLAN_ID','STRGC_LAND_RSRCE_PLAN_NAME','PLAN_TYPE','PLAN_STATUS','APPROVAL_DATE','APPROVAL_LAST_AMEND_DATE','LEGALIZATION_DATE','LEGALIZATION_LAST_AMEND_DATE','GEOMETRY','OBJECTID']",
+        "popup":"['STRGC_LAND_RSRCE_PLAN_ID','STRGC_LAND_RSRCE_PLAN_NAME','PLAN_TYPE','PLAN_STATUS','APPROVAL_DATE','APPROVAL_LAST_AMEND_DATE','LEGALIZATION_DATE','LEGALIZATION_LAST_AMEND_DATE']",
+        "color":"#8985ea"
+    },
+    {
+        "dataset": "WHSE_LAND_USE_PLANNING.RMP_STRGC_LAND_RSRCE_PLAN_SVW",
+        "type": "polygon",
+        "name" :"Kalum LRMP",
+        "group":"Boundaries",
+        "query": "STRGC_LAND_RSRCE_PLAN_ID=20",
+        "fields": "['STRGC_LAND_RSRCE_PLAN_ID','STRGC_LAND_RSRCE_PLAN_NAME','PLAN_TYPE','PLAN_STATUS','APPROVAL_DATE','APPROVAL_LAST_AMEND_DATE','LEGALIZATION_DATE','LEGALIZATION_LAST_AMEND_DATE','GEOMETRY','OBJECTID']",
+        "popup":"['STRGC_LAND_RSRCE_PLAN_ID','STRGC_LAND_RSRCE_PLAN_NAME','PLAN_TYPE','PLAN_STATUS','APPROVAL_DATE','APPROVAL_LAST_AMEND_DATE','LEGALIZATION_DATE','LEGALIZATION_LAST_AMEND_DATE']",
+        "color":"#ee2965"
+    },
+    {
+        "dataset": "WHSE_LAND_USE_PLANNING.RMP_STRGC_LAND_RSRCE_PLAN_SVW",
+        "type": "polygon",
+        "name" :"Cranberry SRMP",
+        "group":"Boundaries",
+        "query": "STRGC_LAND_RSRCE_PLAN_ID=151",
+        "fields": "['STRGC_LAND_RSRCE_PLAN_ID','STRGC_LAND_RSRCE_PLAN_NAME','PLAN_TYPE','PLAN_STATUS','APPROVAL_DATE','APPROVAL_LAST_AMEND_DATE','LEGALIZATION_DATE','LEGALIZATION_LAST_AMEND_DATE','GEOMETRY','OBJECTID']",
+        "popup":"['STRGC_LAND_RSRCE_PLAN_ID','STRGC_LAND_RSRCE_PLAN_NAME','PLAN_TYPE','PLAN_STATUS','APPROVAL_DATE','APPROVAL_LAST_AMEND_DATE','LEGALIZATION_DATE','LEGALIZATION_LAST_AMEND_DATE']",
+        "color":"#fae093"
+    },
+    {
+        "dataset": "WHSE_TANTALIS.TA_CONSERVANCY_AREAS_SVW",
+        "type": "polygon",
+        "name" :"Hanna-Tintina Conservancy",
+        "group":"Boundaries",
+        "query": " ADMIN_AREA_SID = 5420",
+        "fields": "['ADMIN_AREA_SID','CONSERVANCY_AREA_NAME','ORCS_PRIMARY','ORCS_SECONDARY','ESTABLISHMENT_DATE','OFFICIAL_AREA_HA','PARK_MANAGEMENT_PLAN_URL','SHAPE','OBJECTID']",
+        "popup":"['ADMIN_AREA_SID','CONSERVANCY_AREA_NAME','ORCS_PRIMARY','ORCS_SECONDARY','ESTABLISHMENT_DATE','OFFICIAL_AREA_HA','PARK_MANAGEMENT_PLAN_URL']",
+        "color":"#eaf698"
+    },
+    {
+        "dataset": "WHSE_FOREST_VEGETATION.REC_VISUAL_LANDSCAPE_INVENTORY",
+        "type": "polygon",
+        "name" :"Visual Landscape Inventory",
+        "group":"Landscape",
+        "query": "REC_EVC_FINAL_VALUE_CODE IS NOT NULL",
+        "fields": "['PROJECT_NAME','REC_EVC_FINAL_VALUE_CODE', 'REC_EVQO_CODE','RATIONALE','GEOMETRY','OBJECTID']",
+        "popup":"['PROJECT_NAME','REC_EVC_FINAL_VALUE_CODE', 'REC_EVQO_CODE','RATIONALE']",
+        "color":"#c61277"
+    },
+
+    {
+        "dataset": "WHSE_MINERAL_TENURE.MTA_ACQUIRED_TENURE_HISTORY_SP",
+        "type": "polygon",
+        "name" :"MTA - Mineral, Placer and Coal Tenure History",
+        "group":"Mining",
+        "query": "",
+        "fields": "['TENURE_HISTORY_ID', 'TENURE_NUMBER_ID','TENURE_TYPE_DESCRIPTION','REVISION_NUMBER','GEOMETRY','OBJECTID']",
+        "popup":"['TENURE_HISTORY_ID', 'TENURE_NUMBER_ID','TENURE_TYPE_DESCRIPTION','REVISION_NUMBER']",
+        "color":"#b6244d"
+    },
+    {
+        "dataset": "WHSE_MINERAL_TENURE.MTA_ACQUIRED_TENURE_SVW",
+        "type": "polygon",
+        "name" :"MTA - Mineral, Placer and Coal Tenure",
+        "group":"Mining",
+        "query": "",
+        "fields": "['TENURE_NUMBER_ID', 'CLAIM_NAME','TENURE_TYPE_DESCRIPTION','TENURE_SUB_TYPE_DESCRIPTION','TITLE_TYPE_DESCRIPTION','ISSUE_DATE','GOOD_TO_DATE','AREA_IN_HECTARES','REVISION_NUMBER','GEOMETRY','OBJECTID']",
+        "popup":"['TENURE_NUMBER_ID', 'CLAIM_NAME','TENURE_TYPE_DESCRIPTION','TENURE_SUB_TYPE_DESCRIPTION','TITLE_TYPE_DESCRIPTION','ISSUE_DATE','GOOD_TO_DATE','AREA_IN_HECTARES','REVISION_NUMBER',]",
+        "color":"#fd5023"
+    },
+    {
+        "dataset": "WHSE_WILDLIFE_MANAGEMENT.WCP_WILDLIFE_HABITAT_AREA_POLY",
+        "type": "polygon",
+        "name" :"Grizzly Bear: Wildlife Habitat Areas - Approved",
+        "group":"Wildlife",
+        "query": "COMMON_SPECIES_NAME = 'Grizzly Bear'",
+        "fields": "['HABITAT_AREA_ID', 'TAG','APPROVAL_DATE','FEATURE_NOTES','COMMON_SPECIES_NAME','LEGISLATION_ACT_NAME','TIMBER_HARVEST_CODE','HECTARES','GEOMETRY','OBJECTID']",
+        "popup":"['HABITAT_AREA_ID', 'TAG','APPROVAL_DATE','FEATURE_NOTES','COMMON_SPECIES_NAME','LEGISLATION_ACT_NAME','TIMBER_HARVEST_CODE','HECTARES']",
+        "color":"#9e8679"
+    },
+    {
+        "dataset": "WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW",
+        "type": "polygon",
+        "name" :"BC Parks, Ecological Reserves, and Protected Areas",
+        "group":"Boundaries",
+        "query": "",
+        "fields": "['ADMIN_AREA_SID','PROTECTED_LANDS_NAME','PROTECTED_LANDS_DESIGNATION','PARK_CLASS','OFFICIAL_AREA_HA','PARK_MANAGEMENT_PLAN_URL','SHAPE','OBJECTID']",
+        "popup":"['ADMIN_AREA_SID','PROTECTED_LANDS_NAME','PROTECTED_LANDS_DESIGNATION','PARK_CLASS','OFFICIAL_AREA_HA','PARK_MANAGEMENT_PLAN_URL']",
+        "color":"#be5464"
+    },
+    {
+        "dataset": "WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY",
+        "type": "polygon",
+        "name" :"Biogeoclimatic Ecosystem Classification (BEC)",
+        "group":"Landscape",
+        "query": "",
+        "fields": "['MAP_LABEL','ZONE','SUBZONE','VARIANT','PHASE','NATURAL_DISTURBANCE','GEOMETRY','OBJECTID']",
+        "popup":"['MAP_LABEL','ZONE','SUBZONE','VARIANT','PHASE','NATURAL_DISTURBANCE']",
+        "color":"#5b7058"
+    },
+    {
+        "dataset": "WHSE_TERRESTRIAL_ECOLOGY.ERC_ECOSECTIONS_SP",
+        "type": "polygon",
+        "name" :"Ecosections - Ecoregion Ecosystem Classification of British Columbia",
+        "group":"Landscape",
+        "query": "",
+        "fields": "['ECOSECTION_CODE','ECOSECTION_NAME','EFFECTIVE_DATE','EXPIRY_DATE','GEOMETRY','OBJECTID']",
+        "popup":"['ECOSECTION_CODE','ECOSECTION_NAME','EFFECTIVE_DATE','EXPIRY_DATE']",
+        "color":"#09df6c"
+    },
+    {
+        "dataset": "WHSE_TANTALIS.TA_CROWN_TENURES_SVW",
+        "type": "polygon",
+        "name" :"RESERVE/NOTATION: Crown Tenures",
+        "group":"Boundaries",
+        "query": "TENURE_TYPE = 'RESERVE/NOTATION'",
+        "fields": "['INTRID_SID','TENURE_STAGE','TENURE_STATUS','TENURE_TYPE','TENURE_SUBTYPE','TENURE_PURPOSE','CROWN_LANDS_FILE','TENURE_EXPIRY','TENURE_LEGAL_DESCRIPTION','TENURE_AREA_IN_HECTARES','SHAPE','OBJECTID']",
+        "popup":"['INTRID_SID','TENURE_STAGE','TENURE_STATUS','TENURE_TYPE','TENURE_SUBTYPE','TENURE_PURPOSE','CROWN_LANDS_FILE','TENURE_EXPIRY','TENURE_LEGAL_DESCRIPTION','TENURE_AREA_IN_HECTARES']",
+        "color":"#cbfb6f"
+    },
+    {
+        "dataset": "WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW",
+        "type": "polygon",
+        "name" :"Private Parcels",
+        "group":"Boundaries",
+        "query": "OWNER_TYPE='Private'",
+        "fields": "['PARCEL_NAME', 'OWNER_TYPE','SHAPE','OBJECTID']",
+        "popup":"['PARCEL_NAME', 'OWNER_TYPE']",
+        "color":"#b8263e"
+    },
+    {
+        "dataset": "WHSE_LAND_USE_PLANNING.RMP_STRGC_LAND_RSRCE_PLAN_SVW",
+        "type": "polygon",
+        "name" :"Strategic Land and Resource Plans - Current",
+        "group":"Boundaries",
+        "query": "",
+        "fields": "['STRGC_LAND_RSRCE_PLAN_ID', 'STRGC_LAND_RSRCE_PLAN_PROVID','STRGC_LAND_RSRCE_PLAN_NAME','PLAN_TYPE','PLAN_STATUS','GEOMETRY','OBJECTID']",
+        "popup":"['STRGC LAND RSRCE PLAN ID', 'STRGC LAND RSRCE PLAN PROVID','PLAN NAME','PLAN TYPE',' PLAN STATUS']",
+        "color":"#5e8f09"
+    }
+]
