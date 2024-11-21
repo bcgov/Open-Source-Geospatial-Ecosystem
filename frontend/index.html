@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>FOSS4G LUP Web Map</title>
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> -->
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+
+    <!-- Top Banner -->
+    <div class="banner">
+        <p>This is a test and only a test, please stay calm</p>
+    </div>
+
+    <!-- Header Section -->
+    <header class="header">
+        <!-- <img src="{{ url_for('static', filename='BCID_V_gry_rev.png') }}" alt="British Columbia Logo" class="logo"> -->
+        <img src="static/BCID_V_gry_rev.png" alt="British Columbia Logo" class="logo">
+        <h1>The FOSS4G test app</h1>
+        <p>some more text just because</p>
+        <a href="#" class="btn">This button does nothing!</a>
+    </header>
+
+<!-- Main Discover Section -->
+<main>
+    <section class="discover">
+        <h2>Discover The LUP</h2>
+        <div class="services-grid">
+            <div class="service-item">
+                <div class="overview-item">
+                    <!-- <img src="{{ url_for('static', filename='spiral.png') }}" alt="Overview Map"> -->
+                    <img src="static/spiral.png" alt="Overview Map">
+                    <h3>LUP Overview</h3>
+                    <p>View the Land Use Plan Overview Map</p>
+                    <a href="overview_map">Learn more</a>
+                </div>
+            </div>
+            <div class="service-item">
+                <!-- <img src="{{ url_for('static', filename='intersect.png') }}" alt="Intersect with legal and non-legal planning objectives"> -->
+                <img src="static/intersect.png" alt="Intersect with legal and non-legal planning objectives">
+                <h3>Intersect with Legal and Non Legal Planning Objectives</h3>
+                <p>Try it out!</p>
+                <a href="intersect">Learn more</a>
+            </div>
+            <div class="service-item">
+                <!-- <img src="{{ url_for('static', filename='query.png') }}" alt="Query land use plans and planning objectives"> -->
+                <img src="static/query.png" alt="Query land use plans and planning objectives">
+                <h3>Query some stuff</h3>
+                <p>Be your own detective</p>
+                <a href="#">Learn more</a>
+            </div>
+        </div>
+    </section>
+</main>
+
+</body>
+</html>
