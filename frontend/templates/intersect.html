@@ -50,6 +50,7 @@
                 <table id="intersected-data-1-table">
                     <thead>
                         <tr>
+                            <th>Legal Feature ID</th>
                             <th>Plan Name</th>
                             <th>Objective</th>
                             <th>Legalization Date</th>
@@ -61,6 +62,7 @@
                     <tbody>
                         {% for row in intersected_data_1 %}
                             <tr>
+                                <td>{{ row['LEGAL_FEAT_ID'] }}</td>
                                 <td>{{ row['STRGC_LAND_RSRCE_PLAN_NAME'] }}</td>
                                 <td>{{ row['LEGAL_FEAT_OBJECTIVE'] }}</td>
                                 <td>{{ row['LEGALIZATION_DATE'] }}</td>
@@ -83,7 +85,7 @@
                 <table id="intersected-data-2-table">
                     <thead>
                         <tr>
-                            <th>Feature ID</th>
+                            <th>Non Legal Feature ID</th>
                             <th>Plan Name</th>
                             <th>Objective</th>
                             <th>Decision Date</th>
