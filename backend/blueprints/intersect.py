@@ -68,6 +68,8 @@ def intersect():
             uploaded_gdf = gpd.read_file(uploaded_file)
         elif uploaded_file.filename.endswith('.kml'):
             uploaded_gdf = gpd.read_file(uploaded_file)
+        elif uploaded_file.filename.endswith('.gpx'):
+            uploaded_gdf = gpd.read_file(uploaded_file)
 
         if uploaded_gdf is not None:
             intersected_data_1 = intersect_with_wfs(uploaded_gdf, WFS_LAYER_1_URL)
