@@ -14,8 +14,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js"></script>
     <script src="https://unpkg.com/leaflet-wfst@2.0.1-beta.27/dist/leaflet-wfst.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/leaflet-filelayer@1.2.0/src/leaflet.filelayer.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/togeojson/0.16.0/togeojson.min.js"></script>
-    <script src="/plugins/leaflet.filelayer.js"></script>
 
     <style>
         #overview {
@@ -49,18 +47,6 @@
         var baseMaps={
             'CartoDB Positron':CartoDB_Positron
         };
-
-// add file layer upload to map
-        var control = L.Control.fileLayerLoad({
-                    layer: L.geoJSON,
-                    layerOptions: {style: {color: getRandomColor()}},
-                    addToMap: true,
-                    fileSizeLimit: 1024,
-                    formats: [
-                        '.kml',
-                        '.geojson'
-                    ]
-                }).addTo(map);
 
 //   js functions
         // function to get wfs layers by query
