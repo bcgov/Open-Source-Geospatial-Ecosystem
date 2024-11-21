@@ -50,6 +50,18 @@
             'CartoDB Positron':CartoDB_Positron
         };
 
+// add file layer upload to map
+        var control = L.Control.fileLayerLoad({
+                    layer: L.geoJSON,
+                    layerOptions: {style: {color: getRandomColor()}},
+                    addToMap: true,
+                    fileSizeLimit: 1024,
+                    formats: [
+                        '.kml',
+                        '.geojson'
+                    ]
+                }).addTo(map);
+
 //   js functions
         // function to get wfs layers by query
         
