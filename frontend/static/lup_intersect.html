@@ -34,6 +34,14 @@
             maxZoom: 20
         });
         CartoDB_Positron.addTo(map);
+
+        L.tileLayer('https://maps.gov.bc.ca/arcgis/rest/services/province/web_mercator_cache/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; <a href="https://data.gov.bc.ca/">BC Government</a>',
+            maxZoom: 20,
+            errorTileUrl: 'path-to-error-image.png' 
+        }).addTo(map);
+
+
         var lup_aoi= 
         {
             "type": "FeatureCollection",

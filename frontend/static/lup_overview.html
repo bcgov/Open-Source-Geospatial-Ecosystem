@@ -30,6 +30,7 @@
     <script src="https://unpkg.com/leaflet-wfst@2.0.1-beta.27/dist/leaflet-wfst.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/togeojson/0.16.0/togeojson.min.js"></script>
     <script src="/plugins/leaflet.filelayer.js"></script>
+    
 
     <style>
         #overview {
@@ -75,6 +76,12 @@
             maxZoom: 20
         }).addTo(map);
 
+        L.tileLayer('https://maps.gov.bc.ca/arcgis/rest/services/province/web_mercator_cache/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; <a href="https://data.gov.bc.ca/">BC Government</a>',
+            maxZoom: 20,
+            errorTileUrl: 'path-to-error-image.png' 
+        }).addTo(map);
+        
         // WFS data source URL
         const SERVICE_URL = "http://localhost:5000/wfs/";
 
@@ -147,8 +154,7 @@
             fileSizeLimit: 1024,
             formats: [
                 '.kml',
-                '.geojson',
-                '.gpx'
+                '.geojson'
             ]
         }).addTo(map);
 
