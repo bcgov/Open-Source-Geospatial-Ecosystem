@@ -19,6 +19,11 @@
         </div>
     </div>
 
+    <div id="legend-container" style="position: absolute; bottom: 10px; left: 10px; background-color: white; padding: 10px; z-index: 1000; border: 1px solid #ccc; border-radius: 4px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+        <strong>Legend</strong>
+        <div id="legendContent"></div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.5/proj4.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js"></script>
@@ -170,10 +175,25 @@
         control.loader.on('data:loaded', function(event) {
             const layer = event.layer;
             uploadedLayers.push(layer);
-            
-            const fileName = event.filename || "Uploaded Layer" + $uploadedLayers.length;
+        
+            const fileName = event.filename || "Uploaded Layer " + uploadedLayers.length;
+            const color = getRandomColor(); // Generate a color for the layer
+        
+            // Style the uploaded layer with the random color
+            layer.setStyle({
+                color: color,
+                weight: 2
+            });
+        
+            // Add the uploaded layer to the map
+            map.addLayer(layer);
+        
+            // Create a checkbox for toggling the layer
             createCheckboxForAddedLayer(layer, fileName);
-        });     
+        
+            // Add the uploaded layer to the legend
+            updateLegend(fileName, color, 1, "add");
+        });
         
         // Function to generate the WFS query URL
         function wfsQuery(dataset, query = null, fields = [], startIndex = 0, count = null ) {
@@ -189,7 +209,7 @@
                 srsName: 'EPSG:4326',
                 bbox: [54.94267775412879,-130.02081515748938, 56.60674270353342,-127.66422698319626, 'urn:ogc:def:crs:EPSG:4326'],
                 sortBy: 'OBJECTID',
-                limit: 10000,
+                limit: 1000000,
                 offset: startIndex 
             });
         
@@ -261,26 +281,69 @@
             }
             return color;
         }
+        function updateLegend(layerName, color, transparency, action) {
+            const legendContent = document.getElementById("legendContent");
+        
+            if (action === "add") {
+                if (document.getElementById(`legend-${layerName}`)) return;
+        
+                const legendItem = document.createElement("div");
+                legendItem.id = `legend-${layerName}`;
+                legendItem.style.display = "flex";
+                legendItem.style.alignItems = "center";
+                legendItem.style.marginBottom = "5px";
+        
 
+                const colorPatch = document.createElement("span");
+                colorPatch.style.width = "20px";
+                colorPatch.style.height = "20px";
+                colorPatch.style.backgroundColor = color;
+                colorPatch.style.opacity = transparency;
+                colorPatch.style.border = "1px solid #000";
+                colorPatch.style.marginRight = "10px";
+        
+     
+                const layerLabel = document.createElement("span");
+                layerLabel.textContent = layerName;
+        
+  
+                legendItem.appendChild(colorPatch);
+                legendItem.appendChild(layerLabel);
+        
+       
+                legendContent.appendChild(legendItem);
+            } else if (action === "remove") {
+    
+                const legendItem = document.getElementById(`legend-${layerName}`);
+                if (legendItem) {
+                    legendContent.removeChild(legendItem);
+                }
+            }
+        }
+        
         // Toggle layer function updated to pass Popup and Color
         async function layerToggleWFS(checkbox, index) {
             const layerData = jsonData[index];
+            const layerName= layerData.name
             const dataset = layerData.dataset;
             const query = layerData.query;
             const fields = JSON.parse(layerData.fields.replace(/'/g, '"'));
             const popupFields = JSON.parse(layerData.popup.replace(/'/g, '"')); // Convert to array
             const color = layerData.color; // Get the color
+            const transparency = 0.5
 
             if (checkbox.checked) {
                 if (!activeLayers[dataset]) {
                     const geoJsonLayer = await loadWFSData(dataset, query, fields, popupFields, color);
                     activeLayers[dataset] = geoJsonLayer;
+                    updateLegend(layerName, color, transparency, "add");
                 }
             } else {
                 // Remove layer if unchecked
                 if (activeLayers[dataset]) {
                     map.removeLayer(activeLayers[dataset]);
                     delete activeLayers[dataset];
+                    updateLegend(layerName, color, transparency, "remove")
                 }
             }
         }
