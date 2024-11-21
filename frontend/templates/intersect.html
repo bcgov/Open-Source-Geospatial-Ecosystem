@@ -4,9 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Feature Intersect</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="../static/style.css">
 </head>
+
+
 <body>
+
+<!-- Header Section -->
+
+<div class="header">
+    <img src="../static/BCID_H_rgb_rev.png" alt="British Columbia Logo" class="logo">
+    <div class="title">BC Land Use Planning Tool</div>
+    <div class="navbar">
+        <ul>
+            <li>
+                Data & Mapping Tools 
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- Top Banner -->
+<div class="banner">
+    <div class="banner-title"><p>Intersect Tool</p></div>
+</div>
+
     <h2>Upload a File to Intersect with Land Use Polygons</h2>
     <!-- Form for uploading data -->
     <form action="/intersect" method="POST" enctype="multipart/form-data">
