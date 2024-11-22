@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LUP Overview</title>
 </head>
+
 <body>
     <div id="overview"></div>
-    
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.5/proj4.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js"></script>
@@ -18,16 +21,17 @@
     <style>
         #overview {
             width: 100%;
-            height: 100vh; /* Adjust to fit the entire viewport */
+            height: 100vh;
+            /* Adjust to fit the entire viewport */
             position: relative;
         }
     </style>
 
     <script>
-//call map variable 
+        //call map variable 
         var map = L.map('overview').setView([55.781113, -128.867888], 7);
 
-// base map stuff 
+        // base map stuff 
         var CartoDB_Positron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
             subdomains: 'abcd',
@@ -38,30 +42,30 @@
         L.tileLayer('https://maps.gov.bc.ca/arcgis/rest/services/province/web_mercator_cache/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Tiles &copy; <a href="https://data.gov.bc.ca/">BC Government</a>',
             maxZoom: 20,
-            errorTileUrl: 'path-to-error-image.png' 
+            errorTileUrl: 'path-to-error-image.png'
         }).addTo(map);
 
 
-        var lup_aoi= 
+        var lup_aoi =
         {
             "type": "FeatureCollection",
             "name": "aoi",
             "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::4326" } },
             "features": [
-            { "type": "Feature", "properties": { "OBJECTID": 3.0, "SHAPE_Leng": 908959.60400000215, "SHAPE_Area": 51484492817.909615, "X_Max": null, "X_Min": null, "Y_Max": null, "Y_Min": null, "centerx": null, "centery": null, "Lat_Max": -127.12066348938077, "Lat_Min": -130.70713817004415, "Lon_Max": 56.880992958850584, "Lon_Min": 54.658316969110963 }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ -128.877519335263372, 56.854459870751043 ], [ -128.47103084514157, 56.862845226243849 ], [ -127.182976424146929, 56.880987675036366 ], [ -127.120645609878679, 54.734177239127789 ], [ -130.459733007391407, 54.658312163230242 ], [ -130.707118882745391, 56.800867888548048 ], [ -128.877519335263372, 56.854459870751043 ] ] ] ] } }
+                { "type": "Feature", "properties": { "OBJECTID": 3.0, "SHAPE_Leng": 908959.60400000215, "SHAPE_Area": 51484492817.909615, "X_Max": null, "X_Min": null, "Y_Max": null, "Y_Min": null, "centerx": null, "centery": null, "Lat_Max": -127.12066348938077, "Lat_Min": -130.70713817004415, "Lon_Max": 56.880992958850584, "Lon_Min": 54.658316969110963 }, "geometry": { "type": "MultiPolygon", "coordinates": [[[[-128.877519335263372, 56.854459870751043], [-128.47103084514157, 56.862845226243849], [-127.182976424146929, 56.880987675036366], [-127.120645609878679, 54.734177239127789], [-130.459733007391407, 54.658312163230242], [-130.707118882745391, 56.800867888548048], [-128.877519335263372, 56.854459870751043]]]] } }
             ]
         };
         // object for basemap layers to add to layer control 
-        var baseMaps={
-            'CartoDB Positron':CartoDB_Positron
+        var baseMaps = {
+            'CartoDB Positron': CartoDB_Positron
         };
 
-//   js functions
+        //   js functions
         // function to get wfs layers by query
-        
-        function wfsQuery(dataset, query = null, fields = [], startIndex = 0, count = null ) {
+
+        function wfsQuery(dataset, query = null, fields = [], startIndex = 0, count = null) {
             const SERVICE_URL = "http://localhost:5000/wfs";
-        
+
             const params = new URLSearchParams({
                 service: 'WFS',
                 version: '2.0.0',
@@ -69,14 +73,14 @@
                 typeName: `pub:${dataset}`,
                 outputFormat: 'application/json',
                 srsName: 'EPSG:4326',
-                bbox: [54.94267775412879,-130.02081515748938, 56.60674270353342,-127.66422698319626, 'urn:ogc:def:crs:EPSG:4326'],
+                bbox: [54.94267775412879, -130.02081515748938, 56.60674270353342, -127.66422698319626, 'urn:ogc:def:crs:EPSG:4326'],
                 sortBy: 'OBJECTID',
                 limit: 1000000,
-                offset: startIndex 
+                offset: startIndex
             });
-        
+
             // Use INTERSECTS filter with a POLYGON if bbox is provided
-        
+
             if (query) {
                 if (params.has('CQL_FILTER')) {
                     params.set('CQL_FILTER', `${params.get('CQL_FILTER')} AND ${query}`);
@@ -84,15 +88,15 @@
                     params.set('CQL_FILTER', query);
                 }
             }
-        
+
             if (fields && fields.length > 0) {
                 params.append('propertyName', fields.map(field => field.toUpperCase()).join(','));
             }
-        
+
             if (count !== null) {
                 params.append('count', count);
             }
-        
+
             const url = `${SERVICE_URL}${params.toString()}`;
             console.log("WFS URL:", url);
             return url;
@@ -107,77 +111,79 @@
             return color;
         }
 
-// add layer group, color, control, and whatever else to json and change popups below to match the fields 
-// empty object to add layers to for layer control 
-const bbox = [743161, 1112127, 898012, 1291756, 'EPSG:4326'];
-    function loadWFSData(jsonData) {
-        jsonData.forEach(item => {
-            const dataset = item.Dataset;
-            const query = item.Query;
-            const name= item.Name
-            const colors=item.Color
-            const fields = JSON.parse(item.Fields.replace(/'/g, '"'));
-            const popupFields = JSON.parse(item.Popup.replace(/'/g, '"'));
-            
-            const url = wfsQuery(dataset, query, fields);
-            
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    L.geoJSON(data, {
-                        style: {
-                            color: colors,
-                            weight: 2
-                        },
-                        onEachFeature: function (feature, layer) {
-                            if (feature.properties) {
-                                const popupContent = popupFields.map(field => 
-                                `<strong>${field.replace(/_/g, ' ')}:</strong> ${feature.properties[field] || 'N/A'}`
-                            ).join('<br>');
-                            layer.bindPopup(popupContent);
+        // add layer group, color, control, and whatever else to json and change popups below to match the fields 
+        // empty object to add layers to for layer control 
+        const bbox = [743161, 1112127, 898012, 1291756, 'EPSG:4326'];
+        function loadWFSData(jsonData) {
+            jsonData.forEach(item => {
+                const dataset = item.Dataset;
+                const query = item.Query;
+                const name = item.Name
+                const colors = item.Color
+                const fields = JSON.parse(item.Fields.replace(/'/g, '"'));
+                const popupFields = JSON.parse(item.Popup.replace(/'/g, '"'));
+
+                const url = wfsQuery(dataset, query, fields);
+
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        L.geoJSON(data, {
+                            style: {
+                                color: colors,
+                                weight: 2
+                            },
+                            onEachFeature: function (feature, layer) {
+                                if (feature.properties) {
+                                    const popupContent = popupFields.map(field =>
+                                        `<strong>${field.replace(/_/g, ' ')}:</strong> ${feature.properties[field] || 'N/A'}`
+                                    ).join('<br>');
+                                    layer.bindPopup(popupContent);
+                                }
                             }
-                        }
-                    }).addTo(map);
-                })
-                .catch(error => {
-                    console.error('Error fetching WFS data:', error);
-                });
-        });
-    }
-// plugins 
+                        }).addTo(map);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching WFS data:', error);
+                    });
+            });
+        }
+        // plugins 
 
-// add layers to map 
-    L.geoJSON(lup_aoi,{
-        style: {
-            fillColor: 'transparent',
-            color: 'black',
-            weight: 4}
-    }).addTo(map);
+        // add layers to map 
+        L.geoJSON(lup_aoi, {
+            style: {
+                fillColor: 'transparent',
+                color: 'black',
+                weight: 4
+            }
+        }).addTo(map);
 
 
-    //create json of layers for the map still needs to be altered to add fields for popups, colors, other properties?
-    const jsonData = [
-    {
-        "Dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW",
-        "Query": "",
-        "Fields": "['STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK','GEOMETRY','OBJECTID']",
-        "Name": "'Legal Planning Objective Polygons",
-        "Popup":"['STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK']",
-        "Color":"#FF5733"
-    },
-    {
-        "Dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_NON_LEGAL_POLY_SVW",
-        "Query": "",
-        "Fields": "['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE','GEOMETRY','OBJECTID']",
-        "Name" :"Non Legal Planning Objective Polygons",
-        "Popup":"['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE']",
-        "Color":"#FF33A1"
-    },
-]
+        //create json of layers for the map still needs to be altered to add fields for popups, colors, other properties?
+        const jsonData = [
+            {
+                "Dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW",
+                "Query": "",
+                "Fields": "['STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK','GEOMETRY','OBJECTID']",
+                "Name": "'Legal Planning Objective Polygons",
+                "Popup": "['STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK']",
+                "Color": "#FF5733"
+            },
+            {
+                "Dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_NON_LEGAL_POLY_SVW",
+                "Query": "",
+                "Fields": "['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE','GEOMETRY','OBJECTID']",
+                "Name": "Non Legal Planning Objective Polygons",
+                "Popup": "['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE']",
+                "Color": "#FF33A1"
+            },
+        ]
 
-    loadWFSData(jsonData);
-    var layerControl = L.control.layers(baseMaps).addTo(map);
+        loadWFSData(jsonData);
+        var layerControl = L.control.layers(baseMaps).addTo(map);
 
     </script>
 </body>
+
 </html>

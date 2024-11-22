@@ -9,18 +9,8 @@
 <body>
     <div id="overview"></div>
     
-    <!-- Toggle button and container for dynamic checkboxes -->
-    <div id="checkbox-container" style="position: absolute; top: 10px; right: 10px; background-color: white; padding: 10px; z-index: 1000; border: 1px solid #ccc; border-radius: 4px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
-        <button id="toggleCheckboxContainer" onclick="toggleCheckboxContainer()" style="background: none; border: none; cursor: pointer; font-size: 16px;">▲</button>
-        <div id="checkboxContent">
-            <!-- Checkboxes will be dynamically inserted here -->
-        </div>
-    </div>
 
-    <div id="legend-container" style="position: absolute; bottom: 10px; left: 10px; background-color: white; padding: 10px; z-index: 1000; border: 1px solid #ccc; border-radius: 4px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
-        <strong>Legend</strong>
-        <div id="legendContent"></div>
-    </div>
+
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.5/proj4.js"></script>
@@ -28,40 +18,7 @@
     <script src="https://unpkg.com/leaflet-wfst@2.0.1-beta.27/dist/leaflet-wfst.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/togeojson/0.16.0/togeojson.min.js"></script>
     <script src="/plugins/leaflet.filelayer.js"></script>
-    
 
-    <style>
-        #overview {
-            width: 100%;
-            height: 100vh; /* Adjust to fit the entire viewport */
-            position: relative;
-        }
-        
-        #layerContainer {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            width: 200px;
-            background: white;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            padding: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-    
-        #layerContent {
-            display: block; /* Visible by default */
-        }
-    
-        /* Style the toggle button */
-        #toggleButton {
-            background: none;
-            border: none;
-            font-size: 16px;
-            cursor: pointer;
-            float: right;
-        }
-    </style>
 
     <script>
         // Initialize the map
@@ -131,6 +88,7 @@
         // Call the function to create checkboxes
         createCheckboxes(checkboxContainer);
 
+        /*
         function toggleCheckboxContainer() {
             const checkboxContent = document.getElementById('checkboxContent');
             const toggleButton = document.getElementById('toggleCheckboxContainer');
@@ -143,6 +101,7 @@
                 toggleButton.textContent = "▼"; // Downward arrow to indicate minimized state
             }
         }
+        */
 
         // add file layer upload to map
         var control = L.Control.fileLayerLoad({

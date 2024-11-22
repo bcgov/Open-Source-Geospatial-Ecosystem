@@ -11,7 +11,7 @@
 
 /* body */
 body {
-    font-family:Arial, Helvetica, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
     line-height: 1.6;
     background-color: #ffffff;
     padding-bottom: 150px;
@@ -20,27 +20,27 @@ body {
 
 .header {
     padding: 10px;
-    background-color:var(--primary-dark);
+    background-color: var(--primary-dark);
     border-bottom: solid 2px var(--accent);
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .logo {
-    width:188px;
-    object-fit:fill;
+    width: 188px;
+    object-fit: fill;
 }
 
 .title {
     width: 30%;
-    height:auto;
-    display:flex;
+    height: auto;
+    display: flex;
     margin-left: 10px;
     justify-content: left;
-    font-size:24px;
-    font-weight:bold;
-    color:#fff;
+    font-size: 24px;
+    font-weight: bold;
+    color: #fff;
 }
 
 .navbar {
@@ -48,7 +48,7 @@ body {
     width: 100%;
     justify-content: left;
     color: #fff;
-    font-weight:bold;
+    font-weight: bold;
     margin-left: 20px;
 }
 
@@ -60,64 +60,64 @@ body {
 
 .navbar ul li {
     list-style-type: none;
-    display:inline;
-    margin-right:10px;
+    display: inline;
+    margin-right: 10px;
 }
 
 @media screen and (max-width: 900px) {
-.title {
-    width:auto;
-    height:auto;
-    display:flex;
-    margin-left: 10px;
-    justify-content: left;
-    font-size:24px;
-    font-weight:bold;
-    color:#fff;
-}
+    .title {
+        width: auto;
+        height: auto;
+        display: flex;
+        margin-left: 10px;
+        justify-content: left;
+        font-size: 24px;
+        font-weight: bold;
+        color: #fff;
+    }
 }
 
 
 /* Banner */
 .banner {
-    position:relative;
+    position: relative;
     background-color: var(--primary-dark);
-    background-image:url(../static/CCRD_BellaCoola.jpg);
-    background-size:100%;
+    background-image: url(../static/CCRD_BellaCoola.jpg);
+    background-size: 100%;
     background-repeat: no-repeat;
     background-position: 0% 30%;
-    width:100%;
-    height:400px;
+    width: 100%;
+    height: 400px;
     text-align: center;
     padding: 50px;
     font-size: 2.5rem;
 }
 
 .banner-title {
-    position:absolute;
+    position: absolute;
     margin: 0px auto;
-    display:block;
-    height:150px;
-    width:350px;
-    bottom:0px;
-    left:0px;
+    display: block;
+    height: 150px;
+    width: 350px;
+    bottom: 0px;
+    left: 0px;
     background-color: var(--secondary);
     background-color: rgba(116, 152, 206, 0.8);
     border-radius: 0px 30px 0px 0px;
     border-top: 2px solid var(--accent);
     border-right: 2px solid var(--accent);
-    padding:10px 25px 5px 5px;
-    color:#fff;
-    font-size:40px;
-    font-weight:bold;
-    text-align:center;
+    padding: 10px 25px 5px 5px;
+    color: #fff;
+    font-size: 40px;
+    font-weight: bold;
+    text-align: center;
 }
 
 .banner-title p {
     margin: 0;
-    position:absolute;
-    top:50%;
-    left:50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
     transform: translate(-50%, -50%);
 }
 
@@ -130,7 +130,8 @@ body {
     padding: 50px 20px;
     position: relative;
     border-top: 6.5px solid #ffc017;
-    border-bottom: 6.5px solid #ffc017; /* Fixed typo here */
+    border-bottom: 6.5px solid #ffc017;
+    /* Fixed typo here */
 }
 
 .header2 .logo {
@@ -169,7 +170,8 @@ body {
 }
 
 .services-grid {
-    max-width: 1200px; /* Set a max-width for responsiveness */
+    max-width: 1200px;
+    /* Set a max-width for responsiveness */
     margin: 0 auto;
     display: flex;
     justify-content: center;
@@ -224,7 +226,8 @@ body {
 
 #maps-item {
     width: 100%;
-    height: 80vh; /* Set to fit most of the viewport */
+    height: 80vh;
+    /* Set to fit most of the viewport */
     padding: 20px;
     border: 2px solid #000;
     border-radius: 10px;
@@ -253,9 +256,11 @@ body {
 
 /* Table container with scroll bar */
 .table-container {
-    max-height: 300px; /* Set the max height of the table container */
-    overflow-y: auto; /* Add vertical scroll */
-    overflow-x: auto; 
+    max-height: 300px;
+    /* Set the max height of the table container */
+    overflow-y: auto;
+    /* Add vertical scroll */
+    overflow-x: auto;
     margin: 10px auto;
     border: 1px solid #ddd;
     border-radius: 5px;
@@ -264,15 +269,19 @@ body {
 
 /* Ensure table inside the container does not exceed the container height */
 table {
-    width: 100%; /* Set to full width of the parent container */
+    width: 100%;
+    /* Set to full width of the parent container */
     border-collapse: collapse;
     text-align: left;
-    max-height: 100%; /* Ensure the table does not overflow */
-    overflow-y: auto; /* Add vertical scroll to table if needed */
+    max-height: 100%;
+    /* Ensure the table does not overflow */
+    overflow-y: auto;
+    /* Add vertical scroll to table if needed */
 }
 
 /* Table rows and cells for better visibility */
-table th, table td {
+table th,
+table td {
     padding: 10px;
     border: 1px solid #ddd;
 }
@@ -315,7 +324,8 @@ table th, table td {
     border-collapse: collapse;
 }
 
-.table-container th, .table-container td {
+.table-container th,
+.table-container td {
     text-align: left;
     border: 1px solid #ddd;
     padding: 8px;
@@ -328,7 +338,8 @@ table th, table td {
 /* Define specific widths for columns */
 .table-container th:nth-child(1),
 .table-container td:nth-child(1) {
-    width: 15%; /* Adjust as needed */
+    width: 15%;
+    /* Adjust as needed */
 }
 
 .table-container th:nth-child(2),
@@ -352,5 +363,91 @@ table th, table td {
 .table-container td:nth-child(6),
 .table-container th:nth-child(7),
 .table-container td:nth-child(7) {
-    width: 10%; /* Applies to columns unique to the first table */
+    width: 10%;
+    /* Applies to columns unique to the first table */
 }
+
+/*lup overview map*/
+/*Set up collapsible-bar with that grid layout so everyhting is side by side (if it ever works*/
+.collapsible-bar {
+    background-color: #294780;
+    display: grid;
+    grid-auto-flow: column;
+    justify-content: right;
+    gap: 10px;
+
+}
+
+.collapsible {
+    background-color: #1e345e;
+    color: rgb(216, 213, 213);
+    cursor: pointer;
+    padding: 18px;
+    width:auto;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 15px;
+} 
+
+.active, .collapsible:hover {
+    
+    font-weight: bolder;
+    color: white;
+}
+
+.collapsible:after {
+    content: '\002B';
+    color: white;
+    font-weight: bold;
+    float: right;
+    margin-left: 5px;
+}
+
+.active:after {
+    content: "\2212";
+}
+
+.content {
+    padding: 0 18px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+    background-color: white;
+    position: absolute;
+    top: 552px;
+    right: 0px;
+    z-index: 1000;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+}
+
+
+#overview {
+    width: 100%;
+    height: 100vh;
+    /* Adjust to fit the entire viewport */
+    position: relative;
+}
+/* 
+
+I don't think this is needed anymore, keeping it commented out just in case
+#layerContainer {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 200px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#layerContent {
+    display: block;
+    /* Visible by default */
+}
+ */

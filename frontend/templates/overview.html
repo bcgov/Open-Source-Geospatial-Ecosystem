@@ -7,24 +7,41 @@
     <link rel="stylesheet" href="../static/style.css">
 </head>
 <body>
-<!-- Header Section -->
+    <!-- Header Section -->
+    <header class="header">
+        <img src="../static/BCID_H_rgb_rev.png" alt="British Columbia Logo" class="logo">
+        <div class="title">BC Land Use Planning Tool</div>
+        <div class="navbar">
+            <ul>
+                <li>
+                    Data & Mapping Tools 
+                </li>
+            </ul>
+        </div>
+    </header>
 
-<div class="header">
-    <img src="../static/BCID_H_rgb_rev.png" alt="British Columbia Logo" class="logo">
-    <div class="title">BC Land Use Planning Tool</div>
-    <div class="navbar">
-        <ul>
-            <li>
-                Data & Mapping Tools 
-            </li>
-        </ul>
+    <!-- Top Banner -->
+    <div class="banner">
+        <div class="banner-title"><p>Overview Map</p></div>
     </div>
-</div>
 
-<!-- Top Banner -->
-<div class="banner">
-    <div class="banner-title"><p>Overview Map</p></div>
-</div>
+    <!-- Contains the Layer Selection Checkboxes and Legend Collapsible Menus-->
+    <div class="collapsible-bar">
+        <!--Layer Selection-->
+        <div>
+            <button class="collapsible">Select Layers</button>
+            <div class="content" id="checkbox-container">
+                <p style="font-size: larger;"><br><strong>Select Map Layers</strong></p>
+            </div>
+        </div>
+        <!--Legend-->
+        <div>
+            <button class="collapsible">View Legend</button>
+            <div class="content" id="legendContent">
+                <p style="font-size: larger;"><br><strong>Legend</strong></p>
+            </div>
+        </div>
+    </div>
 
     <section class='maps'>
         <h2>Land Use Plan Overview Map</h2>
@@ -35,5 +52,23 @@
             </div>
         </div>
     </section>
+
+    <!--Collapses Legend and Layer Selection Menus-->
+    <script>
+        var coll = document.getElementsByClassName("collapsible");
+        var i;
+
+        for (i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", function () {
+                this.classList.toggle("active");
+                var content = this.nextElementSibling;
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                }
+            });
+        }
+    </script>
 </body>
 </html>
