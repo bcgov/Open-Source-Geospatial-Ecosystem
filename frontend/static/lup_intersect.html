@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LUP intersect</title>
 </head>
+
 <body>
+
     <div id="intersect"></div>
     
     <!-- Toggle button and container for dynamic checkboxes -->
@@ -33,7 +37,8 @@
     <style>
         #intersect {
             width: 100%;
-            height: 100vh; /* Adjust to fit the entire viewport */
+            height: 100vh;
+            /* Adjust to fit the entire viewport */
             position: relative;
         }
         
@@ -68,6 +73,9 @@
         var map = L.map('intersect').setView([55.781113, -128.867888], 7);
 
         // Base layer setup
+
+        // base map stuff 
+
         var CartoDB_Positron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
             subdomains: 'abcd',
@@ -77,20 +85,21 @@
         L.tileLayer('https://maps.gov.bc.ca/arcgis/rest/services/province/web_mercator_cache/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Tiles &copy; <a href="https://data.gov.bc.ca/">BC Government</a>',
             maxZoom: 20,
-            errorTileUrl: 'path-to-error-image.png' 
+            errorTileUrl: 'path-to-error-image.png'
         }).addTo(map);
         
         // WFS data source URL
         const SERVICE_URL = "http://localhost:5000/wfs/";
 
-        // A simple GeoJSON layer example for AOI (Area of Interest)
-        var lup_aoi= 
+
+
+        var lup_aoi =
         {
             "type": "FeatureCollection",
             "name": "aoi",
             "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::4326" } },
             "features": [
-            { "type": "Feature", "properties": { "OBJECTID": 3.0, "SHAPE_Leng": 908959.60400000215, "SHAPE_Area": 51484492817.909615, "X_Max": null, "X_Min": null, "Y_Max": null, "Y_Min": null, "centerx": null, "centery": null, "Lat_Max": -127.12066348938077, "Lat_Min": -130.70713817004415, "Lon_Max": 56.880992958850584, "Lon_Min": 54.658316969110963 }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ -128.877519335263372, 56.854459870751043 ], [ -128.47103084514157, 56.862845226243849 ], [ -127.182976424146929, 56.880987675036366 ], [ -127.120645609878679, 54.734177239127789 ], [ -130.459733007391407, 54.658312163230242 ], [ -130.707118882745391, 56.800867888548048 ], [ -128.877519335263372, 56.854459870751043 ] ] ] ] } }
+                { "type": "Feature", "properties": { "OBJECTID": 3.0, "SHAPE_Leng": 908959.60400000215, "SHAPE_Area": 51484492817.909615, "X_Max": null, "X_Min": null, "Y_Max": null, "Y_Min": null, "centerx": null, "centery": null, "Lat_Max": -127.12066348938077, "Lat_Min": -130.70713817004415, "Lon_Max": 56.880992958850584, "Lon_Min": 54.658316969110963 }, "geometry": { "type": "MultiPolygon", "coordinates": [[[[-128.877519335263372, 56.854459870751043], [-128.47103084514157, 56.862845226243849], [-127.182976424146929, 56.880987675036366], [-127.120645609878679, 54.734177239127789], [-130.459733007391407, 54.658312163230242], [-130.707118882745391, 56.800867888548048], [-128.877519335263372, 56.854459870751043]]]] } }
             ]
         };
         
@@ -210,8 +219,9 @@
         
         // Function to generate the WFS query URL
         function wfsQuery(dataset, query = null, fields = [], startIndex = 0, count = 5000 ) {
+
             const SERVICE_URL = "http://localhost:5000/wfs";
-        
+
             const params = new URLSearchParams({
                 service: 'WFS',
                 version: '2.0.0',
@@ -219,14 +229,13 @@
                 typeName: `pub:${dataset}`,
                 outputFormat: 'application/json',
                 srsName: 'EPSG:4326',
-                bbox: [54.94267775412879,-130.02081515748938, 56.60674270353342,-127.66422698319626, 'urn:ogc:def:crs:EPSG:4326'],
+                bbox: [54.94267775412879, -130.02081515748938, 56.60674270353342, -127.66422698319626, 'urn:ogc:def:crs:EPSG:4326'],
                 sortBy: 'OBJECTID',
-                startIndex:startIndex,
-                count:count,
+
             });
-        
+
             // Use INTERSECTS filter with a POLYGON if bbox is provided
-        
+
             if (query) {
                 params.delete('bbox');
                 if (params.has('CQL_FILTER')) {
@@ -235,15 +244,15 @@
                     params.set('CQL_FILTER', query);
                 }
             }
-        
+
             if (fields && fields.length > 0) {
                 params.append('propertyName', fields.map(field => field.toUpperCase()).join(','));
             }
-        
+
             if (count !== null) {
                 params.append('count', count);
             }
-        
+
             const url = `${SERVICE_URL}${params.toString()}`;
             console.log("WFS URL:", url);
             return url;
@@ -330,6 +339,7 @@
                 legendItem.style.marginBottom = "5px";
         
 
+
                 const colorPatch = document.createElement("span");
                 colorPatch.style.width = "20px";
                 colorPatch.style.height = "20px";
@@ -385,6 +395,8 @@
             }
         }
 
+
     </script>
 </body>
+
 </html>
