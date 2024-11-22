@@ -251,53 +251,63 @@
         // store active layers as an object keyed by layer name
         var activeLayers = {};
 
-        // Fetch the WFS data and add it as a GeoJSON layer
+
+
         async function loadWFSData(dataset, query, fields, popupFields, color) {
             const count = 5000;  // Limit of features per request
             let startIndex = 0;  // Starting index for pagination
-        
+            let hasMoreData = true;  // Flag to track if more data is available
+
+            // Fetch data function with pagination
             const fetchData = async () => {
-                const url = wfsQuery(dataset, query, fields, startIndex, count);
-                
-                try {
-                    const response = await fetch(url);
-                    const data = await response.json();
-        
-                    if (data.features && data.features.length > 0) {
-                        // Process the fetched data and add it to the map
-                        const geoJsonLayer = L.geoJSON(data, {
-                            style: {
-                                color: color,  // Use the color specified in jsonData
-                                weight: 2
-                            },
-                            onEachFeature: function(feature, layer) {
-                                if (feature.properties) {
-                                    // Construct the popup content dynamically based on the popupFields
-                                    let popupContent = "";
-                                    popupFields.forEach(field => {
-                                        if (feature.properties[field]) {
-                                            popupContent += `<strong>${field}:</strong> ${feature.properties[field]}<br>`;
-                                        }
-                                    });
-                                    layer.bindPopup(popupContent);
+                while (hasMoreData) {
+                    const url = wfsQuery(dataset, query, fields, startIndex, count);
+
+                    try {
+                        const response = await fetch(url);
+                        const data = await response.json();
+
+                        if (data.features && data.features.length > 0) {
+                            // Process the fetched data and add it to the map
+                            const geoJsonLayer = L.geoJSON(data, {
+                                style: {
+                                    color: color,  // Use the color specified in jsonData
+                                    weight: 2
+                                },
+                                onEachFeature: function(feature, layer) {
+                                    if (feature.properties) {
+                                        // Construct the popup content dynamically based on the popupFields
+                                        let popupContent = "";
+                                        popupFields.forEach(field => {
+                                            if (feature.properties[field]) {
+                                                popupContent += `<strong>${field}:</strong> ${feature.properties[field]}<br>`;
+                                            }
+                                        });
+                                        layer.bindPopup(popupContent);
+                                    }
                                 }
+                            }).addTo(map);
+
+                            // Increment startIndex for next page
+                            startIndex += count;
+
+                            // If fewer features than requested are returned, stop fetching
+                            if (data.features.length < count) {
+                                hasMoreData = false;
                             }
-                        }).addTo(map);
-        
-                        // Move to the next page if there are more features to load
-                        startIndex += count;
-                        fetchData();  // Recursive call to fetch the next page of data
-                    } else {
-                        console.log(`Finished loading dataset: ${dataset}`);
+                        } else {
+                            hasMoreData = false;  // Stop if no features are returned
+                        }
+                    } catch (error) {
+                        console.error('Error fetching WFS data:', error);
+                        hasMoreData = false;  // Stop if there's an error
                     }
-                } catch (error) {
-                    console.error("Error loading WFS data: ", error);
                 }
             };
-        
-            // Start the fetching process
-            fetchData();
-        }
+
+    fetchData();  // Start fetching data with pagination
+}
+
         // Function to generate random color for styling layers
         function getRandomColor() {
             const letters = '0123456789ABCDEF';
@@ -350,29 +360,27 @@
         // Toggle layer function updated to pass Popup and Color
         async function layerToggleWFS(checkbox, index) {
             const layerData = jsonData[index];
-            const layerName = layerData.name;
+            const layerName= layerData.name
             const dataset = layerData.dataset;
             const query = layerData.query;
             const fields = JSON.parse(layerData.fields.replace(/'/g, '"'));
             const popupFields = JSON.parse(layerData.popup.replace(/'/g, '"')); // Convert to array
             const color = layerData.color; // Get the color
-            const transparency = 0.5;
-        
+            const transparency = 0.5
+
             if (checkbox.checked) {
                 if (!activeLayers[dataset]) {
-                    // Load and add WFS data to the map
                     const geoJsonLayer = await loadWFSData(dataset, query, fields, popupFields, color);
                     activeLayers[dataset] = geoJsonLayer;
                     updateLegend(layerName, color, transparency, "add");
                 }
             } else {
-                // Remove the layer and any associated data when unchecked
+                // Remove layer if unchecked
                 if (activeLayers[dataset]) {
-                    // Remove layer from map
+                    console.log(`layer unchecked`);
                     map.removeLayer(activeLayers[dataset]);
-                    // Clear any paged data associated with the dataset (if needed)
-                    delete activeLayers[dataset]; // This ensures that data is cleared
-                    updateLegend(layerName, color, transparency, "remove");
+                    delete activeLayers[dataset];
+                    updateLegend(layerName, color, transparency, "remove")
                 }
             }
         }
