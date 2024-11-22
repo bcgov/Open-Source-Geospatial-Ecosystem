@@ -8,9 +8,6 @@
 </head>
 <body>
     <div id="overview"></div>
-    
-
-
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.5/proj4.js"></script>
@@ -91,7 +88,6 @@
             });
         }
 
-        // Call the function to create checkboxes
         createCheckboxes(checkboxContainer);
 
         /*
@@ -167,7 +163,7 @@
         });
         
         // Function to generate the WFS query URL
-        function wfsQuery(dataset, query = null, fields = [], startIndex = 0, count = null ) {
+        function wfsQuery(dataset, query = null, fields = [], startIndex = 0, count = 5000 ) {
             const SERVICE_URL = "http://localhost:5000/wfs";
         
             const params = new URLSearchParams({
@@ -178,10 +174,9 @@
                 typeName: `pub:${dataset}`,
                 outputFormat: 'application/json',
                 srsName: 'EPSG:4326',
-                bbox: [54.94267775412879,-130.02081515748938, 56.60674270353342,-127.66422698319626, 'urn:ogc:def:crs:EPSG:4326'],
+                bbox: [54.94267775412879, -130.02081515748938, 56.60674270353342, -127.66422698319626, 'urn:ogc:def:crs:EPSG:4326'],
                 sortBy: 'OBJECTID',
-                limit: 1000000,
-                offset: startIndex 
+
             });
         
             // Use INTERSECTS filter with a POLYGON if bbox is provided
@@ -212,36 +207,57 @@
 
         // Fetch the WFS data and add it as a GeoJSON layer
         async function loadWFSData(dataset, query, fields, popupFields, color) {
-            const url = wfsQuery(dataset, query, fields);
-        
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-                const geoJsonLayer = L.geoJSON(data, {
-                    style: {
-                        color: color, // Use the color specified in jsonData
-                        weight: 2
-                    },
-                    onEachFeature: function(feature, layer) {
-                        if (feature.properties) {
-                            // Construct the popup content dynamically based on the popupFields
-                            let popupContent = "";
-                            popupFields.forEach(field => {
-                                if (feature.properties[field]) {
-                                    popupContent += `<strong>${field}:</strong> ${feature.properties[field]}<br>`;
+            const count = 5000;  // Limit of features per request
+            let startIndex = 0;  // Starting index for pagination
+            let hasMoreData = true;  // Flag to track if more data is available
+
+            // Fetch data function with pagination
+            const fetchData = async () => {
+                while (hasMoreData) {
+                    const url = wfsQuery(dataset, query, fields, startIndex, count);
+
+                    try {
+                        const response = await fetch(url);
+                        const data = await response.json();
+
+                        if (data.features && data.features.length > 0) {
+                            // Process the fetched data and add it to the map
+                            const geoJsonLayer = L.geoJSON(data, {
+                                style: {
+                                    color: color,  // Use the color specified in jsonData
+                                    weight: 2
+                                },
+                                onEachFeature: function(feature, layer) {
+                                    if (feature.properties) {
+                                        // Construct the popup content dynamically based on the popupFields
+                                        let popupContent = "";
+                                        popupFields.forEach(field => {
+                                            if (feature.properties[field]) {
+                                                popupContent += `<strong>${field}:</strong> ${feature.properties[field]}<br>`;
+                                            }
+                                        });
+                                        layer.bindPopup(popupContent);
+                                    }
                                 }
-                            });
-                            layer.bindPopup(popupContent);
+                            }).addTo(map);
+
+                            // Increment startIndex for next page
+                            startIndex += count;
+
+                            // If fewer features than requested are returned, stop fetching
+                            if (data.features.length < count) {
+                                hasMoreData = false;
+                            }
+                        } else {
+                            hasMoreData = false;  // Stop if no features are returned
                         }
+                    } catch (error) {
+                        console.error('Error fetching WFS data:', error);
+                        hasMoreData = false;  // Stop if there's an error
                     }
-                }).addTo(map);
-        
-                activeLayers[dataset] = geoJsonLayer;
-                return geoJsonLayer;
-            } catch (error) {
-                console.error("Error loading WFS data: ", error);
-                return null;
-            }
+                }
+            };
+             fetchData();  // Start fetching data with pagination
         }
         // Function to generate random color for styling layers
         function getRandomColor() {
@@ -264,7 +280,6 @@
                 legendItem.style.alignItems = "center";
                 legendItem.style.marginBottom = "5px";
         
-
                 const colorPatch = document.createElement("span");
                 colorPatch.style.width = "20px";
                 colorPatch.style.height = "20px";
@@ -273,22 +288,16 @@
                 colorPatch.style.border = "1px solid #000";
                 colorPatch.style.marginRight = "10px";
         
-     
                 const layerLabel = document.createElement("span");
                 layerLabel.textContent = layerName;
         
-  
                 legendItem.appendChild(colorPatch);
                 legendItem.appendChild(layerLabel);
         
-       
                 legendContent.appendChild(legendItem);
             } else if (action === "remove") {
-    
                 const legendItem = document.getElementById(`legend-${layerName}`);
-                if (legendItem) {
-                    legendContent.removeChild(legendItem);
-                }
+                if (legendItem) legendContent.removeChild(legendItem);
             }
         }
         
