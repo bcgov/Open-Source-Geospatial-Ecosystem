@@ -52,7 +52,8 @@
         };
         // pull json from same directory
         let jsonData = [];
-
+        const maplayers = 'overview';  // Or 'overview' depending on the data you need
+        
         fetch('/static/layers.json')
             .then(response => {
                 if (!response.ok) {
@@ -61,9 +62,14 @@
                 return response.json();
             })
             .then(data => {
-                jsonData = data;
-                console.log('JSON Data Loaded:', jsonData);
-                createCheckboxes(document.getElementById('checkbox-container'));
+                // Check if the maplayers key exists in the JSON data
+                if (data.maps && data.maps[maplayers]) {
+                    jsonData = data.maps[maplayers];
+                    console.log(`Map Data for "${maplayers}":`, jsonData);
+                    createCheckboxes(document.getElementById('checkbox-container'));
+                } else {
+                    console.warn(`No data found for map layer "${maplayers}"`);
+                }
             })
             .catch(error => {
                 console.error('Error loading JSON file:', error);
