@@ -72,10 +72,6 @@
         // Initialize the map
         var map = L.map('intersect').setView([55.781113, -128.867888], 7);
 
-        // Base layer setup
-
-        // base map stuff 
-
         var CartoDB_Positron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
             subdomains: 'abcd',
@@ -104,7 +100,7 @@
         };
         
         let jsonData = [];
-        const maplayers = 'intersect';  // Or 'overview' depending on the data you need
+        const maplayers = 'intersect';  // Change depending on map and layers.json
         
         fetch('/static/layers.json')
             .then(response => {
@@ -219,9 +215,8 @@
         
         // Function to generate the WFS query URL
         function wfsQuery(dataset, query = null, fields = [], startIndex = 0, count = 5000 ) {
-
             const SERVICE_URL = "http://localhost:5000/wfs";
-
+        
             const params = new URLSearchParams({
                 service: 'WFS',
                 version: '2.0.0',
@@ -229,13 +224,15 @@
                 typeName: `pub:${dataset}`,
                 outputFormat: 'application/json',
                 srsName: 'EPSG:4326',
-                bbox: [54.94267775412879, -130.02081515748938, 56.60674270353342, -127.66422698319626, 'urn:ogc:def:crs:EPSG:4326'],
+                bbox: [54.94267775412879, -130.02081515748938, 56.60674270353342, -127.66422698319626, 'urn:ogc:def:crs:EPSG:4326'].join(','),
                 sortBy: 'OBJECTID',
+                startIndex: startIndex,
+                count: count
 
             });
-
+        
             // Use INTERSECTS filter with a POLYGON if bbox is provided
-
+        
             if (query) {
                 params.delete('bbox');
                 if (params.has('CQL_FILTER')) {
@@ -244,78 +241,83 @@
                     params.set('CQL_FILTER', query);
                 }
             }
-
+        
             if (fields && fields.length > 0) {
                 params.append('propertyName', fields.map(field => field.toUpperCase()).join(','));
             }
-
+        
             if (count !== null) {
                 params.append('count', count);
             }
-
+        
             const url = `${SERVICE_URL}${params.toString()}`;
             console.log("WFS URL:", url);
             return url;
         }
+
         // store active layers as an object keyed by layer name
         var activeLayers = {};
 
 
 
+        // Fetch the WFS data and add it as a GeoJSON layer
         async function loadWFSData(dataset, query, fields, popupFields, color) {
-            const count = 5000;  // Limit of features per request
-            let startIndex = 0;  // Starting index for pagination
-            let hasMoreData = true;  // Flag to track if more data is available
-
-            // Fetch data function with pagination
-            const fetchData = async () => {
-                while (hasMoreData) {
-                    const url = wfsQuery(dataset, query, fields, startIndex, count);
-
-                    try {
-                        const response = await fetch(url);
-                        const data = await response.json();
-
-                        if (data.features && data.features.length > 0) {
-                            // Process the fetched data and add it to the map
-                            const geoJsonLayer = L.geoJSON(data, {
-                                style: {
-                                    color: color,  // Use the color specified in jsonData
-                                    weight: 2
-                                },
-                                onEachFeature: function(feature, layer) {
-                                    if (feature.properties) {
-                                        // Construct the popup content dynamically based on the popupFields
-                                        let popupContent = "";
-                                        popupFields.forEach(field => {
-                                            if (feature.properties[field]) {
-                                                popupContent += `<strong>${field}:</strong> ${feature.properties[field]}<br>`;
-                                            }
-                                        });
-                                        layer.bindPopup(popupContent);
-                                    }
-                                }
-                            }).addTo(map);
-
-                            // Increment startIndex for next page
-                            startIndex += count;
-
-                            // If fewer features than requested are returned, stop fetching
-                            if (data.features.length < count) {
-                                hasMoreData = false;
-                            }
-                        } else {
-                            hasMoreData = false;  // Stop if no features are returned
-                        }
-                    } catch (error) {
-                        console.error('Error fetching WFS data:', error);
-                        hasMoreData = false;  // Stop if there's an error
+            const count = 5000; // Limit of features per request
+            let startIndex = 0; // Starting index for pagination
+            let hasMoreData = true; // Flag to track if more data is available
+        
+            const groupLayer = L.featureGroup();
+        
+            while (hasMoreData) {
+                const url = wfsQuery(dataset, query, fields, startIndex, count);
+        
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) {
+                        console.error(`Error: ${response.statusText}`);
+                        break;
                     }
+        
+                    const data = await response.json();
+                    if (data.features && data.features.length > 0) {
+                        const geoJsonLayer = L.geoJSON(data, {
+                            style: {
+                                color: color,
+                                weight: 2,
+                                opacity: 0.8 // Matches the legend transparency
+                            },
+                            onEachFeature: function (feature, layer) {
+                                let popupContent = "";
+                                popupFields.forEach(field => {
+                                    if (feature.properties[field]) {
+                                        popupContent += `<strong>${field}:</strong> ${feature.properties[field]}<br>`;
+                                    }
+                                });
+                                if (popupContent) {
+                                    layer.bindPopup(popupContent);
+                                }
+                            }
+                        });
+        
+                        groupLayer.addLayer(geoJsonLayer);
+                        map.addLayer(groupLayer);
+        
+                        startIndex += count;
+        
+                        if (data.features.length < count) {
+                            hasMoreData = false; // No more data
+                        }
+                    } else {
+                        hasMoreData = false; // Stop if no features
+                    }
+                } catch (error) {
+                    console.error('Error fetching WFS data:', error);
+                    break;
                 }
-            };
-
-    fetchData();  // Start fetching data with pagination
-}
+            }
+        
+            return groupLayer;
+        }
 
         // Function to generate random color for styling layers
         function getRandomColor() {
@@ -328,18 +330,17 @@
         }
         function updateLegend(layerName, color, transparency, action) {
             const legendContent = document.getElementById("legendContent");
+            const id = `legend-${layerName}`;
         
             if (action === "add") {
-                if (document.getElementById(`legend-${layerName}`)) return;
+                if (document.getElementById(id)) return;
         
                 const legendItem = document.createElement("div");
-                legendItem.id = `legend-${layerName}`;
+                legendItem.id = id;
                 legendItem.style.display = "flex";
                 legendItem.style.alignItems = "center";
                 legendItem.style.marginBottom = "5px";
         
-
-
                 const colorPatch = document.createElement("span");
                 colorPatch.style.width = "20px";
                 colorPatch.style.height = "20px";
@@ -348,49 +349,42 @@
                 colorPatch.style.border = "1px solid #000";
                 colorPatch.style.marginRight = "10px";
         
-     
                 const layerLabel = document.createElement("span");
                 layerLabel.textContent = layerName;
         
-  
                 legendItem.appendChild(colorPatch);
                 legendItem.appendChild(layerLabel);
         
-       
                 legendContent.appendChild(legendItem);
             } else if (action === "remove") {
-    
-                const legendItem = document.getElementById(`legend-${layerName}`);
-                if (legendItem) {
-                    legendContent.removeChild(legendItem);
-                }
+                const legendItem = document.getElementById(id);
+                if (legendItem) legendContent.removeChild(legendItem);
             }
         }
         
         // Toggle layer function updated to pass Popup and Color
         async function layerToggleWFS(checkbox, index) {
             const layerData = jsonData[index];
-            const layerName= layerData.name
+            const layerName = layerData.name;
             const dataset = layerData.dataset;
             const query = layerData.query;
-            const fields = JSON.parse(layerData.fields.replace(/'/g, '"'));
-            const popupFields = JSON.parse(layerData.popup.replace(/'/g, '"')); // Convert to array
-            const color = layerData.color; // Get the color
-            const transparency = 0.5
-
+            const sanitizeJSON = (str) => str.replace(/,(\s*[\]}])/g, '$1');
+            const fields = JSON.parse(sanitizeJSON(layerData.fields.replace(/'/g, '"')));
+            const popupFields = JSON.parse(sanitizeJSON(layerData.popup.replace(/'/g, '"')));
+            const color = layerData.color;
+            const transparency = 0.5;
+        
             if (checkbox.checked) {
                 if (!activeLayers[dataset]) {
-                    const geoJsonLayer = await loadWFSData(dataset, query, fields, popupFields, color);
-                    activeLayers[dataset] = geoJsonLayer;
+                    const groupLayer = await loadWFSData(dataset, query, fields, popupFields, color);
+                    activeLayers[dataset] = groupLayer; // Store the group layer
                     updateLegend(layerName, color, transparency, "add");
                 }
             } else {
-                // Remove layer if unchecked
                 if (activeLayers[dataset]) {
-                    console.log(`layer unchecked`);
-                    map.removeLayer(activeLayers[dataset]);
+                    map.removeLayer(activeLayers[dataset]); // Remove the group layer
                     delete activeLayers[dataset];
-                    updateLegend(layerName, color, transparency, "remove")
+                    updateLegend(layerName, color, transparency, "remove");
                 }
             }
         }

@@ -158,7 +158,7 @@
                 "name" :"Moose: Ungulate Winter Range - Approved",
                 "group":"Wildlife",
                 "query": "SPECIES_1 IN ('M-ALAL', 'M-ALAL;M-CEEL;M-ODHE;M-ODVI') Or SPECIES_2 IN ('M-ALAL', 'M-ODHE; M-ALAL')",
-                "fields": "['SPECIES_1', 'SPECIES_2','UWR_NUMBER','UWR_UNIT_NUMBER',GEOMETRY','OBJECTID']",
+                "fields": "['SPECIES_1', 'SPECIES_2','UWR_NUMBER','UWR_UNIT_NUMBER','GEOMETRY','OBJECTID']",
                 "popup":"['SPECIES_1', 'SPECIES_2','UWR_NUMBER','UWR_UNIT_NUMBER']",
                 "color":"#9f6fe0"
             },
