@@ -241,7 +241,8 @@
                             style: {
                                 color: color,
                                 weight: 2,
-                                opacity: 0.8 // Matches the legend transparency
+                                opacity: 1.0, // Matches the legend transparency
+                                fillOpacity: 0.5
                             },
                             onEachFeature: function (feature, layer) {
                                 let popupContent = "";
@@ -328,7 +329,7 @@
             const fields = JSON.parse(sanitizeJSON(layerData.fields.replace(/'/g, '"')));
             const popupFields = JSON.parse(sanitizeJSON(layerData.popup.replace(/'/g, '"')));
             const color = layerData.color;
-            const transparency = 0.5;
+            const transparency = 1.0;
         
             if (checkbox.checked) {
                 if (!activeLayers[dataset]) {
