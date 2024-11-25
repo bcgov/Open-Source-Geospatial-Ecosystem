@@ -76,18 +76,43 @@
             style: { fillColor: 'transparent', color: 'black', weight: 4 }
         }).addTo(map);
 
-        const checkboxContainer = document.getElementById('checkbox-container');
 
         // Function to create checkboxes dynamically based on jsonData
+// Function to create grouped checkboxes dynamically
         function createCheckboxes(container) {
-            jsonData.forEach((layer, index) => {
-                const label = document.createElement('label');
-                label.innerHTML = `<input type="checkbox" onclick="layerToggleWFS(this, ${index})" /> ${layer.name}`;
-                checkboxContainer.appendChild(label);
-                checkboxContainer.appendChild(document.createElement('br'));
-            });
-        }
+            const groupedLayers = {};
 
+            // Group layers by the 'group' field
+            jsonData.forEach((layer) => {
+                if (!groupedLayers[layer.group]) {
+                    groupedLayers[layer.group] = [];
+                }
+                groupedLayers[layer.group].push(layer);
+            });
+
+            // Create headers and checkboxes for each group
+            for (const [group, layers] of Object.entries(groupedLayers)) {
+                // Create a group header
+                const groupHeader = document.createElement('p');
+                groupHeader.style.fontSize = "larger";
+                groupHeader.style.fontWeight = "bold";
+                groupHeader.textContent = group;
+                container.appendChild(groupHeader);
+
+                // Add checkboxes for each layer
+                layers.forEach((layer) => {
+                    // Find the correct index of this layer in the original jsonData array
+                    const index = jsonData.findIndex(item => item.name === layer.name && item.group === group);
+
+                    const label = document.createElement('label');
+                    label.innerHTML = `<input type="checkbox" onclick="layerToggleWFS(this, ${index})" /> ${layer.name}`;
+                    container.appendChild(label);
+                    container.appendChild(document.createElement('br'));
+                });
+            }
+        }
+        
+        const checkboxContainer = document.getElementById('checkbox-container');
         createCheckboxes(checkboxContainer);
 
         // add file layer upload to map
