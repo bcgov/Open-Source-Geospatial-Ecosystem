@@ -53,6 +53,12 @@ def intersect_with_wfs(uploaded_gdf, wfs_url):
     # Return the GeoDataFrame (not the JSON string)
     return intersected_data
 
+# Function to convert Timestamp columns to strings
+def convert_timestamps_to_string(gdf):
+    for column in gdf.select_dtypes(include=['datetime']).columns:
+        gdf[column] = gdf[column].astype(str)  # Convert datetime to string
+    return gdf
+
 @blueprint.route('/intersect', methods=['GET', 'POST'])
 def intersect():
     with open(map_path, 'r') as f:
@@ -72,6 +78,12 @@ def intersect():
             uploaded_gdf = gpd.read_file(uploaded_file)
 
         if uploaded_gdf is not None:
+            # convert uploaded_gdf to geoJSON for leaflet
+            uploaded_gdf = gpd.GeoDataFrame(uploaded_gdf, geometry='geometry', crs='EPSG:4326')
+            uploaded_geojson = convert_timestamps_to_string(uploaded_gdf)
+            uploaded_geojson = uploaded_geojson.to_json()
+            
+
             intersected_data_1 = intersect_with_wfs(uploaded_gdf, WFS_LAYER_1_URL)
             intersected_data_2 = intersect_with_wfs(uploaded_gdf, WFS_LAYER_2_URL)
 
@@ -87,7 +99,8 @@ def intersect():
                 'intersect.html',
                 intersected_data_1=intersected_data_1_list,
                 intersected_data_2=intersected_data_2_list,
-                leaflet_map=leaflet_map
+                leaflet_map=leaflet_map,
+                uploaded_geojson=json.dumps(uploaded_geojson)
             )
     # For GET requests, set default values for the data variables
     return render_template(
