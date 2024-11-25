@@ -34,6 +34,16 @@
     <form action="/intersect" method="POST" enctype="multipart/form-data">
         <input type="file" name="file" accept=".geojson,.shp,.kml,.gpx" required>
         <button type="submit">Upload and Intersect</button>
+        <p>Select Data Type:</p>
+            <label>
+                <input type="radio" name="data_type" value="legal" required> Legal
+            </label>
+            <label>
+                <input type="radio" name="data_type" value="non_legal"> Non-legal
+            </label>
+            <label>
+                <input type="radio" name="data_type" value="oth"> Both
+            </label>
     </form>
 
     <!-- Map Section -->
