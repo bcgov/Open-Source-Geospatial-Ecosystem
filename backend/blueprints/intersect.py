@@ -79,9 +79,9 @@ def intersect():
 
         if uploaded_gdf is not None:
             # convert uploaded_gdf to geoJSON for leaflet
-            uploaded_gdf = gpd.GeoDataFrame(uploaded_gdf, geometry='geometry', crs='EPSG:4326')
             uploaded_geojson = convert_timestamps_to_string(uploaded_gdf)
             uploaded_geojson = uploaded_geojson.to_json()
+            uploaded_gdf.to_clipboard()
             
 
             intersected_data_1 = intersect_with_wfs(uploaded_gdf, WFS_LAYER_1_URL)
@@ -97,11 +97,12 @@ def intersect():
 
             return render_template(
                 'intersect.html',
+                uploaded_geojson=uploaded_gdf,
                 intersected_data_1=intersected_data_1_list,
                 intersected_data_2=intersected_data_2_list,
-                leaflet_map=leaflet_map,
-                uploaded_geojson=json.dumps(uploaded_geojson)
+                leaflet_map = leaflet_map
             )
+
     # For GET requests, set default values for the data variables
     return render_template(
         'intersect.html',
