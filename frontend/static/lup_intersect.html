@@ -31,7 +31,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js"></script>
     <script src="https://unpkg.com/leaflet-wfst@2.0.1-beta.27/dist/leaflet-wfst.min.js"></script>
     
-
     <style>
         #intersect {
             width: 100%;
@@ -81,6 +80,33 @@
             maxZoom: 20,
             errorTileUrl: 'path-to-error-image.png'
         }).addTo(map);
+
+        // get uploaded geoJSON
+        const uploadedData = JSON.parse('{{ uploaded_geojson|safe }}');
+        
+        // Check if uploaded data exists
+        if (uploadedData) {
+            const uploadedLayer = L.geoJSON(uploadedData, {
+                style: {
+                    color: "blue",
+                    weight: 2,
+                    fillOpacity: 0.4
+                },
+                onEachFeature: function (feature, layer) {
+                    if (feature.properties) {
+                        layer.bindPopup(Object.entries(feature.properties)
+                            .map(([key, value]) => `<strong>${key}:</strong> ${value}`)
+                            .join("<br>")
+                        );
+                    }
+                }
+            }).addTo(map);  // Use addTo() method to add the layer to the map
+
+            // Zoom to the uploaded data
+            map.fitBounds(uploadedLayer.getBounds());
+        } else {
+            console.error("No uploaded GeoJSON data found.");
+        }
         
         // WFS data source URL
         const SERVICE_URL = "http://localhost:5000/wfs/";
