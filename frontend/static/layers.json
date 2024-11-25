@@ -368,7 +368,7 @@
             {
                 "dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POINT_SVW",
                 "type": "polygon",
-                "name": "Current Legal Planning Objective Polygons",
+                "name": "Current Legal Planning Objective Point",
                 "group":"Legal Planning Objectives",
                 "query": "",
                 "fields": "['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK','GEOMETRY','OBJECTID']",
