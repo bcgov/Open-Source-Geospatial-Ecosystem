@@ -349,61 +349,61 @@
                 "dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW",
                 "type": "polygon",
                 "name": "Current Legal Planning Objective Polygons",
-                "group":"",
+                "group":"Legal Planning Objectives",
                 "query": "",
                 "fields": "['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK','GEOMETRY','OBJECTID']",
                 "popup":"['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK']",
-                "color":"#A22E1C"
-            },
-            {
-                "dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_NON_LEGAL_POLY_SVW",
-                "type": "polygon",
-                "name": "Current Non Legal Planning Objective Polygons",
-                "group":"",
-                "query": "",
-                "fields": "['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE','GEOMETRY','OBJECTID']",
-                "popup":"['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE']",
-                "color":"#E88C2C"
+                "color":"#f54245"
             },
             {
                 "dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_LINE_SVW",
                 "type": "polygon",
                 "name": "Current Legal Planning Objective Lines",
-                "group":"",
+                "group":"Legal Planning Objectives",
                 "query": "",
                 "fields": "['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK','GEOMETRY','OBJECTID']",
                 "popup":"['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK']",
-                "color":"#A22E1C"
-            },
-            {
-                "dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_NON_LEGAL_LINE_SVW",
-                "type": "line",
-                "name": "Current Non Legal Planning Objective Lines",
-                "group":"",
-                "query": "",
-                "fields": "['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE','GEOMETRY','OBJECTID']",
-                "popup":"['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE']",
-                "color":"#E88C2C"
+                "color":"#c23437"
             },
             {
                 "dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POINT_SVW",
                 "type": "polygon",
                 "name": "Current Legal Planning Objective Polygons",
-                "group":"",
+                "group":"Legal Planning Objectives",
                 "query": "",
                 "fields": "['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK','GEOMETRY','OBJECTID']",
                 "popup":"['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK']",
-                "color":"#A22E1C"
+                "color":"#7a2022"
+            },
+            {
+                "dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_NON_LEGAL_POLY_SVW",
+                "type": "polygon",
+                "name": "Current Non Legal Planning Objective Polygons",
+                "group":"Non Legal Planning Objectives",
+                "query": "",
+                "fields": "['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE','GEOMETRY','OBJECTID']",
+                "popup":"['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE']",
+                "color":"#3eed95"
+            },
+            {
+                "dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_NON_LEGAL_LINE_SVW",
+                "type": "line",
+                "name": "Current Non Legal Planning Objective Lines",
+                "group":"Non Legal Planning Objectives",
+                "query": "",
+                "fields": "['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE','GEOMETRY','OBJECTID']",
+                "popup":"['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE']",
+                "color":"#238755"
             },
             {
                 "dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_NON_LEGAL_POINT_SVW",
                 "type": "point",
                 "name": "Current Non Legal Planning Objective Points",
-                "group":"",
+                "group":"Non Legal Planning Objectives",
                 "query": "",
                 "fields": "['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE','GEOMETRY','OBJECTID']",
                 "popup":"['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME','NON_LEGAL_FEAT_OBJECTIVE','ORIGINAL_DECISION_DATE']",
-                "color":"#E88C2C"
+                "color":"#0f3b25"
             }
         ]
     }
