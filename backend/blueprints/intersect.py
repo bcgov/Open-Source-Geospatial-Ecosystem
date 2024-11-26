@@ -3,6 +3,7 @@ import requests
 from shapely.geometry import shape, mapping
 import json
 import geopandas as gpd
+import pandas as pd
 import io
 import os
 
@@ -54,8 +55,10 @@ def intersect_with_wfs(uploaded_gdf, wfs_url):
     return intersected_data
 
 # Convert timestamp columns to strings
-def convert_timestamps_to_string(gdf):
-    for column in gdf.select_dtypes(include=['datetime']).columns:
+def clean_uploaded_data(gdf):
+    gdf = gdf.where(pd.notnull(gdf), None)
+
+    for column in gdf.select_dtypes(include=['datetime','datetime64[ns]']).columns:
         gdf[column] = gdf[column].astype(str)  # Convert datetime to string
     return gdf
 
@@ -95,12 +98,8 @@ def intersect():
 
         if uploaded_gdf is not None:
             # convert uploaded_gdf to geoJSON for leaflet
-            uploaded_gdf_time_string = convert_timestamps_to_string(uploaded_gdf)
+            uploaded_gdf_time_string = clean_uploaded_data(uploaded_gdf)
             uploaded_geojson = gdf_to_geojson(uploaded_gdf_time_string)
-            # print(uploaded_geojson)
-            # uploaded_geojson = uploaded_geojson.to_json()
-
-            
 
             intersected_data_1 = intersect_with_wfs(uploaded_gdf, WFS_LAYER_1_URL)
             intersected_data_2 = intersect_with_wfs(uploaded_gdf, WFS_LAYER_2_URL)
