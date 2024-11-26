@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FOSS4G LUP Web Map</title>
+    <title>Gitanyow Land Use Planning Overview</title>
     <link rel="stylesheet" href="../static/style.css">
 </head>
 <body>
     <!-- Header Section -->
     <header class="header">
         <img src="../static/BCID_H_rgb_rev.png" alt="British Columbia Logo" class="logo">
-        <div class="title">BC Land Use Planning Tool</div>
+        <div class="title">Gitanyow Land Use Planning Tool</div>
         <div class="navbar">
             <ul>
                 <li>
@@ -27,6 +27,10 @@
 
     <!-- Contains the Layer Selection Checkboxes and Legend Collapsible Menus-->
     <div class="collapsible-bar">
+        <!-- back button-->
+        <div>
+            <button onclick="window.location.href='/'" class="back-button">Return to Main Page</button>
+        </div>
         <!--Layer Selection-->
         <div>
             <button class="collapsible">Select Layers</button>
@@ -44,7 +48,6 @@
     </div>
 
     <section class='maps'>
-        <h2>Land Use Plan Overview Map</h2>
         <div class='maps-box'>
             <div id='maps-item'>
                 <!-- Embed leaflet map content -->

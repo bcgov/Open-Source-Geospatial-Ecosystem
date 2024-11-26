@@ -66,12 +66,20 @@ body {
 }
 
 .navbar {
+    
     width: 100%;
     color: #fff;
     font-size: 18px;
     font-weight: bold;
     flex: -1 1 auto;
 }
+.navbar li {
+    margin-left: 20px; 
+    font-size: 1rem; 
+    font-weight: bold;
+    color: white;
+}
+
 
 
 /* Banner */
@@ -336,6 +344,7 @@ body {
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden;
+    z-index: 0;
 }
 
 .maps-box {
@@ -478,7 +487,20 @@ table td {
     grid-auto-flow: column;
     justify-content: right;
     gap: 10px;
+    position: relative; 
+    z-index: 1;
 
+}
+.back-button {
+    background-color: #1e345e;
+    color: rgb(216, 213, 213);
+    cursor: pointer;
+    padding: 18px;
+    width:auto;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 15px;
 }
 
 .collapsible {
@@ -504,7 +526,7 @@ table td {
     color: white;
     font-weight: bold;
     float: right;
-    margin-left: 5px;
+    margin-left: 15px;
 }
 
 .active:after {
@@ -512,14 +534,14 @@ table td {
 }
 
 .content {
-    padding: 0 18px;
+    padding: 10 18px;
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.2s ease-out;
     background-color: white;
     position: absolute;
-    top: 552px;
-    right: 0px;
+    top: 50px;
+    right: 5px;
     z-index: 1000;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -553,3 +575,32 @@ I don't think this is needed anymore, keeping it commented out just in case
     display: block;
 }
  */
+
+
+/* for intersect form */
+.form-horizontal {
+    position: relative;
+    display: flex;
+    align-items: center; 
+    gap: 15px; 
+    flex-wrap: wrap;
+    z-index: 0;
+}
+
+.form-horizontal input[type="file"] {
+    flex-shrink: 0; 
+}
+
+.form-horizontal .radio-group {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.form-horizontal .radio-group label {
+    margin: 0; 
+}
+
+.form-horizontal button {
+    flex-shrink: 0;
+}
