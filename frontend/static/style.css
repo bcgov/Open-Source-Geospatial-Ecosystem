@@ -335,6 +335,7 @@ body {
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden;
+    z-index: 0;
 }
 
 .maps-box {
@@ -477,6 +478,8 @@ table td {
     grid-auto-flow: column;
     justify-content: right;
     gap: 10px;
+    position: relative; 
+    z-index: 1;
 
 }
 
@@ -503,7 +506,7 @@ table td {
     color: white;
     font-weight: bold;
     float: right;
-    margin-left: 5px;
+    margin-left: 15px;
 }
 
 .active:after {
@@ -511,14 +514,14 @@ table td {
 }
 
 .content {
-    padding: 0 18px;
+    padding: 10 18px;
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.2s ease-out;
     background-color: white;
     position: absolute;
-    top: 552px;
-    right: 0px;
+    top: 50px;
+    right: 5px;
     z-index: 1000;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -556,10 +559,12 @@ I don't think this is needed anymore, keeping it commented out just in case
 
 /* for intersect form */
 .form-horizontal {
+    position: relative;
     display: flex;
     align-items: center; 
     gap: 15px; 
     flex-wrap: wrap;
+    z-index: 0;
 }
 
 .form-horizontal input[type="file"] {
