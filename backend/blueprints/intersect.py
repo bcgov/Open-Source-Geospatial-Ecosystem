@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, jsonify
 import requests
-from shapely.geometry import shape
+from shapely.geometry import shape, mapping
 import json
 import geopandas as gpd
 import io
@@ -53,11 +53,27 @@ def intersect_with_wfs(uploaded_gdf, wfs_url):
     # Return the GeoDataFrame (not the JSON string)
     return intersected_data
 
-# Function to convert Timestamp columns to strings
+# Convert timestamp columns to strings
 def convert_timestamps_to_string(gdf):
     for column in gdf.select_dtypes(include=['datetime']).columns:
         gdf[column] = gdf[column].astype(str)  # Convert datetime to string
     return gdf
+
+# create geoJSON
+def gdf_to_geojson(gdf):
+    # dict to contain geojson data
+    geojson = {'type': 'FeatureCollection', 'features': []}
+
+    # loop through each row of the dataframe
+    for _, row in gdf.iterrows():
+        feature = {
+            'type': 'Feature',
+            'properties': row.drop('geometry').to_dict(),
+            'geometry': mapping(row.geometry)
+        }
+        geojson['features'].append(feature)
+
+    return geojson
 
 @blueprint.route('/intersect', methods=['GET', 'POST'])
 def intersect():
@@ -79,9 +95,11 @@ def intersect():
 
         if uploaded_gdf is not None:
             # convert uploaded_gdf to geoJSON for leaflet
-            uploaded_geojson = convert_timestamps_to_string(uploaded_gdf)
-            uploaded_geojson = uploaded_geojson.to_json()
-            uploaded_gdf.to_clipboard()
+            uploaded_gdf_time_string = convert_timestamps_to_string(uploaded_gdf)
+            uploaded_geojson = gdf_to_geojson(uploaded_gdf_time_string)
+            # print(uploaded_geojson)
+            # uploaded_geojson = uploaded_geojson.to_json()
+
             
 
             intersected_data_1 = intersect_with_wfs(uploaded_gdf, WFS_LAYER_1_URL)
@@ -97,7 +115,7 @@ def intersect():
 
             return render_template(
                 'intersect.html',
-                uploaded_geojson=uploaded_gdf,
+                uploaded_geojson=uploaded_geojson,
                 intersected_data_1=intersected_data_1_list,
                 intersected_data_2=intersected_data_2_list,
                 leaflet_map = leaflet_map
