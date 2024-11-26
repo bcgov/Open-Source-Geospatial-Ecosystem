@@ -173,46 +173,38 @@
         });
         
         // Function to generate the WFS query URL
-        function wfsQuery(dataset, query = null, fields = [], startIndex = 0, count = 5000 ) {
-            const SERVICE_URL = "http://localhost:5000/wfs";
+        function wfsQuery(dataset, query = null, fields = [], startIndex = 0, count = 5000) {
+            const SERVICE_URL = "http://localhost:5000/wfs"; // Correct the base URL
         
+            // Initialize query parameters
             const params = new URLSearchParams({
                 service: 'WFS',
-                version: '2.0.0',
+                version: '2.2.0',
                 request: 'GetFeature',
                 typeName: `pub:${dataset}`,
                 outputFormat: 'application/json',
                 srsName: 'EPSG:4326',
-                bbox: [54.94267775412879, -130.02081515748938, 56.60674270353342, -127.66422698319626, 'urn:ogc:def:crs:EPSG:4326'].join(','),
                 sortBy: 'OBJECTID',
                 startIndex: startIndex,
                 count: count
-
             });
         
-            // Use INTERSECTS filter with a POLYGON if bbox is provided
-        
-            if (query) {
-                params.delete('bbox');
-                if (params.has('CQL_FILTER')) {
-                    params.set('CQL_FILTER', `${params.get('CQL_FILTER')} AND ${query}`);
-                } else {
-                    params.set('CQL_FILTER', query);
-                }
-            }
-        
+            // Use `propertyName` instead of `Fields`
             if (fields && fields.length > 0) {
-                params.append('propertyName', fields.map(field => field.toUpperCase()).join(','));
+                params.set('propertyName', fields.join(','));
             }
         
-            if (count !== null) {
-                params.append('count', count);
+            // Build the CQL_FILTER with optional query
+            if (query) {
+                params.set('CQL_FILTER', query.replace(/\+/g, ' ')); // Replace '+' with space
             }
         
+            // Build the final URL
             const url = `${SERVICE_URL}${params.toString()}`;
             console.log("WFS URL:", url);
             return url;
         }
+        
         
         // store active layers as an object keyed by layer name
         var activeLayers = {};
