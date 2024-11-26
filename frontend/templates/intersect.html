@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="../static/style.css">
 </head>
 
-
 <body>
 
 <!-- Header Section -->
@@ -29,12 +28,22 @@
     <div class="banner-title"><p>Intersect Tool</p></div>
 </div>
 
+    <!-- Contains the Layer Selection Checkboxes and Legend Collapsible Menus-->
+    <div class="collapsible-bar">
+        <!--Layer Selection-->
+        <div>
+            <button class="collapsible">Select Layers</button>
+            <div class="content" id="checkbox-container">
+                <p style="font-size: larger;"><br><strong>Select Map Layers</strong></p>
+            </div>
+        </div>
+    </div>
+
     <h2>Upload a File to Intersect with Land Use Polygons</h2>
     <!-- Form for uploading data -->
-    <form action="/intersect" method="POST" enctype="multipart/form-data">
+    <form action="/intersect" method="POST" enctype="multipart/form-data" class="form-horizontal">
         <input type="file" name="file" accept=".geojson,.shp,.kml,.gpx" required>
-        <button type="submit">Upload and Intersect</button>
-        <p>Select Data Type:</p>
+        <div class="radio-group">
             <label>
                 <input type="radio" name="data_type" value="legal" required> Legal
             </label>
@@ -44,12 +53,18 @@
             <label>
                 <input type="radio" name="data_type" value="both"> Both
             </label>
+        </div>
+        <button type="submit">Upload and Intersect</button>
     </form>
 
-    <!-- Map Section -->
-    <div id="map-container">
-        {{ leaflet_map | safe }}
-    </div>
+    <section class='maps'>
+        <div class='maps-box'>
+            <div id='maps-item'>
+                <!-- Embed leaflet map content -->
+                {{ leaflet_map|safe }}
+            </div>
+        </div>
+    </section>
 
     <!-- Intersected Data Section -->
     <div class="data-section">
@@ -273,6 +288,23 @@
     {% endif %}
 
     <script>
+
+
+        var coll = document.getElementsByClassName("collapsible");
+        var i;
+
+        for (i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", function () {
+                this.classList.toggle("active");
+                var content = this.nextElementSibling;
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                }
+            });
+        }
+
         // JavaScript to toggle the visibility of the tables
         function toggleTableVisibility(tableId) {
             const tableContainer = document.getElementById(tableId);

@@ -552,3 +552,30 @@ I don't think this is needed anymore, keeping it commented out just in case
     display: block;
 }
  */
+
+
+/* for intersect form */
+.form-horizontal {
+    display: flex;
+    align-items: center; 
+    gap: 15px; 
+    flex-wrap: wrap;
+}
+
+.form-horizontal input[type="file"] {
+    flex-shrink: 0; 
+}
+
+.form-horizontal .radio-group {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.form-horizontal .radio-group label {
+    margin: 0; 
+}
+
+.form-horizontal button {
+    flex-shrink: 0;
+}
