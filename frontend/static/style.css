@@ -78,12 +78,7 @@ body {
     font-weight: bold;
     color: white;
 }
-.navbar ul {
-    list-style: none; /* Remove the bullet points */
-    margin: 0; /* Remove default margin */
-    padding: 0; /* Remove default padding */
-    display: flex; /* Ensure items are inline */
-}
+
 
 
 /* Banner */
@@ -494,6 +489,17 @@ table td {
     position: relative; 
     z-index: 1;
 
+}
+.back-button {
+    background-color: #1e345e;
+    color: rgb(216, 213, 213);
+    cursor: pointer;
+    padding: 18px;
+    width:auto;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 15px;
 }
 
 .collapsible {
