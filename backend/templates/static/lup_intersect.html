@@ -381,27 +381,6 @@
                 }
             }
         }
-<<<<<<< HEAD
-        fetch('http://localhost:5000/get_gdfs')
-            .then(response => response.json())
-            .then(data => {
-                Object.keys(data).forEach(key => {
-                    L.geoJSON(data[key], {
-                        onEachFeature: function (feature, layer) {
-                            if (feature.properties) {
-                                let popupContent = "";
-                                for (const [key, value] of Object.entries(feature.properties)) {
-                                    popupContent += `<strong>${key}:</strong> ${value}<br>`;
-                                }
-                                layer.bindPopup(popupContent);
-                            }
-                        },
-                        style: function (feature) {
-                            return { color: getRandomColor() };
-                        }
-                    }).addTo(map);
-                });
-=======
 
         fetch('http://localhost:5000/get_gdfs')
             .then(response => response.json())
@@ -423,16 +402,10 @@
                         return { color: getRandomColor() }; // Use your random color function or set a fixed color
                     }
                 }).addTo(map);
->>>>>>> 4b14cec (failed attempt 1)
             })
             .catch(error => {
                 console.error("Error fetching GeoJSON:", error);
             });
-<<<<<<< HEAD
-    
-=======
-
->>>>>>> 4b14cec (failed attempt 1)
     </script>
 </body>
 

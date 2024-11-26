@@ -284,13 +284,8 @@ def intersect():
     
 @blueprint.route('/get_gdfs', methods=['GET'])
 def get_gdfs():
-<<<<<<< HEAD
     try:
         # Convert each GeoDataFrame to GeoJSON, ensuring that it is not None
-=======
-    """Return GeoJSON representations of legal and non-legal polygons."""
-    try:
->>>>>>> 4b14cec (failed attempt 1)
         gdfs = {
             "legal_polys": legal_polys_gdf.to_json() if legal_polys_gdf is not None else None,
             "legal_lines": legal_lines_gdf.to_json() if legal_lines_gdf is not None else None,
@@ -299,7 +294,6 @@ def get_gdfs():
             "non_legal_lines": non_lines_gdf.to_json() if non_lines_gdf is not None else None,
             "non_legal_points": non_points_gdf.to_json() if non_points_gdf is not None else None,
         }
-<<<<<<< HEAD
 
         all_features = []
         for key, geojson in gdfs.items():
@@ -315,11 +309,4 @@ def get_gdfs():
         return jsonify(combined_geojson)
 
     except Exception as e:
-=======
-        # Remove any None entries
-        gdfs = {key: value for key, value in gdfs.items() if value is not None}
-        return jsonify(gdfs)
-    except Exception as e:
-        blueprint.logger.error(f"Error in /get_gdfs: {e}")
->>>>>>> 4b14cec (failed attempt 1)
         return jsonify({"error": str(e)}), 500
