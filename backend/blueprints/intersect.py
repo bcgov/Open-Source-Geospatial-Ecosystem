@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request, jsonify, Response
 import requests
 from shapely.geometry import shape
 import geojson
@@ -156,10 +156,17 @@ def non_legal_data_intersect(user_data):
         non_points_gdf, intersected_non_legal_point_list
     )
 
+legal_polys_gdf = None
+legal_lines_gdf = None
+legal_points_gdf = None
+non_polys_gdf = None
+non_lines_gdf = None
+non_points_gdf = None
 
 
 @blueprint.route('/intersect', methods=['GET', 'POST'])
 def intersect():
+    global legal_polys_gdf, legal_lines_gdf, legal_points_gdf, non_polys_gdf, non_lines_gdf, non_points_gdf
     with open(map_path, 'r') as f:
         leaflet_map = f.read()
     if request.method == 'POST':
@@ -198,6 +205,9 @@ def intersect():
                 intersected_data_5=None
                 intersected_data_6=None
                 
+                legal_polys_gdf = legal_polys_gdf
+                legal_lines_gdf = legal_lines_gdf
+                legal_points_gdf = legal_points_gdf
 
                 
             elif data_type =='non_legal':    
@@ -211,6 +221,10 @@ def intersect():
                 intersected_data_4=intersected_non_legal_poly_list
                 intersected_data_5=intersected_non_legal_line_list
                 intersected_data_6=intersected_non_legal_point_list
+                
+                non_polys_gdf = non_polys_gdf
+                non_lines_gdf = non_lines_gdf
+                non_points_gdf = non_points_gdf
                 
                 
             elif data_type =='both':
@@ -229,6 +243,13 @@ def intersect():
                 intersected_data_4=intersected_non_legal_poly_list
                 intersected_data_5=intersected_non_legal_line_list
                 intersected_data_6=intersected_non_legal_point_list
+                
+                legal_polys_gdf = legal_polys_gdf
+                legal_lines_gdf = legal_lines_gdf
+                legal_points_gdf = legal_points_gdf
+                non_polys_gdf = non_polys_gdf
+                non_lines_gdf = non_lines_gdf
+                non_points_gdf = non_points_gdf
             
                 
             return render_template(
@@ -252,3 +273,22 @@ def intersect():
         intersected_data_5=None,
         intersected_data_6=None
     )
+    
+@blueprint.route('/get_gdfs', methods=['GET'])
+def get_gdfs():
+    """Return GeoJSON representations of legal and non-legal polygons."""
+    try:
+        gdfs = {
+            "legal_polys": legal_polys_gdf.to_json() if legal_polys_gdf is not None else None,
+            "legal_lines": legal_lines_gdf.to_json() if legal_lines_gdf is not None else None,
+            "legal_points": legal_points_gdf.to_json() if legal_points_gdf is not None else None,
+            "non_legal_polys": non_polys_gdf.to_json() if non_polys_gdf is not None else None,
+            "non_legal_lines": non_lines_gdf.to_json() if non_lines_gdf is not None else None,
+            "non_legal_points": non_points_gdf.to_json() if non_points_gdf is not None else None,
+        }
+        # Remove any None entries
+        gdfs = {key: value for key, value in gdfs.items() if value is not None}
+        return jsonify(gdfs)
+    except Exception as e:
+        blueprint.logger.error(f"Error in /get_gdfs: {e}")
+        return jsonify({"error": str(e)}), 500
