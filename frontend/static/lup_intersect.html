@@ -380,32 +380,30 @@
                 }
             }
         }
-
         fetch('http://localhost:5000/get_gdfs')
             .then(response => response.json())
             .then(data => {
-                // Add the GeoJSON data to the map
-                L.geoJSON(data, {
-                    onEachFeature: function (feature, layer) {
-                        // Check if the feature has properties and bind them to a popup
-                        if (feature.properties) {
-                            let popupContent = "";
-                            for (const [key, value] of Object.entries(feature.properties)) {
-                                popupContent += `<strong>${key}:</strong> ${value}<br>`;
+                Object.keys(data).forEach(key => {
+                    L.geoJSON(data[key], {
+                        onEachFeature: function (feature, layer) {
+                            if (feature.properties) {
+                                let popupContent = "";
+                                for (const [key, value] of Object.entries(feature.properties)) {
+                                    popupContent += `<strong>${key}:</strong> ${value}<br>`;
+                                }
+                                layer.bindPopup(popupContent);
                             }
-                            layer.bindPopup(popupContent);
+                        },
+                        style: function (feature) {
+                            return { color: getRandomColor() };
                         }
-                    },
-                    style: function (feature) {
-                        // You can style the GeoJSON features here. For example, set a random color.
-                        return { color: getRandomColor() }; // Use your random color function or set a fixed color
-                    }
-                }).addTo(map);
+                    }).addTo(map);
+                });
             })
             .catch(error => {
                 console.error("Error fetching GeoJSON:", error);
             });
-
+    
     </script>
 </body>
 

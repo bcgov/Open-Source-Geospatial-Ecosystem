@@ -5,6 +5,7 @@ import geojson
 import geopandas as gpd
 import io
 import os
+import json
 
 blueprint = Blueprint('intersect',__name__,
                     static_folder='../frontend/static',  
@@ -155,6 +156,13 @@ def non_legal_data_intersect(user_data):
         non_lines_gdf, intersected_non_legal_line_list, 
         non_points_gdf, intersected_non_legal_point_list
     )
+    
+def validate_geojson(geojson_data):
+    try:
+        geojson_object = geojson.loads(geojson_data)
+        print("Valid GeoJSON!")
+    except ValueError as e:
+        print(f"Invalid GeoJSON: {e}")
 
 legal_polys_gdf = None
 legal_lines_gdf = None
@@ -276,8 +284,8 @@ def intersect():
     
 @blueprint.route('/get_gdfs', methods=['GET'])
 def get_gdfs():
-    """Return GeoJSON representations of legal and non-legal polygons."""
     try:
+        # Convert each GeoDataFrame to GeoJSON, ensuring that it is not None
         gdfs = {
             "legal_polys": legal_polys_gdf.to_json() if legal_polys_gdf is not None else None,
             "legal_lines": legal_lines_gdf.to_json() if legal_lines_gdf is not None else None,
@@ -286,9 +294,19 @@ def get_gdfs():
             "non_legal_lines": non_lines_gdf.to_json() if non_lines_gdf is not None else None,
             "non_legal_points": non_points_gdf.to_json() if non_points_gdf is not None else None,
         }
-        # Remove any None entries
-        gdfs = {key: value for key, value in gdfs.items() if value is not None}
-        return jsonify(gdfs)
+
+        all_features = []
+        for key, geojson in gdfs.items():
+            if geojson:
+                geojson_obj = json.loads(geojson) if isinstance(geojson, str) else geojson
+                all_features.extend(geojson_obj['features'])
+        
+        combined_geojson = {
+            "type": "FeatureCollection",
+            "features": all_features
+        }
+
+        return jsonify(combined_geojson)
+
     except Exception as e:
-        blueprint.logger.error(f"Error in /get_gdfs: {e}")
         return jsonify({"error": str(e)}), 500
