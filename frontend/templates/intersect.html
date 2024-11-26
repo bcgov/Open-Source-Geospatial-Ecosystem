@@ -36,13 +36,36 @@
     <form action="/intersect" method="POST" enctype="multipart/form-data">
         <input type="file" name="file" accept=".geojson,.shp,.kml,.gpx" required>
         <button type="submit">Upload and Intersect</button>
-        {{uploaded_geojson}}
-        <!-- {% if uploaded_geojson %}
+        <!-- {{uploaded_geojson}} -->
+        {% if uploaded_geojson %}
             <script>
-                const uploadedGeoJSON = {{ uploaded_geojson | tojson | safe }}   
+                // const uploadedGeoJSON = JSON.parse('{{ uploaded_geojson | safe }}');
+                const uploadedGeoJson = {{ uploaded_geojson|safe }}
             </script>
             <button type="button" onclick="addUploadedDataToMap(uploadedGeoJSON)">Show Data</button>
-        {% endif %} -->
+        {% endif %}
+        <!-- {% if uploaded_geojson %}
+        <script>
+            // Ensure that the uploadedGeoJSON is safely parsed into a JavaScript object
+            const uploadedGeoJSON = JSON.parse('{{ uploaded_geojson | tojson | safe }}');
+            
+            // Function to display uploaded data on the map
+            function addUploadedDataToMap(geojsonData) {
+                console.log("GeoJSON data:", geojsonData);  // Example: log the GeoJSON to the console
+                // Add GeoJSON to Leaflet or another map library
+                L.geoJSON(geojsonData).addTo(map);  // Assuming you're using Leaflet
+            }
+
+            // Create the button dynamically and add it to the document
+            const showDataButton = document.createElement('button');
+            showDataButton.textContent = 'Show Data';
+            showDataButton.type = 'button';
+            showDataButton.onclick = function() {
+                addUploadedDataToMap(uploadedGeoJSON);
+            };
+            document.body.appendChild(showDataButton);
+        </script> -->
+{% endif %}
     </form>
 
     <!-- Map Section -->
