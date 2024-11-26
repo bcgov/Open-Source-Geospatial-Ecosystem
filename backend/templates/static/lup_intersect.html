@@ -381,6 +381,7 @@
                 }
             }
         }
+<<<<<<< HEAD
         fetch('http://localhost:5000/get_gdfs')
             .then(response => response.json())
             .then(data => {
@@ -400,11 +401,38 @@
                         }
                     }).addTo(map);
                 });
+=======
+
+        fetch('http://localhost:5000/get_gdfs')
+            .then(response => response.json())
+            .then(data => {
+                // Add the GeoJSON data to the map
+                L.geoJSON(data, {
+                    onEachFeature: function (feature, layer) {
+                        // Check if the feature has properties and bind them to a popup
+                        if (feature.properties) {
+                            let popupContent = "";
+                            for (const [key, value] of Object.entries(feature.properties)) {
+                                popupContent += `<strong>${key}:</strong> ${value}<br>`;
+                            }
+                            layer.bindPopup(popupContent);
+                        }
+                    },
+                    style: function (feature) {
+                        // You can style the GeoJSON features here. For example, set a random color.
+                        return { color: getRandomColor() }; // Use your random color function or set a fixed color
+                    }
+                }).addTo(map);
+>>>>>>> 4b14cec (failed attempt 1)
             })
             .catch(error => {
                 console.error("Error fetching GeoJSON:", error);
             });
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 4b14cec (failed attempt 1)
     </script>
 </body>
 
