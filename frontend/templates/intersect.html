@@ -34,6 +34,16 @@
     <form action="/intersect" method="POST" enctype="multipart/form-data">
         <input type="file" name="file" accept=".geojson,.shp,.kml,.gpx" required>
         <button type="submit">Upload and Intersect</button>
+        <p>Select Data Type:</p>
+            <label>
+                <input type="radio" name="data_type" value="legal" required> Legal
+            </label>
+            <label>
+                <input type="radio" name="data_type" value="non_legal"> Non-legal
+            </label>
+            <label>
+                <input type="radio" name="data_type" value="both"> Both
+            </label>
     </form>
 
     <!-- Map Section -->
@@ -43,6 +53,7 @@
 
     <!-- Intersected Data Section -->
     <div class="data-section">
+
         {% if intersected_data_1 %}
             <h3>Legal Planning Objective Polygons</h3>
             <button class="minimize-btn" onclick="toggleTableVisibility('intersected-data-1')">Minimize</button>
@@ -79,10 +90,80 @@
         {% endif %}
 
         {% if intersected_data_2 %}
-            <h3>Non-Legal Planning Objective Polygons</h3>
+            <h3>Legal Planning Objective Lines</h3>
             <button class="minimize-btn" onclick="toggleTableVisibility('intersected-data-2')">Minimize</button>
             <div id="intersected-data-2" class="table-container">
                 <table id="intersected-data-2-table">
+                    <thead>
+                        <tr>
+                            <th>Legal Feature ID</th>
+                            <th>Plan Name</th>
+                            <th>Objective</th>
+                            <th>Legalization Date</th>
+                            <th>Document Title</th>
+                            <th>Document URL</th>
+                            <th>Metadata Link</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in intersected_data_2 %}
+                            <tr>
+                                <td>{{ row['LEGAL_FEAT_ID'] }}</td>
+                                <td>{{ row['STRGC_LAND_RSRCE_PLAN_NAME'] }}</td>
+                                <td>{{ row['LEGAL_FEAT_OBJECTIVE'] }}</td>
+                                <td>{{ row['LEGALIZATION_DATE'] }}</td>
+                                <td>{{ row['ENABLING_DOCUMENT_TITLE'] }}</td>
+                                <td><a href="{{ row['ENABLING_DOCUMENT_URL'] }}" target="_blank">Link</a></td>
+                                <td><a href="{{ row['RSRCE_PLAN_METADATA_LINK'] }}" target="_blank">Link</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p>No Legal Planning Objective line data found</p>
+        {% endif %}
+
+        {% if intersected_data_3 %}
+            <h3>Legal Planning Objective Points</h3>
+            <button class="minimize-btn" onclick="toggleTableVisibility('intersected-data-3')">Minimize</button>
+            <div id="intersected-data-3" class="table-container">
+                <table id="intersected-data-3-table">
+                    <thead>
+                        <tr>
+                            <th>Legal Feature ID</th>
+                            <th>Plan Name</th>
+                            <th>Objective</th>
+                            <th>Legalization Date</th>
+                            <th>Document Title</th>
+                            <th>Document URL</th>
+                            <th>Metadata Link</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in intersected_data_3 %}
+                            <tr>
+                                <td>{{ row['LEGAL_FEAT_ID'] }}</td>
+                                <td>{{ row['STRGC_LAND_RSRCE_PLAN_NAME'] }}</td>
+                                <td>{{ row['LEGAL_FEAT_OBJECTIVE'] }}</td>
+                                <td>{{ row['LEGALIZATION_DATE'] }}</td>
+                                <td>{{ row['ENABLING_DOCUMENT_TITLE'] }}</td>
+                                <td><a href="{{ row['ENABLING_DOCUMENT_URL'] }}" target="_blank">Link</a></td>
+                                <td><a href="{{ row['RSRCE_PLAN_METADATA_LINK'] }}" target="_blank">Link</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p>No Legal Planning Objective Points data found</p>
+        {% endif %}
+
+        {% if intersected_data_4 %}
+            <h3>Non-Legal Planning Objective Polygons</h3>
+            <button class="minimize-btn" onclick="toggleTableVisibility('intersected-data-4')">Minimize</button>
+            <div id="intersected-data-4" class="table-container">
+                <table id="intersected-data-4-table">
                     <thead>
                         <tr>
                             <th>Non Legal Feature ID</th>
@@ -92,7 +173,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for row in intersected_data_2 %}
+                        {% for row in intersected_data_4 %}
                             <tr>
                                 <td>{{ row['NON_LEGAL_FEAT_ID'] }}</td>
                                 <td>{{ row['STRGC_LAND_RSRCE_PLAN_NAME'] }}</td>
@@ -106,18 +187,89 @@
         {% else %}
             <p>No Non-Legal Planning Objective Polygon data found</p>
         {% endif %}
+
+        {% if intersected_data_5 %}
+        <h3>Non-Legal Planning Objective Lines</h3>
+        <button class="minimize-btn" onclick="toggleTableVisibility('intersected-data-5')">Minimize</button>
+        <div id="intersected-data-5" class="table-container">
+            <table id="intersected-data-5-table">
+                <thead>
+                    <tr>
+                        <th>Non Legal Feature ID</th>
+                        <th>Plan Name</th>
+                        <th>Objective</th>
+                        <th>Decision Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in intersected_data_5 %}
+                        <tr>
+                            <td>{{ row['NON_LEGAL_FEAT_ID'] }}</td>
+                            <td>{{ row['STRGC_LAND_RSRCE_PLAN_NAME'] }}</td>
+                            <td>{{ row['NON_LEGAL_FEAT_OBJECTIVE'] }}</td>
+                            <td>{{ row['ORIGINAL_DECISION_DATE'] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>No Non-Legal Planning Objective line data found</p>
+    {% endif %}
     </div>
 
-    {% if not intersected_data_1 and not intersected_data_2 %}
+        {% if intersected_data_6 %}
+        <h3>Non-Legal Planning Objective Points</h3>
+        <button class="minimize-btn" onclick="toggleTableVisibility('intersected-data-6')">Minimize</button>
+        <div id="intersected-data-6" class="table-container">
+            <table id="intersected-data-6-table">
+                <thead>
+                    <tr>
+                        <th>Non Legal Feature ID</th>
+                        <th>Plan Name</th>
+                        <th>Objective</th>
+                        <th>Decision Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in intersected_data_6 %}
+                        <tr>
+                            <td>{{ row['NON_LEGAL_FEAT_ID'] }}</td>
+                            <td>{{ row['STRGC_LAND_RSRCE_PLAN_NAME'] }}</td>
+                            <td>{{ row['NON_LEGAL_FEAT_OBJECTIVE'] }}</td>
+                            <td>{{ row['ORIGINAL_DECISION_DATE'] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>No Non-Legal Planning Objective Points data found</p>
+    {% endif %}
+
+    {% if not intersected_data_1 and not intersected_data_2 and not intersected_data_3 and not intersected_data_4 and not
+        intersected_data_5 and not intersected_data_6%}
         <p>No Data - Upload a file and intersect.</p>
     {% endif %}
 
     <!-- Add these two buttons to download separate CSVs -->
     {% if intersected_data_1 %}
-        <button class="download-btn" onclick="downloadTableAsCSV('intersected-data-1-table', 'legal_data.csv')">Download Legal Planning CSV</button>
+        <button class="download-btn" onclick="downloadTableAsCSV('intersected-data-1-table', 'legal_data.csv')">Download Legal Planning Polygons CSV</button>
     {% endif %}
     {% if intersected_data_2 %}
-        <button class="download-btn" onclick="downloadTableAsCSV('intersected-data-2-table', 'non_legal_data.csv')">Download Non-Legal Planning CSV</button>
+        <button class="download-btn" onclick="downloadTableAsCSV('intersected-data-2-table', 'non_legal_data.csv')">Download Legal Planning Lines CSV</button>
+    {% endif %}
+    {% if intersected_data_3 %}
+    <button class="download-btn" onclick="downloadTableAsCSV('intersected-data-3-table', 'legal_data.csv')">Download Legal Planning Points CSV</button>
+    {% endif %}
+    {% if intersected_data_4 %}
+        <button class="download-btn" onclick="downloadTableAsCSV('intersected-data-4-table', 'non_legal_data.csv')">Download Non-Legal Planning Polygons CSV</button>
+    {% endif %}
+    {% if intersected_data_5 %}
+        <button class="download-btn" onclick="downloadTableAsCSV('intersected-data-5-table', 'legal_data.csv')">Download Non-Legal Planning Lines CSV</button>
+    {% endif %}
+    {% if intersected_data_6 %}
+        <button class="download-btn" onclick="downloadTableAsCSV('intersected-data-6-table', 'non_legal_data.csv')">Download Non-Legal Planning Points CSV</button>
     {% endif %}
 
     <script>
