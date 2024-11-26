@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Feature Intersect</title>
@@ -34,12 +36,115 @@
     <form action="/intersect" method="POST" enctype="multipart/form-data">
         <input type="file" name="file" accept=".geojson,.shp,.kml,.gpx" required>
         <button type="submit">Upload and Intersect</button>
+        {% if uploaded_geojson %}
+            <script>
+                const uploadedGeoJSON = {{uploaded_geojson|safe}}
+            </script>
+            <button type="button" onclick="addUploadedDataToMap(uploadedGeoJSON)">Show Data</button>
+        {% endif %}
     </form>
 
     <!-- Map Section -->
-    <div id="map-container">
-        {{ leaflet_map | safe }}
-    </div>
+<div id="intersect">
+        <!-- {{ leaflet_map | safe }} -->
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.5/proj4.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js"></script>
+    <script src="https://unpkg.com/leaflet-wfst@2.0.1-beta.27/dist/leaflet-wfst.min.js"></script>
+
+    <style>
+        #intersect {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100%;
+        }
+        
+        #layerContainer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 200px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        #layerContent {
+            display: block; /* Visible by default */
+        }
+
+        /* Style the toggle button */
+        #toggleButton {
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            float: right;
+        }
+    </style>
+
+    <script>
+        // Initialize the map
+        var map = L.map('intersect').setView([55.781113, -128.867888], 7);
+
+        var CartoDB_Positron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            subdomains: 'abcd',
+            maxZoom: 20
+        }).addTo(map);
+
+        L.tileLayer('https://maps.gov.bc.ca/arcgis/rest/services/province/web_mercator_cache/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; <a href="https://data.gov.bc.ca/">BC Government</a>',
+            maxZoom: 20,
+            errorTileUrl: 'path-to-error-image.png'
+        }).addTo(map);
+
+        function addUploadedDataToMap(uploadedData) {
+            console.log("Uploaded GeoJSON data:", uploadedData);
+
+            if (uploadedData) {
+                try {
+                    const uploadedLayer = L.geoJSON(uploadedData, {
+                        style: {
+                            color: "blue",
+                            weight: 2,
+                            fillOpacity: 0.4
+                        },
+                        onEachFeature: function (feature, layer) {
+                            if (feature.properties) {
+                                layer.bindPopup(
+                                    Object.entries(feature.properties)
+                                        .map(([key, value]) => `<strong>${key}:</strong> ${value}`)
+                                        .join("<br>")
+                                );
+                            }
+                        }
+                    }).addTo(map);
+
+                    map.fitBounds(uploadedLayer.getBounds());
+                } catch (error) {
+                    console.error("Error adding GeoJSON to map:", error.message);
+                }
+            } else {
+                console.error("No uploaded GeoJSON data found.");
+            }
+        }
+
+    </script>
+</div>
 
     <!-- Intersected Data Section -->
     <div class="data-section">
