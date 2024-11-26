@@ -56,27 +56,36 @@ def intersect_with_wfs(uploaded_gdf, wfs_url):
 
 # Convert timestamp columns to strings
 def clean_uploaded_data(gdf):
-    gdf = gdf.where(pd.notnull(gdf), None)
+    gdf = gdf.map(lambda x: None if pd.isnull(x) else x)
 
-    for column in gdf.select_dtypes(include=['datetime','datetime64[ns]']).columns:
-        gdf[column] = gdf[column].astype(str)  # Convert datetime to string
+    datetime_columns = gdf.columns[gdf.apply(lambda col: pd.api.types.is_datetime64_any_dtype(col))]
+    for column in datetime_columns:
+        gdf[column] = gdf[column].dt.strftime('%Y-%m-%d %H:%M:%S') 
+
     return gdf
 
 # create geoJSON
 def gdf_to_geojson(gdf):
     # dict to contain geojson data
-    geojson = {'type': 'FeatureCollection', 'features': []}
+    geojson = {"type": "FeatureCollection", "features": []}
 
     # loop through each row of the dataframe
     for _, row in gdf.iterrows():
-        feature = {
-            'type': 'Feature',
-            'properties': row.drop('geometry').to_dict(),
-            'geometry': mapping(row.geometry)
-        }
-        geojson['features'].append(feature)
+        # check if geometry exists and is a valid
+        geometry = mapping(row.geometry) if row.geometry is not None else None
 
-    return geojson
+        if geometry and "coordinates" in geometry:
+            geometry["coordinates"] = list(geometry["coordinates"])
+
+        # create geojson feature
+        feature = {
+            "type": "Feature",
+            "properties": row.drop("geometry").to_dict(),
+            "geometry": geometry
+        }
+        geojson["features"].append(feature)
+
+    return json.dumps(geojson, indent=2)
 
 @blueprint.route('/intersect', methods=['GET', 'POST'])
 def intersect():
@@ -98,8 +107,9 @@ def intersect():
 
         if uploaded_gdf is not None:
             # convert uploaded_gdf to geoJSON for leaflet
-            uploaded_gdf_time_string = clean_uploaded_data(uploaded_gdf)
-            uploaded_geojson = gdf_to_geojson(uploaded_gdf_time_string)
+            clean_uploaded_gdf = clean_uploaded_data(uploaded_gdf)
+            print(clean_uploaded_data)
+            uploaded_geojson = gdf_to_geojson(clean_uploaded_gdf)
 
             intersected_data_1 = intersect_with_wfs(uploaded_gdf, WFS_LAYER_1_URL)
             intersected_data_2 = intersect_with_wfs(uploaded_gdf, WFS_LAYER_2_URL)
