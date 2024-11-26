@@ -15,7 +15,7 @@
 
     <div class="data-section">
         {% if uploaded_geojson %}
-            <button class="uploaded-data" onclick="handleFileUpload('uploaded-geojson')">Show Data</button>
+            <button class="uploaded-data" onclick="addUploadedDataToMap('uploaded-geojson')">Show Data</button>
     </div>
     
     <!-- Toggle button and container for dynamic checkboxes -->
@@ -87,28 +87,28 @@
         }).addTo(map);
 
         // geoJSON data passed from Flask
-        var geojsonData = {{ geojson_data | tojson }};
+        // var geojsonData = {{ geojson_data | tojson }};
 
-        if (geojsonData) {
-            L.geoJSON(geojsonData, {
-                style: {
-                    color: "blue",
-                    weight: 2,
-                    fillOpacity: 0.4
-                },
-                onEachFeature: function(feature, layer) {
-                    if (feature.properties) {
-                        layer.bindPopup(
-                            Object.entries(feature.properties)
-                            .map(([key, value]) => `<strong>${key}:</strong> ${value}`)
-                            .join("<br>")
-                        );
-                    }
-                }
-            }).addTo(map);
-        } else {
-            alert("No GeoJSON data available")
-        }
+        // if (geojsonData) {
+        //     L.geoJSON(geojsonData, {
+        //         style: {
+        //             color: "blue",
+        //             weight: 2,
+        //             fillOpacity: 0.4
+        //         },
+        //         onEachFeature: function(feature, layer) {
+        //             if (feature.properties) {
+        //                 layer.bindPopup(
+        //                     Object.entries(feature.properties)
+        //                     .map(([key, value]) => `<strong>${key}:</strong> ${value}`)
+        //                     .join("<br>")
+        //                 );
+        //             }
+        //         }
+        //     }).addTo(map);
+        // } else {
+        //     alert("No GeoJSON data available")
+        // }
 
         // function handleFileUpload(event) {
         //     const file = event.target.files[0];
@@ -133,36 +133,36 @@
         // }
 
 
-        // function addUploadedDataToMap(uploadedData) {
-        //     console.log("Uploaded GeoJSON data:", uploadedData);
+        function addUploadedDataToMap(uploadedData) {
+            console.log("Uploaded GeoJSON data:", uploadedData);
             
-        //     if (uploadedData) {
-        //         try {
-        //             const uploadedLayer = L.geoJSON(uploadedData, {
-        //                 style: {
-        //                     color: "blue",
-        //                     weight: 2,
-        //                     fillOpacity: 0.4
-        //                 },
-        //                 onEachFeature: function (feature, layer) {
-        //                     if (feature.properties) {
-        //                         layer.bindPopup(
-        //                             Object.entries(feature.properties)
-        //                                 .map(([key, value]) => `<strong>${key}:</strong> ${value}`)
-        //                                 .join("<br>")
-        //                         );
-        //                     }
-        //                 }
-        //             }).addTo(map);
+            if (uploadedData) {
+                try {
+                    const uploadedLayer = L.geoJSON(uploadedData, {
+                        style: {
+                            color: "blue",
+                            weight: 2,
+                            fillOpacity: 0.4
+                        },
+                        onEachFeature: function (feature, layer) {
+                            if (feature.properties) {
+                                layer.bindPopup(
+                                    Object.entries(feature.properties)
+                                        .map(([key, value]) => `<strong>${key}:</strong> ${value}`)
+                                        .join("<br>")
+                                );
+                            }
+                        }
+                    }).addTo(map);
 
-        //             map.fitBounds(uploadedLayer.getBounds());
-        //         } catch (error) {
-        //             console.error("Error adding GeoJSON to map:", error.message);
-        //         }
-        //     } else {
-        //         console.error("No uploaded GeoJSON data found.");
-        //     }
-        // }
+                    map.fitBounds(uploadedLayer.getBounds());
+                } catch (error) {
+                    console.error("Error adding GeoJSON to map:", error.message);
+                }
+            } else {
+                console.error("No uploaded GeoJSON data found.");
+            }
+        }
 
         
         // WFS data source URL
