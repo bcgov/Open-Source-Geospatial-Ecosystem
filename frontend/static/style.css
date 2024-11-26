@@ -65,11 +65,24 @@ body {
 }
 
 .navbar {
+    
     width: 100%;
     color: #fff;
     font-size: 18px;
     font-weight: bold;
     flex: -1 1 auto;
+}
+.navbar li {
+    margin-left: 20px; 
+    font-size: 1rem; 
+    font-weight: bold;
+    color: white;
+}
+.navbar ul {
+    list-style: none; /* Remove the bullet points */
+    margin: 0; /* Remove default margin */
+    padding: 0; /* Remove default padding */
+    display: flex; /* Ensure items are inline */
 }
 
 
