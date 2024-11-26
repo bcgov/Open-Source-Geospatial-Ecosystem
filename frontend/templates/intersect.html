@@ -36,12 +36,13 @@
     <form action="/intersect" method="POST" enctype="multipart/form-data">
         <input type="file" name="file" accept=".geojson,.shp,.kml,.gpx" required>
         <button type="submit">Upload and Intersect</button>
-        {% if uploaded_geojson %}
+        {{uploaded_geojson}}
+        <!-- {% if uploaded_geojson %}
             <script>
-                const uploadedGeoJSON = {{ uploaded_geojson|safe }}
+                const uploadedGeoJSON = {{ uploaded_geojson | tojson | safe }}   
             </script>
             <button type="button" onclick="addUploadedDataToMap(uploadedGeoJSON)">Show Data</button>
-        {% endif %}
+        {% endif %} -->
     </form>
 
     <!-- Map Section -->
@@ -61,13 +62,6 @@
                 position: relative;
                 margin: 0;
                 padding: 0;
-            }
-
-            html, body {
-                margin: 0;
-                padding: 0;
-                overflow: hidden;
-                height: 100%;
             }
             
             #layerContainer {
@@ -140,6 +134,298 @@
                     }
                 } else {
                     console.error("No uploaded GeoJSON data found.");
+                }
+            }
+
+            // WFS data source URL
+            const SERVICE_URL = "http://localhost:5000/wfs/";
+
+
+
+            var lup_aoi =
+            {
+                "type": "FeatureCollection",
+                "name": "aoi",
+                "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::4326" } },
+                "features": [
+                    { "type": "Feature", "properties": { "OBJECTID": 3.0, "SHAPE_Leng": 908959.60400000215, "SHAPE_Area": 51484492817.909615, "X_Max": null, "X_Min": null, "Y_Max": null, "Y_Min": null, "centerx": null, "centery": null, "Lat_Max": -127.12066348938077, "Lat_Min": -130.70713817004415, "Lon_Max": 56.880992958850584, "Lon_Min": 54.658316969110963 }, "geometry": { "type": "MultiPolygon", "coordinates": [[[[-128.877519335263372, 56.854459870751043], [-128.47103084514157, 56.862845226243849], [-127.182976424146929, 56.880987675036366], [-127.120645609878679, 54.734177239127789], [-130.459733007391407, 54.658312163230242], [-130.707118882745391, 56.800867888548048], [-128.877519335263372, 56.854459870751043]]]] } }
+                ]
+            };
+            
+            let jsonData = [];
+            const maplayers = 'intersect';  // Change depending on map and layers.json
+            
+            fetch('/static/layers.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Check if the maplayers key exists in the JSON data
+                    if (data.maps && data.maps[maplayers]) {
+                        jsonData = data.maps[maplayers];
+                        console.log(`Map Data for "${maplayers}":`, jsonData);
+                        createCheckboxes(document.getElementById('checkbox-container'));
+                    } else {
+                        console.warn(`No data found for map layer "${maplayers}"`);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading JSON file:', error);
+                });
+        
+
+            L.geoJSON(lup_aoi, {
+                style: { fillColor: 'transparent', color: 'black', weight: 4 }
+            }).addTo(map);
+
+            const checkboxContainer = document.getElementById('checkbox-container');
+
+            // Function to create checkboxes dynamically based on jsonData
+            function createCheckboxes(container) {
+                jsonData.forEach((layer, index) => {
+                    const label = document.createElement('label');
+                    label.innerHTML = `<input type="checkbox" onclick="layerToggleWFS(this, ${index})" /> ${layer.name}`;
+                    checkboxContainer.appendChild(label);
+                    checkboxContainer.appendChild(document.createElement('br'));
+                });
+            }
+
+            // Call the function to create checkboxes
+            createCheckboxes(checkboxContainer);
+
+            function toggleCheckboxContainer() {
+                const checkboxContent = document.getElementById('checkboxContent');
+                const toggleButton = document.getElementById('toggleCheckboxContainer');
+            
+                if (checkboxContent.style.display === "none") {
+                    checkboxContent.style.display = "block";
+                    toggleButton.textContent = "▲"; // Upward arrow to indicate expanded state
+                } else {
+                    checkboxContent.style.display = "none";
+                    toggleButton.textContent = "▼"; // Downward arrow to indicate minimized state
+                }
+            }
+
+            // Array to keep track of uploaded layers
+            let uploadedLayers = [];
+
+            function createCheckboxForAddedLayer(layer, fileName,) {
+                const label = document.createElement("label");
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.checked = true;
+
+                // Checkbox click event to add or remove the layer from the map
+                checkbox.onclick = () => {
+                    checkbox.checked ? map.addLayer(layer) : map.removeLayer(layer);
+                };
+
+                label.appendChild(checkbox);
+                label.appendChild(document.createTextNode(" " + fileName));
+                checkboxContainer.appendChild(label);
+                checkboxContainer.appendChild(document.createElement("br"));
+            }
+
+            // Event handler for loaded files
+            control.loader.on('data:loaded', function(event) {
+                const layer = event.layer;
+                uploadedLayers.push(layer);
+            
+                const fileName = event.filename || "Uploaded Layer " + uploadedLayers.length;
+                const color = getRandomColor(); // Generate a color for the layer
+            
+                // Style the uploaded layer with the random color
+                layer.setStyle({
+                    color: color,
+                    weight: 2
+                });
+            
+                // Add the uploaded layer to the map
+                map.addLayer(layer);
+            
+                // Create a checkbox for toggling the layer
+                createCheckboxForAddedLayer(layer, fileName);
+            
+                // Add the uploaded layer to the legend
+                updateLegend(fileName, color, 1, "add");
+            });
+            
+            // Function to generate the WFS query URL
+            function wfsQuery(dataset, query = null, fields = [], startIndex = 0, count = 5000 ) {
+                const SERVICE_URL = "http://localhost:5000/wfs";
+            
+                const params = new URLSearchParams({
+                    service: 'WFS',
+                    version: '2.0.0',
+                    request: 'GetFeature',
+                    typeName: `pub:${dataset}`,
+                    outputFormat: 'application/json',
+                    srsName: 'EPSG:4326',
+                    bbox: [54.94267775412879, -130.02081515748938, 56.60674270353342, -127.66422698319626, 'urn:ogc:def:crs:EPSG:4326'].join(','),
+                    sortBy: 'OBJECTID',
+                    startIndex: startIndex,
+                    count: count
+
+                });
+            
+                // Use INTERSECTS filter with a POLYGON if bbox is provided
+            
+                if (query) {
+                    params.delete('bbox');
+                    if (params.has('CQL_FILTER')) {
+                        params.set('CQL_FILTER', `${params.get('CQL_FILTER')} AND ${query}`);
+                    } else {
+                        params.set('CQL_FILTER', query);
+                    }
+                }
+            
+                if (fields && fields.length > 0) {
+                    params.append('propertyName', fields.map(field => field.toUpperCase()).join(','));
+                }
+            
+                if (count !== null) {
+                    params.append('count', count);
+                }
+            
+                const url = `${SERVICE_URL}${params.toString()}`;
+                console.log("WFS URL:", url);
+                return url;
+            }
+
+            // store active layers as an object keyed by layer name
+            var activeLayers = {};
+
+
+
+            // Fetch the WFS data and add it as a GeoJSON layer
+            async function loadWFSData(dataset, query, fields, popupFields, color) {
+                const count = 5000; // Limit of features per request
+                let startIndex = 0; // Starting index for pagination
+                let hasMoreData = true; // Flag to track if more data is available
+            
+                const groupLayer = L.featureGroup();
+            
+                while (hasMoreData) {
+                    const url = wfsQuery(dataset, query, fields, startIndex, count);
+            
+                    try {
+                        const response = await fetch(url);
+                        if (!response.ok) {
+                            console.error(`Error: ${response.statusText}`);
+                            break;
+                        }
+            
+                        const data = await response.json();
+                        if (data.features && data.features.length > 0) {
+                            const geoJsonLayer = L.geoJSON(data, {
+                                style: {
+                                    color: color,
+                                    weight: 2,
+                                    opacity: 0.8 // Matches the legend transparency
+                                },
+                                onEachFeature: function (feature, layer) {
+                                    let popupContent = "";
+                                    popupFields.forEach(field => {
+                                        if (feature.properties[field]) {
+                                            popupContent += `<strong>${field}:</strong> ${feature.properties[field]}<br>`;
+                                        }
+                                    });
+                                    if (popupContent) {
+                                        layer.bindPopup(popupContent);
+                                    }
+                                }
+                            });
+            
+                            groupLayer.addLayer(geoJsonLayer);
+                            map.addLayer(groupLayer);
+            
+                            startIndex += count;
+            
+                            if (data.features.length < count) {
+                                hasMoreData = false; // No more data
+                            }
+                        } else {
+                            hasMoreData = false; // Stop if no features
+                        }
+                    } catch (error) {
+                        console.error('Error fetching WFS data:', error);
+                        break;
+                    }
+                }
+            
+                return groupLayer;
+            }
+
+            // Function to generate random color for styling layers
+            function getRandomColor() {
+                const letters = '0123456789ABCDEF';
+                let color = '#';
+                for (let i = 0; i < 6; i++) {
+                    color += letters[Math.floor(Math.random() * 16)];
+                }
+                return color;
+            }
+            function updateLegend(layerName, color, transparency, action) {
+                const legendContent = document.getElementById("legendContent");
+                const id = `legend-${layerName}`;
+            
+                if (action === "add") {
+                    if (document.getElementById(id)) return;
+            
+                    const legendItem = document.createElement("div");
+                    legendItem.id = id;
+                    legendItem.style.display = "flex";
+                    legendItem.style.alignItems = "center";
+                    legendItem.style.marginBottom = "5px";
+            
+                    const colorPatch = document.createElement("span");
+                    colorPatch.style.width = "20px";
+                    colorPatch.style.height = "20px";
+                    colorPatch.style.backgroundColor = color;
+                    colorPatch.style.opacity = transparency;
+                    colorPatch.style.border = "1px solid #000";
+                    colorPatch.style.marginRight = "10px";
+            
+                    const layerLabel = document.createElement("span");
+                    layerLabel.textContent = layerName;
+            
+                    legendItem.appendChild(colorPatch);
+                    legendItem.appendChild(layerLabel);
+            
+                    legendContent.appendChild(legendItem);
+                } else if (action === "remove") {
+                    const legendItem = document.getElementById(id);
+                    if (legendItem) legendContent.removeChild(legendItem);
+                }
+            }
+            
+            // Toggle layer function updated to pass Popup and Color
+            async function layerToggleWFS(checkbox, index) {
+                const layerData = jsonData[index];
+                const layerName = layerData.name;
+                const dataset = layerData.dataset;
+                const query = layerData.query;
+                const sanitizeJSON = (str) => str.replace(/,(\s*[\]}])/g, '$1');
+                const fields = JSON.parse(sanitizeJSON(layerData.fields.replace(/'/g, '"')));
+                const popupFields = JSON.parse(sanitizeJSON(layerData.popup.replace(/'/g, '"')));
+                const color = layerData.color;
+                const transparency = 0.5;
+            
+                if (checkbox.checked) {
+                    if (!activeLayers[dataset]) {
+                        const groupLayer = await loadWFSData(dataset, query, fields, popupFields, color);
+                        activeLayers[dataset] = groupLayer; // Store the group layer
+                        updateLegend(layerName, color, transparency, "add");
+                    }
+                } else {
+                    if (activeLayers[dataset]) {
+                        map.removeLayer(activeLayers[dataset]); // Remove the group layer
+                        delete activeLayers[dataset];
+                        updateLegend(layerName, color, transparency, "remove");
+                    }
                 }
             }
 
