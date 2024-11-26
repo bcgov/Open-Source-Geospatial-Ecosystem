@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, jsonify
 import requests
 from shapely.geometry import shape
-import json
+import geojson
 import geopandas as gpd
 import io
 import os
@@ -13,38 +13,88 @@ blueprint = Blueprint('intersect',__name__,
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 map_path = os.path.join(BASE_DIR, '..','..','frontend','static', 'lup_intersect.html')
 
-# URL for your WFS layers (replace with actual WFS URLs)/ currently static, needs to be changed to dyanmic URLS that refresh every time?
-WFS_LAYER_1_URL = 'https://openmaps.gov.bc.ca/geo/pub/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=pub%3AWHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW&outputFormat=application%2Fjson&srsName=EPSG%3A4326&bbox=54.94267775412879%2C-130.02081515748938%2C56.60674270353342%2C-127.66422698319626%2Curn%3Aogc%3Adef%3Acrs%3AEPSG%3A4326&sortBy=OBJECTID&limit=10000&offset=0&propertyName=STRGC_LAND_RSRCE_PLAN_NAME%2CLEGAL_FEAT_OBJECTIVE%2CLEGALIZATION_DATE%2CENABLING_DOCUMENT_TITLE%2CENABLING_DOCUMENT_URL%2CRSRCE_PLAN_METADATA_LINK%2CGEOMETRY%2COBJECTID'
-WFS_LAYER_2_URL = 'https://openmaps.gov.bc.ca/geo/pub/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=pub%3AWHSE_LAND_USE_PLANNING.RMP_PLAN_NON_LEGAL_POLY_SVW&outputFormat=application%2Fjson&srsName=EPSG%3A4326&bbox=54.94267775412879%2C-130.02081515748938%2C56.60674270353342%2C-127.66422698319626%2Curn%3Aogc%3Adef%3Acrs%3AEPSG%3A4326&sortBy=OBJECTID&limit=10000&offset=0&propertyName=NON_LEGAL_FEAT_ID%2CSTRGC_LAND_RSRCE_PLAN_NAME%2CNON_LEGAL_FEAT_OBJECTIVE%2CORIGINAL_DECISION_DATE%2CGEOMETRY%2COBJECTID'
+# Define bounding box
+bba = (743161, 1112127, 898012, 1291756, 'urn:ogc:def:crs:EPSG:3005')
+#input intersect layers
+legal_poly="WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW"
+legal_line="WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_LINE_SVW"
+legal_point="WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POINT_SVW"
+non_poly="WHSE_LAND_USE_PLANNING.RMP_PLAN_NON_LEGAL_POLY_SVW"
+non_line="WHSE_LAND_USE_PLANNING.RMP_PLAN_NON_LEGAL_LINE_SVW"
+non_point="WHSE_LAND_USE_PLANNING.RMP_PLAN_NON_LEGAL_POINT_SVW"
 
-def get_wfs_data(url):
-    """
-    Function to query a WFS layer and return the response as GeoJSON.
-    """
-    response = requests.get(url)
-    return response.json()
+def wfs_query_to_gdf(dataset, query=None, fields=None, bbox=None, offset=0, max_features=10000):
+    """Fetch data from a WFS endpoint and return it as a GeoDataFrame, handling pagination."""
+    if fields is None:
+        fields = []
 
-def intersect_with_wfs(uploaded_gdf, wfs_url):
-    # Fetch WFS data as GeoJSON from the WFS URL
-    response = requests.get(wfs_url)
-    
-    if response.status_code != 200:
-        raise Exception(f"Failed to fetch WFS data: {response.status_code}")
-    
-    # Get the content of the response (bytes)
-    wfs_data = response.content
-    
-    # Read the WFS data into a GeoDataFrame using BytesIO
-    with io.BytesIO(wfs_data) as byte_stream:
-        wfs_gdf = gpd.read_file(byte_stream)
+    url = r"https://openmaps.gov.bc.ca/geo/pub/ows?"
+    params = {
+        'service': 'WFS',
+        'version': '2.0.0',
+        'request': 'GetFeature',
+        'typeName': f'pub:{dataset}',
+        'outputFormat': 'application/json',
+        "srsName": "EPSG:3005",
+        'sortBy': 'OBJECTID',
+        'startIndex': offset,
+        'maxFeatures': max_features  # Adjust as needed
+    }
+
+    if bbox is not None and query is not None:
+        bbox_str = f"BBOX(GEOMETRY,{','.join(map(str, bbox))}, 'urn:ogc:def:crs:EPSG:3005')"
+        query = f"{bbox_str} AND {query}"
+    elif bbox is not None:
+        bbox_str = f"{','.join(map(str, bbox))}"
+        params['bbox'] = bbox_str
+    if query is not None:
+        params['CQL_FILTER'] = query
+    if fields:
+        params['propertyName'] = ','.join(fields).upper()
+
+    all_features = []
+    while True:
+        response = requests.get(url, params=params)
+        if response.status_code != 200:
+            raise RuntimeError(f"Error fetching WFS data: {response.status_code} - {response.text}")
+
+        # Load GeoJSON data using geojson library for easier manipulation
+        geojson_data = geojson.loads(response.text)  # Load JSON into GeoJSON format
+        
+        # Add features to the list
+        all_features.extend(geojson_data["features"])
+
+        # If fewer features than requested, we are done
+        if len(geojson_data["features"]) < max_features:
+            break
+
+        # Update the offset for the next page
+        offset += max_features
+        params['startIndex'] = offset
+
+    # Handle case if no features were returned
+    if not all_features:
+        return None  # Return None instead of empty GeoDataFrame
+
+    # Convert the accumulated features to a GeoDataFrame using geopandas
+    gdf = gpd.GeoDataFrame.from_features(all_features, crs="EPSG:3005")
+    return gdf
+
+
+def intersect_with_wfs(uploaded_gdf, gdf_from_wfs):
+    if gdf_from_wfs is None or len(gdf_from_wfs) == 0:
+        return None  # Return None if no data from WFS
 
     # Ensure both GeoDataFrames have the same CRS
-    if uploaded_gdf.crs != wfs_gdf.crs:
-        wfs_gdf = wfs_gdf.to_crs(uploaded_gdf.crs)
+    if uploaded_gdf.crs != gdf_from_wfs.crs:
+        gdf_from_wfs = gdf_from_wfs.to_crs(uploaded_gdf.crs)
 
     # Perform intersection
-    # intersected_data = gpd.overlay(uploaded_gdf, wfs_gdf, how='intersection')
-    intersected_data = gpd.sjoin(wfs_gdf, uploaded_gdf, how='inner', predicate='intersects')
+    # intersected_data = gpd.overlay(uploaded_gdf, gdf_from_wfs, how='intersection')
+    intersected_data = gpd.sjoin(gdf_from_wfs, uploaded_gdf, how='inner', predicate='intersects')
+    
+    if intersected_data.empty:
+        return None
 
     # Convert Timestamp columns to string before serializing to JSON
     for column in intersected_data.select_dtypes(include=['datetime']).columns:
@@ -53,6 +103,61 @@ def intersect_with_wfs(uploaded_gdf, wfs_url):
     # Return the GeoDataFrame (not the JSON string)
     return intersected_data
 
+def process_wfs_intersection(user_data, dataset, columns, bbox):
+    gdf = wfs_query_to_gdf(dataset=dataset, bbox=bbox)
+    if gdf is not None:
+        intersected = intersect_with_wfs(user_data, gdf)
+        if intersected is not None:
+            return gdf, intersected[columns].to_dict(orient='records')
+    return None, None
+
+def legal_data_intersect(user_data):
+    legal_columns = [
+        'LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE',
+        'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 
+        'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK'
+    ]
+    # Process intersections for polygons, lines, and points
+    legal_polys_gdf, intersected_legal_poly_list = process_wfs_intersection(
+        user_data, legal_poly, legal_columns, bba
+    )
+    legal_lines_gdf, intersected_legal_line_list = process_wfs_intersection(
+        user_data, legal_line, legal_columns, bba
+    )
+    legal_points_gdf, intersected_legal_point_list = process_wfs_intersection(
+        user_data, legal_point, legal_columns, bba
+    )
+    
+    return (
+        legal_polys_gdf, intersected_legal_poly_list, 
+        legal_lines_gdf, intersected_legal_line_list, 
+        legal_points_gdf, intersected_legal_point_list
+    )
+    
+def non_legal_data_intersect(user_data):
+    non_columns = [
+        'NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME',
+        'NON_LEGAL_FEAT_OBJECTIVE', 'ORIGINAL_DECISION_DATE'
+    ]
+
+    non_polys_gdf, intersected_non_legal_poly_list = process_wfs_intersection(
+        user_data, non_poly, non_columns, bba
+    )
+    non_lines_gdf, intersected_non_legal_line_list = process_wfs_intersection(
+        user_data, non_line, non_columns, bba
+    )
+    non_points_gdf, intersected_non_legal_point_list = process_wfs_intersection(
+        user_data, non_point, non_columns, bba
+    )
+    
+    return (
+        non_polys_gdf, intersected_non_legal_poly_list, 
+        non_lines_gdf, intersected_non_legal_line_list, 
+        non_points_gdf, intersected_non_legal_point_list
+    )
+
+
+
 @blueprint.route('/intersect', methods=['GET', 'POST'])
 def intersect():
     with open(map_path, 'r') as f:
@@ -60,6 +165,7 @@ def intersect():
     if request.method == 'POST':
         # Step 1: Read the uploaded file
         uploaded_file = request.files['file']
+        data_type = request.form['data_type']
         uploaded_gdf = None
 
         if uploaded_file.filename.endswith('.geojson'):
@@ -72,27 +178,77 @@ def intersect():
             uploaded_gdf = gpd.read_file(uploaded_file)
 
         if uploaded_gdf is not None:
-            intersected_data_1 = intersect_with_wfs(uploaded_gdf, WFS_LAYER_1_URL)
-            intersected_data_2 = intersect_with_wfs(uploaded_gdf, WFS_LAYER_2_URL)
-
-            # Convert DataFrames to list of dictionaries for easy table rendering
-            intersected_data_1_list = intersected_data_1[['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 
-                                                        'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 
-                                                        'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK']].to_dict(orient='records')
             
-            intersected_data_2_list = intersected_data_2[['NON_LEGAL_FEAT_ID', 'STRGC_LAND_RSRCE_PLAN_NAME',
-                                                        'NON_LEGAL_FEAT_OBJECTIVE', 'ORIGINAL_DECISION_DATE']].to_dict(orient='records')
+            intersected_data_1 = None
+            intersected_data_2 = None
+            intersected_data_3 = None
+            intersected_data_4 = None
+            intersected_data_5 = None
+            intersected_data_6 = None
+            
+            if data_type == 'legal':
+                legal_polys_gdf, intersected_legal_poly_list, \
+                legal_lines_gdf, intersected_legal_line_list, \
+                legal_points_gdf, intersected_legal_point_list = legal_data_intersect(uploaded_gdf)
+                
+                intersected_data_1=intersected_legal_poly_list
+                intersected_data_2=intersected_legal_line_list
+                intersected_data_3=intersected_legal_point_list
+                intersected_data_4=None
+                intersected_data_5=None
+                intersected_data_6=None
+                
 
+                
+            elif data_type =='non_legal':    
+                non_polys_gdf, intersected_non_legal_poly_list, \
+                non_lines_gdf, intersected_non_legal_line_list, \
+                non_points_gdf, intersected_non_legal_point_list = non_legal_data_intersect(uploaded_gdf)
+                
+                intersected_data_1=None
+                intersected_data_2=None
+                intersected_data_3=None
+                intersected_data_4=intersected_non_legal_poly_list
+                intersected_data_5=intersected_non_legal_line_list
+                intersected_data_6=intersected_non_legal_point_list
+                
+                
+            elif data_type =='both':
+                legal_polys_gdf, intersected_legal_poly_list, \
+                legal_lines_gdf, intersected_legal_line_list, \
+                legal_points_gdf, intersected_legal_point_list = legal_data_intersect(uploaded_gdf)
+                
+                intersected_data_1=intersected_legal_poly_list
+                intersected_data_2=intersected_legal_line_list
+                intersected_data_3=intersected_legal_point_list
+                
+                non_polys_gdf, intersected_non_legal_poly_list, \
+                non_lines_gdf, intersected_non_legal_line_list, \
+                non_points_gdf, intersected_non_legal_point_list = non_legal_data_intersect(uploaded_gdf)             
+                
+                intersected_data_4=intersected_non_legal_poly_list
+                intersected_data_5=intersected_non_legal_line_list
+                intersected_data_6=intersected_non_legal_point_list
+            
+                
             return render_template(
                 'intersect.html',
-                intersected_data_1=intersected_data_1_list,
-                intersected_data_2=intersected_data_2_list,
-                leaflet_map=leaflet_map
+                leaflet_map=leaflet_map,
+                intersected_data_1=intersected_data_1,
+                intersected_data_2=intersected_data_2,
+                intersected_data_3=intersected_data_3,
+                intersected_data_4=intersected_data_4,
+                intersected_data_5=intersected_data_5,
+                intersected_data_6=intersected_data_6,
             )
     # For GET requests, set default values for the data variables
     return render_template(
         'intersect.html',
         leaflet_map=leaflet_map,
         intersected_data_1=None,
-        intersected_data_2=None
+        intersected_data_2=None,
+        intersected_data_3=None,
+        intersected_data_4=None,
+        intersected_data_5=None,
+        intersected_data_6=None
     )
