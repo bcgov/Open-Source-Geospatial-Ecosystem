@@ -199,7 +199,8 @@
             const geometryField = fields.includes('GEOMETRY') ? 'GEOMETRY' : 'SHAPE';
 
             // Construct CQL_FILTER with query and BBOX if applicable
-            const bboxFilter = `BBOX(${geometryField},898012.21,1291755.751,743161.005,1112127.154)`;
+            const bboxFilter = `BBOX(${geometryField},679217.2894,1084923.6194,938424.3224,1321506.4749)`;
+            
             if (query) {
                 // Append query with BBOX to CQL_FILTER
                 params.set('CQL_FILTER', `${query} AND ${bboxFilter}`);
