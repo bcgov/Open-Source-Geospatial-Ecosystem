@@ -7,11 +7,11 @@ import io
 import os
 
 blueprint = Blueprint('intersect',__name__,
-                    static_folder='../frontend/static',  
-                    template_folder='../frontend/templates')
+                    static_folder='./templates/static',  
+                    template_folder='./templates/templates')
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-map_path = os.path.join(BASE_DIR, '..','..','frontend','static', 'lup_intersect.html')
+map_path = os.path.join(BASE_DIR, '..','templates','static', 'lup_intersect.html')
 
 # Define bounding box
 bba = (743161, 1112127, 898012, 1291756, 'urn:ogc:def:crs:EPSG:3005')
