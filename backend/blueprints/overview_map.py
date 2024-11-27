@@ -3,12 +3,12 @@ import os
 
 # Get the path of `lup_overview.html`
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-map_path = os.path.join(BASE_DIR, '..','..','frontend','static', 'lup_overview.html')
+map_path = os.path.join(BASE_DIR, '..','templates','static', 'lup_overview.html')
 
 # Blueprint setup
 blueprint = Blueprint("Overview_Map", __name__,
-                    static_folder='../frontend/static',  
-                    template_folder='../frontend/templates')  
+                    static_folder='./templates/static',  
+                    template_folder='./templates/templates')  
 
 @blueprint.route("/overview_map")
 def overview():
