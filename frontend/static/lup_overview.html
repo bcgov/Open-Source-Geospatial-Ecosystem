@@ -189,6 +189,7 @@
                 count: count
             });
         
+        
                         // Add fields if provided
             if (fields && fields.length > 0) {
                 params.append('propertyName', fields.join(','));
@@ -198,8 +199,7 @@
             const geometryField = fields.includes('GEOMETRY') ? 'GEOMETRY' : 'SHAPE';
 
             // Construct CQL_FILTER with query and BBOX if applicable
-            const bboxFilter = `BBOX(${geometryField},781152.8450,1051293.6418,916969.3105,1121496.6767)`;
-
+            const bboxFilter = `BBOX(${geometryField},898012.21,1291755.751,743161.005,1112127.154)`;
             if (query) {
                 // Append query with BBOX to CQL_FILTER
                 params.set('CQL_FILTER', `${query} AND ${bboxFilter}`);
