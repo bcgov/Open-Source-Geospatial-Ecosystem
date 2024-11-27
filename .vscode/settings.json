@@ -1,0 +1,27 @@
+{
+    "ruff.lint.run": "onType",
+    "ruff.organizeImports": false,
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+        },
+        "black-formatter.args":
+            ["--line-length=80"],
+    },
+
+    "python.defaultInterpreterPath": "./backend/.venv/bin/python",
+    "python.sortImports.args": [
+        "--profile", "black"
+    ],
+    "editor.hover.enabled": false,
+    "editor.rulers": [
+        80,
+        120
+    ],
+    "isort.args": ["--profile", "black"],
+    "files.trimTrailingWhitespace": true,
+
+
+}
