@@ -174,12 +174,12 @@
         
         // Function to generate the WFS query URL
         function wfsQuery(dataset, query = null, fields = [], startIndex = 0, count = 5000) {
-            const SERVICE_URL = "http://localhost:5000/wfs"; // Correct the base URL
+            const SERVICE_URL = "http://localhost:5000/wfs"; // Add "?" to properly format the URL
         
-            // Initialize query parameters
+            // Base parameters
             const params = new URLSearchParams({
                 service: 'WFS',
-                version: '2.2.0',
+                version: '2.0.0',
                 request: 'GetFeature',
                 typeName: `pub:${dataset}`,
                 outputFormat: 'application/json',
@@ -189,22 +189,26 @@
                 count: count
             });
         
-            // Use `propertyName` instead of `Fields`
+            // Add fields if provided
             if (fields && fields.length > 0) {
-                params.set('propertyName', fields.join(','));
+                params.append('propertyName', fields.join(',')); // No need to uppercase fields
             }
         
-            // Build the CQL_FILTER with optional query
+            // Construct CQL_FILTER with query and BBOX if applicable
+            const bboxFilter = `BBOX(GEOMETRY,54.421167, -129.195923, 54.756965, -128.157028)`;
             if (query) {
-                params.set('CQL_FILTER', query.replace(/\+/g, ' ')); // Replace '+' with space
+                // Append query with BBOX to CQL_FILTER
+                params.set('CQL_FILTER', `${query} AND ${bboxFilter}`);
+            } else {
+                // Use only the BBOX filter if no query is provided
+                params.set('CQL_FILTER', bboxFilter);
             }
         
-            // Build the final URL
+            // Construct the final URL
             const url = `${SERVICE_URL}${params.toString()}`;
             console.log("WFS URL:", url);
             return url;
         }
-        
         
         // store active layers as an object keyed by layer name
         var activeLayers = {};
