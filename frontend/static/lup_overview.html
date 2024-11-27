@@ -179,7 +179,7 @@
             // Base parameters
             const params = new URLSearchParams({
                 service: 'WFS',
-                version: '2.0.0',
+                version: '2.2.0',
                 request: 'GetFeature',
                 typeName: `pub:${dataset}`,
                 outputFormat: 'application/json',
@@ -195,7 +195,7 @@
             }
         
             // Construct CQL_FILTER with query and BBOX if applicable
-            const bboxFilter = `BBOX(GEOMETRY,54.421167, -129.195923, 54.756965, -128.157028)`;
+            const bboxFilter = `BBOX(GEOMETRY,806449.5859,1077489.4995,840510.1633,1094850.3182)`;
             if (query) {
                 // Append query with BBOX to CQL_FILTER
                 params.set('CQL_FILTER', `${query} AND ${bboxFilter}`);
