@@ -39,33 +39,42 @@ def serve_node_modules(filename):
 # WFS proxy route
 @app.route('/wfs<path:endpoint>', methods=['GET', 'POST', 'OPTIONS'])
 def proxy_request(endpoint):
-    # Construct the URL for the WFS request
+    # Construct the base URL
     url = f"{WFS_URL}{endpoint}"
 
-    # Forward the parameters from the request
+    # Collect parameters and headers
     params = request.args.to_dict()
+    headers = dict(request.headers)
+    headers.pop('Host', None)  # Avoid host mismatches
 
-    print("Requesting URL:", url)
-    print("Params:", params)
-    
-    # Handle HTTP methods appropriately
+    # Handle preflight CORS (OPTIONS request)
     if request.method == 'OPTIONS':
         return _build_cors_preflight_response()
-    elif request.method == 'GET':
-        wfs_response = requests.get(url, params=params)
-    elif request.method == 'POST':
-        wfs_response = requests.post(url, data=request.data)
 
-    # Pass the content of the WFS response back to the client
-    response = Response(wfs_response.content, status=wfs_response.status_code)
-    response.headers['Content-Type'] = wfs_response.headers.get('Content-Type', 'application/json')
+    # Forward GET or POST requests to the WFS server
+    try:
+        if request.method == 'GET':
+            wfs_response = requests.get(url, params=params, headers=headers)
+        elif request.method == 'POST':
+            wfs_response = requests.post(url, data=request.data, headers=headers)
 
-    # Add CORS headers
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
-    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+        # Build the Flask response
+        response = Response(wfs_response.content, status=wfs_response.status_code)
+        response.headers['Content-Type'] = wfs_response.headers.get('Content-Type')
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
 
-    return response
+        # Debugging
+        print("Request URL:", wfs_response.url)
+        print("Response Status:", wfs_response.status_code)
+        print("Response Content-Type:", wfs_response.headers.get('Content-Type'))
+        return response
+
+    except requests.RequestException as e:
+        print("Request Error:", e)
+        return Response("Error connecting to WFS server", status=500)
+
 
 def _build_cors_preflight_response():
     """Handles the CORS preflight (OPTIONS) request."""

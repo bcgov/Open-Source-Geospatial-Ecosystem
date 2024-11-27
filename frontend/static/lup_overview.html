@@ -173,42 +173,43 @@
         });
         
         // Function to generate the WFS query URL
-        function wfsQuery(dataset, query = null, fields = [], startIndex = 0, count = 5000 ) {
-            const SERVICE_URL = "http://localhost:5000/wfs";
+        function wfsQuery(dataset, query = null, fields = [], startIndex = 0, count = 5000) {
+            const SERVICE_URL = "http://localhost:5000/wfs"; // Add "?" to properly format the URL
         
+            // Base parameters
             const params = new URLSearchParams({
                 service: 'WFS',
-                version: '2.0.0',
+                version: '2.2.0',
                 request: 'GetFeature',
                 typeName: `pub:${dataset}`,
                 outputFormat: 'application/json',
                 srsName: 'EPSG:4326',
-                bbox: [54.94267775412879, -130.02081515748938, 56.60674270353342, -127.66422698319626, 'urn:ogc:def:crs:EPSG:4326'].join(','),
                 sortBy: 'OBJECTID',
                 startIndex: startIndex,
                 count: count
-
             });
         
-            // Use INTERSECTS filter with a POLYGON if bbox is provided
         
-            if (query) {
-                params.delete('bbox');
-                if (params.has('CQL_FILTER')) {
-                    params.set('CQL_FILTER', `${params.get('CQL_FILTER')} AND ${query}`);
-                } else {
-                    params.set('CQL_FILTER', query);
-                }
-            }
-        
+                        // Add fields if provided
             if (fields && fields.length > 0) {
-                params.append('propertyName', fields.map(field => field.toUpperCase()).join(','));
+                params.append('propertyName', fields.join(','));
+            }
+
+            // Determine the geometry field name
+            const geometryField = fields.includes('GEOMETRY') ? 'GEOMETRY' : 'SHAPE';
+
+            // Construct CQL_FILTER with query and BBOX if applicable
+            const bboxFilter = `BBOX(${geometryField},679217.2894,1084923.6194,938424.3224,1321506.4749)`;
+            
+            if (query) {
+                // Append query with BBOX to CQL_FILTER
+                params.set('CQL_FILTER', `${query} AND ${bboxFilter}`);
+            } else {
+                // Use only the BBOX filter if no query is provided
+                params.set('CQL_FILTER', bboxFilter);
             }
         
-            if (count !== null) {
-                params.append('count', count);
-            }
-        
+            // Construct the final URL
             const url = `${SERVICE_URL}${params.toString()}`;
             console.log("WFS URL:", url);
             return url;
