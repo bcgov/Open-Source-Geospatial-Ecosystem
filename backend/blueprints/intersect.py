@@ -318,12 +318,12 @@ def get_gdfs():
     try:
         # Convert each GeoDataFrame to GeoJSON, ensuring CRS and validity
         gdfs = {
-            # "legal_polys": legal_polys_gdf.to_crs(epsg=4326).to_json() if legal_polys_gdf is not None and not legal_polys_gdf.empty else None,
-            # "legal_lines": legal_lines_gdf.to_crs(epsg=4326).to_json() if legal_lines_gdf is not None and not legal_lines_gdf.empty else None,
-            # "legal_points": legal_points_gdf.to_crs(epsg=4326).to_json() if legal_points_gdf is not None and not legal_points_gdf.empty else None,
-            # "non_legal_polys": non_polys_gdf.to_crs(epsg=4326).to_json() if non_polys_gdf is not None and not non_polys_gdf.empty else None,
-            # "non_legal_lines": non_lines_gdf.to_crs(epsg=4326).to_json() if non_lines_gdf is not None and not non_lines_gdf.empty else None,
-            # "non_legal_points": non_points_gdf.to_crs(epsg=4326).to_json() if non_points_gdf is not None and not non_points_gdf.empty else None,
+            "legal_polys": legal_polys_gdf.to_crs(epsg=4326).to_json() if legal_polys_gdf is not None and not legal_polys_gdf.empty else None,
+            "legal_lines": legal_lines_gdf.to_crs(epsg=4326).to_json() if legal_lines_gdf is not None and not legal_lines_gdf.empty else None,
+            "legal_points": legal_points_gdf.to_crs(epsg=4326).to_json() if legal_points_gdf is not None and not legal_points_gdf.empty else None,
+            "non_legal_polys": non_polys_gdf.to_crs(epsg=4326).to_json() if non_polys_gdf is not None and not non_polys_gdf.empty else None,
+            "non_legal_lines": non_lines_gdf.to_crs(epsg=4326).to_json() if non_lines_gdf is not None and not non_lines_gdf.empty else None,
+            "non_legal_points": non_points_gdf.to_crs(epsg=4326).to_json() if non_points_gdf is not None and not non_points_gdf.empty else None,
             "uploaded_data": uploaded_gdf.to_crs(epsg=4326).to_json() if uploaded_gdf is not None and not uploaded_gdf.empty else None
         }
 
