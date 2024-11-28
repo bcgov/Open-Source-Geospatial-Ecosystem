@@ -3,6 +3,8 @@ import requests
 from shapely.geometry import shape
 import geojson
 import geopandas as gpd
+import pandas as pd
+import gpxpy
 import io
 import os
 import json
@@ -167,6 +169,16 @@ def validate_geojson(geojson_data):
     except ValueError as e:
         print(f"Invalid GeoJSON: {e}")
 
+# Convert timestamp columns to strings and NaN values to None
+def clean_uploaded_data(gdf):
+    gdf = gdf.map(lambda x: None if pd.isnull(x) else x)
+
+    datetime_columns = gdf.columns[gdf.apply(lambda col: pd.api.types.is_datetime64_any_dtype(col))]
+    for column in datetime_columns:
+        gdf[column] = gdf[column].dt.strftime('%Y-%m-%d %H:%M:%S') 
+
+    return gdf
+
 legal_polys_gdf = None
 legal_lines_gdf = None
 legal_points_gdf = None
@@ -178,13 +190,14 @@ non_points_gdf = None
 @blueprint.route('/intersect', methods=['GET', 'POST'])
 def intersect():
     global legal_polys_gdf, legal_lines_gdf, legal_points_gdf, non_polys_gdf, non_lines_gdf, non_points_gdf, uploaded_gdf
+    uploaded_gdf = None
     with open(map_path, 'r') as f:
         leaflet_map = f.read()
     if request.method == 'POST':
         # Step 1: Read the uploaded file
         uploaded_file = request.files['file']
         data_type = request.form['data_type']
-        uploaded_gdf = None
+        # uploaded_gdf = None
 
         if uploaded_file.filename.endswith('.geojson'):
             uploaded_gdf = gpd.read_file(uploaded_file)
@@ -277,6 +290,9 @@ def intersect():
 @blueprint.route('/get_gdfs', methods=['GET'])
 def get_gdfs():
     try:
+        # handle timestamps and NaN values in uploaded data
+        uploaded_gdf = clean_uploaded_data(uploaded_gdf)
+
         # Convert each GeoDataFrame to GeoJSON, ensuring CRS and validity
         gdfs = {
             "legal_polys": legal_polys_gdf.to_crs(epsg=4326).to_json() if legal_polys_gdf is not None and not legal_polys_gdf.empty else None,
