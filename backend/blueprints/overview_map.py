@@ -7,8 +7,8 @@ map_path = os.path.join(BASE_DIR, '..','templates','static', 'lup_overview.html'
 
 # Blueprint setup
 blueprint = Blueprint("Overview_Map", __name__,
-                    static_folder='./templates/static',  
-                    template_folder='./templates/templates')  
+                    static_folder='../templates/static',  
+                    template_folder='../templates/templates')  
 
 @blueprint.route("/overview_map")
 def overview():
