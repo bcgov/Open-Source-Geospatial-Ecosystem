@@ -384,6 +384,12 @@
         fetch('http://localhost:5000/get_gdfs')
             .then(response => response.json())
             .then(data => {
+                const legal_polys = "Intersected Current Legal Planning Objective Polygons";
+                const legal_lines = "Intersected Current Legal Planning Objective Lines";
+                const legal_points = "Intersected Current Legal Planning Objective Points";
+                const non_legal_polys = "Intersected Current Non Legal Planning Objective Polygons";
+                const non_legal_lines = "Intersected Current Non Legal Planning Objective Lines";
+                const non_legal_points = "Intersected Current Non Legal Planning Objective Points";
                 const datasetColors = {
                     legal_polys: getRandomColor(),
                     legal_lines: getRandomColor(),
@@ -415,9 +421,8 @@
                     // Add the GeoJSON layer to the map
                     geoJsonLayer.addTo(map);
         
-                    // Add to legend and checkbox toggle
-                    updateLegend(key, datasetColors[key], "add");
                     createCheckboxForAddedLayer(geoJsonLayer, key);
+                    updateLegend(datasetColors[key], datasetColors[value], 1, "add");
                 });
             })
             .catch(error => {
