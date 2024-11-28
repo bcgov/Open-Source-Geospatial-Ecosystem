@@ -177,7 +177,7 @@ non_points_gdf = None
 
 @blueprint.route('/intersect', methods=['GET', 'POST'])
 def intersect():
-    global legal_polys_gdf, legal_lines_gdf, legal_points_gdf, non_polys_gdf, non_lines_gdf, non_points_gdf
+    global legal_polys_gdf, legal_lines_gdf, legal_points_gdf, non_polys_gdf, non_lines_gdf, non_points_gdf, uploaded_gdf
     with open(map_path, 'r') as f:
         leaflet_map = f.read()
     if request.method == 'POST':
@@ -260,7 +260,7 @@ def intersect():
                 intersected_data_3=intersected_data_3,
                 intersected_data_4=intersected_data_4,
                 intersected_data_5=intersected_data_5,
-                intersected_data_6=intersected_data_6,
+                intersected_data_6=intersected_data_6
             )
     # For GET requests, set default values for the data variables
     return render_template(
@@ -285,6 +285,7 @@ def get_gdfs():
             "non_legal_polys": non_polys_gdf.to_crs(epsg=4326).to_json() if non_polys_gdf is not None and not non_polys_gdf.empty else None,
             "non_legal_lines": non_lines_gdf.to_crs(epsg=4326).to_json() if non_lines_gdf is not None and not non_lines_gdf.empty else None,
             "non_legal_points": non_points_gdf.to_crs(epsg=4326).to_json() if non_points_gdf is not None and not non_points_gdf.empty else None,
+            "uploaded_data": uploaded_gdf.to_crs(epsg=4326).to_json() if uploaded_gdf is not None and not uploaded_gdf.empty else None
         }
 
         # Filter out None values
