@@ -285,21 +285,23 @@ def intersect():
 @blueprint.route('/get_gdfs', methods=['GET'])
 def get_gdfs():
     try:
-        # Convert each GeoDataFrame to GeoJSON, ensuring that it is not None
+        # Convert each GeoDataFrame to GeoJSON, ensuring CRS and validity
         gdfs = {
-            "legal_polys": legal_polys_gdf.to_json() if legal_polys_gdf is not None else None,
-            "legal_lines": legal_lines_gdf.to_json() if legal_lines_gdf is not None else None,
-            "legal_points": legal_points_gdf.to_json() if legal_points_gdf is not None else None,
-            "non_legal_polys": non_polys_gdf.to_json() if non_polys_gdf is not None else None,
-            "non_legal_lines": non_lines_gdf.to_json() if non_lines_gdf is not None else None,
-            "non_legal_points": non_points_gdf.to_json() if non_points_gdf is not None else None,
+            "legal_polys": legal_polys_gdf.to_crs(epsg=4326).to_json() if legal_polys_gdf is not None and not legal_polys_gdf.empty else None,
+            "legal_lines": legal_lines_gdf.to_crs(epsg=4326).to_json() if legal_lines_gdf is not None and not legal_lines_gdf.empty else None,
+            "legal_points": legal_points_gdf.to_crs(epsg=4326).to_json() if legal_points_gdf is not None and not legal_points_gdf.empty else None,
+            "non_legal_polys": non_polys_gdf.to_crs(epsg=4326).to_json() if non_polys_gdf is not None and not non_polys_gdf.empty else None,
+            "non_legal_lines": non_lines_gdf.to_crs(epsg=4326).to_json() if non_lines_gdf is not None and not non_lines_gdf.empty else None,
+            "non_legal_points": non_points_gdf.to_crs(epsg=4326).to_json() if non_points_gdf is not None and not non_points_gdf.empty else None,
         }
 
+        # Combine features into one GeoJSON
         all_features = []
         for key, geojson in gdfs.items():
             if geojson:
-                geojson_obj = json.loads(geojson) if isinstance(geojson, str) else geojson
-                all_features.extend(geojson_obj['features'])
+                geojson_obj = json.loads(geojson)
+                if 'features' in geojson_obj:
+                    all_features.extend(geojson_obj['features'])
         
         combined_geojson = {
             "type": "FeatureCollection",
