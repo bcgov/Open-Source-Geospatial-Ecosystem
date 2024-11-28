@@ -111,7 +111,8 @@ def process_wfs_intersection(user_data, dataset, columns, bbox):
     if gdf is not None:
         intersected = intersect_with_wfs(user_data, gdf)
         if intersected is not None:
-            return intersected[columns,'geometry', 'OBJECTID' ], intersected[columns].to_dict(orient='records')
+            intersected=intersected[[*columns,'geometry', 'OBJECTID']]
+            return intersected, intersected[columns].to_dict(orient='records')
     return None, None
 
 def legal_data_intersect(user_data):
