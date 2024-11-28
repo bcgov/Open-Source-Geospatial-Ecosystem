@@ -82,7 +82,7 @@ def wfs_query_to_gdf(dataset, query=None, fields=None, bbox=None, offset=0, max_
     return gdf
 
 
-def intersect_with_wfs(uploaded_gdf, gdf_from_wfs):
+def intersect_with_wfs(uploaded_gdf, gdf_from_wfs, filter_list=None):
     if gdf_from_wfs is None or len(gdf_from_wfs) == 0:
         return None  # Return None if no data from WFS
 
@@ -91,17 +91,19 @@ def intersect_with_wfs(uploaded_gdf, gdf_from_wfs):
         gdf_from_wfs = gdf_from_wfs.to_crs(uploaded_gdf.crs)
 
     # Perform intersection
-    # intersected_data = gpd.overlay(uploaded_gdf, gdf_from_wfs, how='intersection')
     intersected_data = gpd.sjoin(gdf_from_wfs, uploaded_gdf, how='inner', predicate='intersects')
     
     if intersected_data.empty:
         return None
 
+    # If a filter list is provided, filter the intersected data based on the list
+    if filter_list is not None:
+        intersected_data = intersected_data[intersected_data['LEGAL_FEAT_ID'].isin(filter_list)]
+
     # Convert Timestamp columns to string before serializing to JSON
     for column in intersected_data.select_dtypes(include=['datetime']).columns:
         intersected_data[column] = intersected_data[column].astype(str)
 
-    # Return the GeoDataFrame (not the JSON string)
     return intersected_data
 
 def process_wfs_intersection(user_data, dataset, columns, bbox):
@@ -109,7 +111,7 @@ def process_wfs_intersection(user_data, dataset, columns, bbox):
     if gdf is not None:
         intersected = intersect_with_wfs(user_data, gdf)
         if intersected is not None:
-            return gdf, intersected[columns].to_dict(orient='records')
+            return intersected, intersected[columns].to_dict(orient='records')
     return None, None
 
 def legal_data_intersect(user_data):
@@ -213,9 +215,6 @@ def intersect():
                 intersected_data_5=None
                 intersected_data_6=None
                 
-                legal_polys_gdf = legal_polys_gdf
-                legal_lines_gdf = legal_lines_gdf
-                legal_points_gdf = legal_points_gdf
 
                 
             elif data_type =='non_legal':    
@@ -230,9 +229,7 @@ def intersect():
                 intersected_data_5=intersected_non_legal_line_list
                 intersected_data_6=intersected_non_legal_point_list
                 
-                non_polys_gdf = non_polys_gdf
-                non_lines_gdf = non_lines_gdf
-                non_points_gdf = non_points_gdf
+
                 
                 
             elif data_type =='both':
@@ -252,12 +249,6 @@ def intersect():
                 intersected_data_5=intersected_non_legal_line_list
                 intersected_data_6=intersected_non_legal_point_list
                 
-                legal_polys_gdf = legal_polys_gdf
-                legal_lines_gdf = legal_lines_gdf
-                legal_points_gdf = legal_points_gdf
-                non_polys_gdf = non_polys_gdf
-                non_lines_gdf = non_lines_gdf
-                non_points_gdf = non_points_gdf
             
                 
             return render_template(
