@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, jsonify, Response
 import requests
-from shapely.geometry import shape
+from shapely.geometry import shape, Point, LineString
 import geojson
 import geopandas as gpd
 import pandas as pd
@@ -169,15 +169,41 @@ def validate_geojson(geojson_data):
     except ValueError as e:
         print(f"Invalid GeoJSON: {e}")
 
+def read_gpx(data):
+    gpx_data = gpxpy.parse(data.read())
+
+    # extract points and lines from gpx
+    points = []
+    lines = []
+
+    # extract lines
+    for route in gpx_data.routes:
+        line = [(point.longitude, point.latitude) for point in route.points]
+        lines.append(LineString(line))
+
+    # extract points
+    for point in gpx_data.waypoints:
+        points.append(Point(point.longitude, point.latitude))
+
+    # combine geometries in a geodataframe
+    geometries = points + lines
+    uploaded_gdf = gpd.GeoDataFrame(geometry=geometries, crs="EPSG:4326")
+
+    return uploaded_gdf
+
+######################################
+## POSSIBLY NOT NEEDED ###############
+######################################
+
 # Convert timestamp columns to strings and NaN values to None
-def clean_uploaded_data(gdf):
-    gdf = gdf.map(lambda x: None if pd.isnull(x) else x)
+# def clean_uploaded_data(gdf):
+#     gdf = gdf.map(lambda x: None if pd.isnull(x) else x)
 
-    datetime_columns = gdf.columns[gdf.apply(lambda col: pd.api.types.is_datetime64_any_dtype(col))]
-    for column in datetime_columns:
-        gdf[column] = gdf[column].dt.strftime('%Y-%m-%d %H:%M:%S') 
+#     datetime_columns = gdf.columns[gdf.apply(lambda col: pd.api.types.is_datetime64_any_dtype(col))]
+#     for column in datetime_columns:
+#         gdf[column] = gdf[column].dt.strftime('%Y-%m-%d %H:%M:%S') 
 
-    return gdf
+#     return gdf
 
 legal_polys_gdf = None
 legal_lines_gdf = None
@@ -206,7 +232,7 @@ def intersect():
         elif uploaded_file.filename.endswith('.kml'):
             uploaded_gdf = gpd.read_file(uploaded_file)
         elif uploaded_file.filename.endswith('.gpx'):
-            uploaded_gdf = gpd.read_file(uploaded_file)
+            uploaded_gdf = read_gpx(uploaded_gdf)
 
         if uploaded_gdf is not None:
             
@@ -290,17 +316,14 @@ def intersect():
 @blueprint.route('/get_gdfs', methods=['GET'])
 def get_gdfs():
     try:
-        # handle timestamps and NaN values in uploaded data
-        uploaded_gdf = clean_uploaded_data(uploaded_gdf)
-
         # Convert each GeoDataFrame to GeoJSON, ensuring CRS and validity
         gdfs = {
-            "legal_polys": legal_polys_gdf.to_crs(epsg=4326).to_json() if legal_polys_gdf is not None and not legal_polys_gdf.empty else None,
-            "legal_lines": legal_lines_gdf.to_crs(epsg=4326).to_json() if legal_lines_gdf is not None and not legal_lines_gdf.empty else None,
-            "legal_points": legal_points_gdf.to_crs(epsg=4326).to_json() if legal_points_gdf is not None and not legal_points_gdf.empty else None,
-            "non_legal_polys": non_polys_gdf.to_crs(epsg=4326).to_json() if non_polys_gdf is not None and not non_polys_gdf.empty else None,
-            "non_legal_lines": non_lines_gdf.to_crs(epsg=4326).to_json() if non_lines_gdf is not None and not non_lines_gdf.empty else None,
-            "non_legal_points": non_points_gdf.to_crs(epsg=4326).to_json() if non_points_gdf is not None and not non_points_gdf.empty else None,
+            # "legal_polys": legal_polys_gdf.to_crs(epsg=4326).to_json() if legal_polys_gdf is not None and not legal_polys_gdf.empty else None,
+            # "legal_lines": legal_lines_gdf.to_crs(epsg=4326).to_json() if legal_lines_gdf is not None and not legal_lines_gdf.empty else None,
+            # "legal_points": legal_points_gdf.to_crs(epsg=4326).to_json() if legal_points_gdf is not None and not legal_points_gdf.empty else None,
+            # "non_legal_polys": non_polys_gdf.to_crs(epsg=4326).to_json() if non_polys_gdf is not None and not non_polys_gdf.empty else None,
+            # "non_legal_lines": non_lines_gdf.to_crs(epsg=4326).to_json() if non_lines_gdf is not None and not non_lines_gdf.empty else None,
+            # "non_legal_points": non_points_gdf.to_crs(epsg=4326).to_json() if non_points_gdf is not None and not non_points_gdf.empty else None,
             "uploaded_data": uploaded_gdf.to_crs(epsg=4326).to_json() if uploaded_gdf is not None and not uploaded_gdf.empty else None
         }
 
