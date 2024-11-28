@@ -111,7 +111,7 @@ def process_wfs_intersection(user_data, dataset, columns, bbox):
     if gdf is not None:
         intersected = intersect_with_wfs(user_data, gdf)
         if intersected is not None:
-            return intersected, intersected[columns].to_dict(orient='records')
+            return intersected[columns,'geometry', 'OBJECTID' ], intersected[columns].to_dict(orient='records')
     return None, None
 
 def legal_data_intersect(user_data):
@@ -286,20 +286,17 @@ def get_gdfs():
             "non_legal_points": non_points_gdf.to_crs(epsg=4326).to_json() if non_points_gdf is not None and not non_points_gdf.empty else None,
         }
 
-        # Combine features into one GeoJSON
-        all_features = []
-        for key, geojson in gdfs.items():
-            if geojson:
-                geojson_obj = json.loads(geojson)
-                if 'features' in geojson_obj:
-                    all_features.extend(geojson_obj['features'])
-        
-        combined_geojson = {
-            "type": "FeatureCollection",
-            "features": all_features
-        }
+        # Filter out None values
+        gdfs = {k: v for k, v in gdfs.items() if v}
 
-        return jsonify(combined_geojson)
+        # Convert GeoJSON strings to dicts
+        geojson_layers = {}
+        for key, geojson in gdfs.items():
+            geojson_obj = json.loads(geojson)
+            geojson_layers[key] = geojson_obj
+
+        # Return a GeoJSON object with each layer under its own key
+        return jsonify(geojson_layers)
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500

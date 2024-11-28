@@ -384,8 +384,18 @@
         fetch('http://localhost:5000/get_gdfs')
             .then(response => response.json())
             .then(data => {
+                const datasetColors = {
+                    legal_polys: getRandomColor(),
+                    legal_lines: getRandomColor(),
+                    legal_points: getRandomColor(),
+                    non_legal_polys: getRandomColor(),
+                    non_legal_lines: getRandomColor(),
+                    non_legal_points: getRandomColor()
+                };
+        
+                // Loop through each layer in the GeoJSON
                 Object.keys(data).forEach(key => {
-                    L.geoJSON(data[key], {
+                    const geoJsonLayer = L.geoJSON(data[key], {
                         onEachFeature: function (feature, layer) {
                             if (feature.properties) {
                                 let popupContent = "";
@@ -396,9 +406,17 @@
                             }
                         },
                         style: function (feature) {
-                            return { color: getRandomColor() };
+                            // Use the color based on the dataset (key)
+                            return { color: datasetColors[key] };
                         }
-                    }).addTo(map);
+                    });
+        
+                    // Add the GeoJSON layer to the map
+                    geoJsonLayer.addTo(map);
+        
+                    // Add to legend and checkbox toggle
+                    updateLegend(key, datasetColors[key], "add");
+                    createCheckboxForAddedLayer(geoJsonLayer, key);
                 });
             })
             .catch(error => {
