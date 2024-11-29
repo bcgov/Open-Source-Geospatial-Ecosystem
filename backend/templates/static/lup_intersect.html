@@ -423,7 +423,7 @@
                     geoJsonLayer.addTo(map);
         
                     createCheckboxForAddedLayer(geoJsonLayer, key);
-                    updateLegend(datasetColors[key], datasetColors[key], 1, "add");
+                    updateLegend(key, datasetColors[key], 1, "add");
                 });
             })
             .catch(error => {
