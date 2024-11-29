@@ -74,6 +74,8 @@
                 L.geoJSON(geojsonData, {
                 style: { fillColor: 'transparent', color: 'black', weight: 4 }
                 }).addTo(map);
+
+                updateLegend('Gitanyow Land Use Plan Area', 'black', 1, 'add');
             })
             .catch(error => console.error("Error loading GeoJSON data:", error));
         } else {
