@@ -5,8 +5,8 @@ import requests
 
 # Create app
 app = Flask(__name__,
-            static_folder='./templates/static',  
-            template_folder='./templates/templates')  
+            static_folder='../templates/static',  
+            template_folder='../templates/templates')  
 
 # Enable CORS for all routes
 CORS(app)
