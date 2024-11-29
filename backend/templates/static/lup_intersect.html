@@ -402,6 +402,7 @@
         
                 // Loop through each layer in the GeoJSON
                 Object.keys(data).forEach(key => {
+                    console.log(key)
                     const geoJsonLayer = L.geoJSON(data[key], {
                         onEachFeature: function (feature, layer) {
                             if (feature.properties) {
@@ -422,7 +423,7 @@
                     geoJsonLayer.addTo(map);
         
                     createCheckboxForAddedLayer(geoJsonLayer, key);
-                    updateLegend(datasetColors[key], datasetColors[value], 1, "add");
+                    updateLegend(datasetColors[key], datasetColors[key], 1, "add");
                 });
             })
             .catch(error => {
