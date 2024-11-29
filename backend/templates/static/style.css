@@ -136,16 +136,16 @@ body {
     font-weight: normal;
     border: none;
     font-family:'BC Sans';
-  }
-  
+    }
+
   /* The container <div> - needed to position the dropdown content */
-  .dropdown {
+    .dropdown {
     position: relative;
     display: inline-block;
-  }
-  
+    }
+
   /* Dropdown Content (Hidden by Default) */
-  .dropdown-content {
+    .dropdown-content {
     display: none;
     position: absolute;
     background-color: var(--primary-dark);
@@ -153,10 +153,9 @@ body {
     min-width: 160px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
-  }
-  
+    }
   /* Links inside the dropdown */
-  .dropdown-content a {
+    .dropdown-content a {
     color: var(--primary-light);
     padding: 12px 16px;
     text-decoration: none;
@@ -164,16 +163,16 @@ body {
     font-weight: normal;
     font-family:'BC Sans';
     font-size:18px;
-  }
-  
+    }
+
   /* Change color of dropdown links on hover */
-  .dropdown-content a:hover {background-color: var(--accent);}
-  
+    .dropdown-content a:hover {background-color: var(--accent);}
+
   /* Show the dropdown menu on hover */
-  .dropdown:hover .dropdown-content {display: block;}
-  
+    .dropdown:hover .dropdown-content {display: block;}
+
   /* Change the background color of the dropdown button when the dropdown content is shown */
-  .dropdown:hover .dropbtn {border-bottom:2px solid var(--primary-light)}
+    .dropdown:hover .dropbtn {border-bottom:2px solid var(--primary-light)}
 
 @media screen and (max-width: 800px) {
     .title {
@@ -603,4 +602,48 @@ I don't think this is needed anymore, keeping it commented out just in case
 
 .form-horizontal button {
     flex-shrink: 0;
+}
+
+/* Container for metadata section */
+.metadata-section {
+    background-color: #2f4882;  
+    color: white;  
+    padding: 30px;
+    margin-top: 20px;
+    font-family: 'BC Sans';
+    border-radius: 8px;  
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);  
+    max-width: 100%;  
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Header styles */
+.header-style {
+    font-size: 24px;  /* Adjust size */
+    color: white;
+    font-weight: bold;
+}
+
+/* Link style */
+.link-style {
+    color: #ffb703;  /* Yellow-orange color */
+    text-decoration: none;
+}
+
+.link-style:hover {
+    text-decoration: underline;
+}
+
+/* Sub-header style */
+h3.header-style {
+    font-size: 20px;
+    color: #ffb703;  /* Emphasis color */
+}
+
+/* Optional styling for paragraphs */
+.metadata-section p {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 15px;
 }
