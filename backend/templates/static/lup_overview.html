@@ -50,7 +50,7 @@
         // pull json from same directory
         let jsonData = [];
         const maplayers = 'overview';  // Or 'overview' depending on the data you need
-        
+
         fetch('/static/layers.json')
             .then(response => {
                 if (!response.ok) {
@@ -71,6 +71,28 @@
             .catch(error => {
                 console.error('Error loading JSON file:', error);
             });
+            
+        // Fetch the Gitanyow GeoJSON URL
+        fetch('/api/gitanyow-url')
+        .then(response => response.json())
+        .then(data => {
+        if (data.url) {
+            // Use the URL to add a GeoJSON layer to the Leaflet map
+            fetch(data.url)
+            .then(res => res.json())
+            .then(geojsonData => {
+                L.geoJSON(geojsonData, {
+                style: function (feature) {
+                    return { color: "blue" }; // Customize your layer style here
+                }
+                }).addTo(map);
+            })
+            .catch(error => console.error("Error loading GeoJSON data:", error));
+        } else {
+            console.error("Error fetching Gitanyow URL:", data.error);
+        }
+        })
+        .catch(error => console.error("Error fetching Gitanyow URL:", error));
 
         L.geoJSON(lup_aoi, {
             style: { fillColor: 'transparent', color: 'black', weight: 4 }

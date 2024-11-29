@@ -30,21 +30,13 @@ def get_gitanyow():
     response = requests.get(base_url, params=params)
 
     if response.status_code == 200:
-        # Parse the JSON response
-        data = response.json()
-        data=data[0]
         response_url = response.url
-        # print("Response URL:", response_url)
+        logging.debug("Response URL:", response_url)
     else:
         logging.error(f"Error: {response.status_code}")
         logging.debug(response.text)
         
-    geojson_data = {
-    "type": "FeatureCollection",
-    "features": [data]
-    }
-    
-    return geojson_data
+    return response_url
 
 api_key = os.getenv("NL_API")
 
