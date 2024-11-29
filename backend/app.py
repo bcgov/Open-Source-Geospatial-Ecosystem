@@ -2,6 +2,13 @@ from flask import Flask, render_template, request, jsonify, Response, send_from_
 from flask_cors import CORS
 from flask_caching import Cache
 import requests
+from dotenv import load_dotenv
+import os 
+
+
+load_dotenv()
+
+api_key = os.getenv("NL_API")
 
 # Create app
 app = Flask(__name__,
