@@ -218,7 +218,7 @@ def intersect():
         elif uploaded_file.filename.endswith('.kml'):
             uploaded_gdf = gpd.read_file(uploaded_file)
         elif uploaded_file.filename.endswith('.gpx'):
-            uploaded_gdf = read_gpx(uploaded_gdf)
+            uploaded_gdf = read_gpx(uploaded_file)
 
         if uploaded_gdf is not None:
             
