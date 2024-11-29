@@ -22,7 +22,7 @@ body {
     font-family: 'BC Sans';
     line-height: 1.6;
     background-color: #ffffff;
-    padding-bottom: 150px;
+    padding-bottom: 5px;
     border-bottom: 6.5px solid #ffc017;
 }
 
@@ -606,28 +606,29 @@ I don't think this is needed anymore, keeping it commented out just in case
 
 /* Container for metadata section */
 .metadata-section {
-    background-color: #2f4882;  
+    background-color: var(--primary-dark);  
     color: white;  
-    padding: 30px;
+    padding: 10px;
     margin-top: 20px;
-    font-family: 'BC Sans';
-    border-radius: 8px;  
+    font-family: 'BC Sans'; 
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);  
     max-width: 100%;  
     margin-left: auto;
     margin-right: auto;
+    border-top: solid 2px var(--accent);
+    border-bottom: solid 2px var(--accent);
 }
 
 /* Header styles */
 .header-style {
-    font-size: 24px;  /* Adjust size */
+    font-size: 24px;  
     color: white;
     font-weight: bold;
 }
 
 /* Link style */
 .link-style {
-    color: #ffb703;  /* Yellow-orange color */
+    color: #E3A82B;  
     text-decoration: none;
 }
 
