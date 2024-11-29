@@ -191,20 +191,6 @@ def read_gpx(data):
 
     return uploaded_gdf
 
-######################################
-## POSSIBLY NOT NEEDED ###############
-######################################
-
-# Convert timestamp columns to strings and NaN values to None
-# def clean_uploaded_data(gdf):
-#     gdf = gdf.map(lambda x: None if pd.isnull(x) else x)
-
-#     datetime_columns = gdf.columns[gdf.apply(lambda col: pd.api.types.is_datetime64_any_dtype(col))]
-#     for column in datetime_columns:
-#         gdf[column] = gdf[column].dt.strftime('%Y-%m-%d %H:%M:%S') 
-
-#     return gdf
-
 legal_polys_gdf = None
 legal_lines_gdf = None
 legal_points_gdf = None
@@ -316,6 +302,11 @@ def intersect():
 @blueprint.route('/get_gdfs', methods=['GET'])
 def get_gdfs():
     try:
+        # Convert timestamp columns to strings and NaN values to None
+        datetime_columns = uploaded_gdf.columns[uploaded_gdf.apply(lambda col: pd.api.types.is_datetime64_any_dtype(col))]
+        for column in datetime_columns:
+            uploaded_gdf[column] = uploaded_gdf[column].dt.strftime('%Y-%m-%d %H:%M:%S') 
+
         # Convert each GeoDataFrame to GeoJSON, ensuring CRS and validity
         gdfs = {
             "legal_polys": legal_polys_gdf.to_crs(epsg=4326).to_json() if legal_polys_gdf is not None and not legal_polys_gdf.empty else None,
@@ -333,7 +324,7 @@ def get_gdfs():
         # Convert GeoJSON strings to dicts
         geojson_layers = {}
         for key, geojson in gdfs.items():
-            geojson_obj = json.loads(geojson)
+            geojson_obj = json.loads(geojson) 
             geojson_layers[key] = geojson_obj
 
         # Return a GeoJSON object with each layer under its own key
