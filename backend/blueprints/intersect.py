@@ -302,7 +302,7 @@ def intersect():
 @blueprint.route('/get_gdfs', methods=['GET'])
 def get_gdfs():
     try:
-        # Convert timestamp columns to strings and NaN values to None
+        # Convert timestamp columns to strings
         datetime_columns = uploaded_gdf.columns[uploaded_gdf.apply(lambda col: pd.api.types.is_datetime64_any_dtype(col))]
         for column in datetime_columns:
             uploaded_gdf[column] = uploaded_gdf[column].dt.strftime('%Y-%m-%d %H:%M:%S') 
