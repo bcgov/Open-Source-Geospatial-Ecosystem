@@ -4,9 +4,47 @@ from flask_caching import Cache
 import requests
 from dotenv import load_dotenv
 import os 
+import os 
+import requests
+import json
+import geojson
+import logging 
 
+#return link for Gitanyow Land Use Plan Boundary 
+def get_gitanyow():
+    load_dotenv()
+    env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),  '../../../backend/.env')
+    load_dotenv(env_path)
 
-load_dotenv()
+    api_key = os.getenv("NL_API")
+
+    # Base URL
+    base_url = "https://native-land.ca/api/index.php"
+
+    # Parameters for the query
+    params = {
+        "maps": "territories",
+        "name": "gitanyow-laxyip",
+        "key": api_key
+    }
+    response = requests.get(base_url, params=params)
+
+    if response.status_code == 200:
+        # Parse the JSON response
+        data = response.json()
+        data=data[0]
+        response_url = response.url
+        # print("Response URL:", response_url)
+    else:
+        logging.error(f"Error: {response.status_code}")
+        logging.debug(response.text)
+        
+    geojson_data = {
+    "type": "FeatureCollection",
+    "features": [data]
+    }
+    
+    return geojson_data
 
 api_key = os.getenv("NL_API")
 
@@ -90,6 +128,15 @@ def _build_cors_preflight_response():
     response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
     return response
+
+#route to return Gitanyow area from Native Land API
+@app.route('/api/gitanyow-url', methods=['GET'])
+def gitanyow_url():
+    try:
+        response_url = get_gitanyow()
+        return jsonify({"url": response_url})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, threaded=True)
