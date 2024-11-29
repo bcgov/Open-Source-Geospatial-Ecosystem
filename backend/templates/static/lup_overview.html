@@ -19,7 +19,7 @@
 
     <script>
         // Initialize the map
-        var map = L.map('overview').setView([55.781113, -128.867888], 7);
+        var map = L.map('overview').setView([55.6, -128.9], 8);
 
         // Base layer setup
         var CartoDB_Positron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
@@ -37,16 +37,6 @@
         // WFS data source URL
         const SERVICE_URL = "http://localhost:5000/wfs/";
 
-        // A simple GeoJSON layer example for AOI (Area of Interest)
-        var lup_aoi= 
-        {
-            "type": "FeatureCollection",
-            "name": "aoi",
-            "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::4326" } },
-            "features": [
-            { "type": "Feature", "properties": { "OBJECTID": 3.0, "SHAPE_Leng": 908959.60400000215, "SHAPE_Area": 51484492817.909615, "X_Max": null, "X_Min": null, "Y_Max": null, "Y_Min": null, "centerx": null, "centery": null, "Lat_Max": -127.12066348938077, "Lat_Min": -130.70713817004415, "Lon_Max": 56.880992958850584, "Lon_Min": 54.658316969110963 }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ -128.877519335263372, 56.854459870751043 ], [ -128.47103084514157, 56.862845226243849 ], [ -127.182976424146929, 56.880987675036366 ], [ -127.120645609878679, 54.734177239127789 ], [ -130.459733007391407, 54.658312163230242 ], [ -130.707118882745391, 56.800867888548048 ], [ -128.877519335263372, 56.854459870751043 ] ] ] ] } }
-            ]
-        };
         // pull json from same directory
         let jsonData = [];
         const maplayers = 'overview';  // Or 'overview' depending on the data you need
@@ -71,7 +61,7 @@
             .catch(error => {
                 console.error('Error loading JSON file:', error);
             });
-            
+
         // Fetch the Gitanyow GeoJSON URL
         fetch('/api/gitanyow-url')
         .then(response => response.json())
@@ -82,9 +72,7 @@
             .then(res => res.json())
             .then(geojsonData => {
                 L.geoJSON(geojsonData, {
-                style: function (feature) {
-                    return { color: "blue" }; // Customize your layer style here
-                }
+                style: { fillColor: 'transparent', color: 'black', weight: 4 }
                 }).addTo(map);
             })
             .catch(error => console.error("Error loading GeoJSON data:", error));
@@ -94,9 +82,19 @@
         })
         .catch(error => console.error("Error fetching Gitanyow URL:", error));
 
-        L.geoJSON(lup_aoi, {
-            style: { fillColor: 'transparent', color: 'black', weight: 4 }
-        }).addTo(map);
+        // A simple GeoJSON layer example for AOI (Area of Interest)
+        //var lup_aoi= 
+        //{
+        //    "type": "FeatureCollection",
+        //    "name": "aoi",
+        //    "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::4326" } },
+        //    "features": [
+        //    { "type": "Feature", "properties": { "OBJECTID": 3.0, "SHAPE_Leng": 908959.60400000215, "SHAPE_Area": 51484492817.909615, "X_Max": null, "X_Min": null, "Y_Max": null, "Y_Min": null, "centerx": null, "centery": null, "Lat_Max": -127.12066348938077, "Lat_Min": -130.70713817004415, "Lon_Max": 56.880992958850584, "Lon_Min": 54.658316969110963 }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ -128.877519335263372, 56.854459870751043 ], [ -128.47103084514157, 56.862845226243849 ], [ -127.182976424146929, 56.880987675036366 ], [ -127.120645609878679, 54.734177239127789 ], [ -130.459733007391407, 54.658312163230242 ], [ -130.707118882745391, 56.800867888548048 ], [ -128.877519335263372, 56.854459870751043 ] ] ] ] } }
+        //    ]
+        //};
+        //L.geoJSON(lup_aoi, {
+        //    style: { fillColor: 'transparent', color: 'black', weight: 4 }
+        //}).addTo(map);
 
 
         // Function to create checkboxes dynamically based on jsonData
