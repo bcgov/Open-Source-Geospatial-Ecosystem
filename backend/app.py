@@ -5,8 +5,8 @@ import requests
 
 # Create app
 app = Flask(__name__,
-            static_folder='../templates/static',  
-            template_folder='../templates/templates')  
+            static_folder='./templates/static',  
+            template_folder='./templates/templates')  
 
 # Enable CORS for all routes
 CORS(app)
@@ -34,7 +34,7 @@ def app_root():
 
 @app.route('/templates/plugins/<path:filename>')
 def serve_node_modules(filename):
-    return send_from_directory('.templates/plugins/', filename)
+    return send_from_directory('./templates/plugins', filename)
 
 # WFS proxy route
 @app.route('/wfs<path:endpoint>', methods=['GET', 'POST', 'OPTIONS'])
