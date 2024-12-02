@@ -10,10 +10,11 @@ import os
 import json
 
 blueprint = Blueprint('intersect',__name__,
-                    static_folder='../templates/static',  
-                    template_folder='../templates/templates')
+                    static_folder='./templates/static',  
+                    template_folder='./templates/templates')
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+map_path = os.path.join(BASE_DIR, '..','templates','static', 'lup_intersect.html')
 map_path = os.path.join(BASE_DIR, '..','templates','static', 'lup_intersect.html')
 
 # Define bounding box

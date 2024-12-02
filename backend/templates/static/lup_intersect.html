@@ -394,7 +394,7 @@
                 non_legal_points: "Intersected Current Non Legal Planning Objective Points",
                 uploaded_data: "Uploaded Data"
             };
-    
+
             const datasetColors = {
                 legal_polys: getRandomColor(),
                 legal_lines: getRandomColor(),
@@ -404,12 +404,12 @@
                 non_legal_points: getRandomColor(),
                 uploaded_data: getRandomColor()
             };
-    
+
             // Loop through each layer in the GeoJSON
             Object.keys(data).forEach(key => {
                 const layerName = datasetNames[key] || key; // Fallback to `key` if no name is mapped
                 console.log(`Adding layer: ${layerName}`);
-    
+
                 const geoJsonLayer = L.geoJSON(data[key], {
                     onEachFeature: function (feature, layer) {
                         if (feature.properties) {
@@ -425,10 +425,10 @@
                         return { color: datasetColors[key] };
                     }
                 });
-    
+
                 // Add the GeoJSON layer to the map
                 geoJsonLayer.addTo(map);
-    
+
                 // Use the human-readable name in the checkbox and legend
                 createCheckboxForAddedLayer(geoJsonLayer, layerName);
                 updateLegend(layerName, datasetColors[key], 1, "add");
@@ -437,6 +437,7 @@
         .catch(error => {
             console.error("Error fetching GeoJSON:", error);
         });
+
     
     </script>
 </body>
