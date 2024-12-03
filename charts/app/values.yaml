@@ -74,7 +74,7 @@ backend:
 
 frontend:
   # -- enable or disable a component deployment.
-  enabled: true
+  enabled: false
   # -- the deployment strategy, can be "Recreate" or "RollingUpdate"
   deploymentStrategy: Recreate
 
@@ -115,7 +115,7 @@ frontend:
     minAvailable: 1 # the minimum number of pods that must be available during the disruption budget.
 
 crunchy:
-  enabled: true # make this false and bitnami-pg true to switch from crunchy to bitnami single postgis.
+  enabled: false # make this false and bitnami-pg true to switch from crunchy to bitnami single postgis.
 
 bitnamipg:
   enabled: false
