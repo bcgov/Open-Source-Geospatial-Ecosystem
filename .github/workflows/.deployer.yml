@@ -195,7 +195,7 @@ jobs:
             ${{ inputs.params }} \
             ${{ steps.vars.outputs.release }} \
             --install --wait --values ${{ inputs.values }} \
-            ./${{ github.event.repository.name }}-${{ steps.pr.outputs.pr || steps.vars.outputs.version }}.tgz
+            ./${{ steps.vars.outputs.repo_name_lower }}-${{ steps.pr.outputs.pr || steps.vars.outputs.version }}.tgz
 
       # Helm release history
       - if: steps.triggers.outputs.triggered == 'true'
