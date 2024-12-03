@@ -1,44 +1,44 @@
-FROM python:3.11 as python-base
+FROM python:3.11-alpine as base
 
-# https://python-poetry.org/docs#ci-recommendations
-ENV POETRY_VERSION=1.8.4
-ENV POETRY_HOME=/opt/poetry
-ENV POETRY_VENV=/opt/poetry-venv
+ARG DEV=false
+ENV VIRTUAL_ENV=/app/.venv \
+    PATH="/app/.venv/bin:$PATH"
 
-# Tell Poetry where to place its cache and virtual environment
-ENV POETRY_CACHE_DIR=/opt/.cache
+RUN apk update && \
+    apk add libpq
 
-# Create stage for Poetry installation
-FROM python-base as poetry-base
 
-# Creating a virtual environment just for poetry and install it with pip
-RUN python3 -m venv $POETRY_VENV \
-	&& $POETRY_VENV/bin/pip install -U pip setuptools \
-	&& $POETRY_VENV/bin/pip install poetry==${POETRY_VERSION}
+FROM base as builder
 
-# Create a new stage from the base python image
-FROM python-base as example-app
+ENV POETRY_NO_INTERACTION=1 \
+    POETRY_VIRTUALENVS_IN_PROJECT=1 \
+    POETRY_VIRTUALENVS_CREATE=1 \
+    POETRY_CACHE_DIR=/tmp/poetry_cache
 
-# Copy Poetry to app image
-COPY --from=poetry-base ${POETRY_VENV} ${POETRY_VENV}
-
-# Add Poetry to PATH
-ENV PATH="${PATH}:${POETRY_VENV}/bin"
+RUN apk update && \
+    apk add musl-dev build-base gcc gfortran openblas-dev gdal gdal-dev proj proj-util proj-dev geos geos-dev
 
 WORKDIR /app
 
-# Copy Dependencies
-COPY poetry.lock pyproject.toml ./
+# Install Poetry
+RUN pip install poetry==1.8.4
 
-# [OPTIONAL] Validate the project is properly configured
-# RUN poetry check
+# Install the app
+COPY pyproject.toml poetry.lock ./
+RUN if [ $DEV ]; then \
+      poetry install --with dev --no-root && rm -rf $POETRY_CACHE_DIR; \
+    else \
+      poetry install --without dev --no-root && rm -rf $POETRY_CACHE_DIR; \
+    fi
 
-# Install Dependencies
-RUN poetry install --no-interaction --no-cache --without dev
 
-# Copy Application
-COPY . /app
+FROM base as runtime
 
-# Run Application
-EXPOSE 5000
-CMD [ "poetry", "run", "python", "-m", "flask", "run", "--host=0.0.0.0" ]
+COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
+RUN apk add bash gdal proj geos
+
+COPY . ./app
+
+WORKDIR /app
+
+ENTRYPOINT ["python", "-m", "gunicorn", "--bind", "0.0.0.0:5000", "osgeo_app.main:gunicorn_app"]
