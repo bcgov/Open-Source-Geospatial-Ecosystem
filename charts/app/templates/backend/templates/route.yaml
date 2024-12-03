@@ -9,7 +9,7 @@ metadata:
 spec:
   host: {{ include "backend.fullname" . }}.{{ .Values.global.domain }}
   port:
-    targetPort: http
+    targetPort: 5000-tcp
   to:
     kind: Service
     name: {{ include "backend.fullname" . }}
