@@ -109,7 +109,7 @@ jobs:
 
           # Release name includes run numbers to ensure uniqueness
           #   - capture the repo name and convert to lowercase
-          repo_name = ${{ github.event.repository.name }}
+          repo_name=${{ github.event.repository.name }}
           repo_name=$( echo "${repo_name,,}")          
 
           #release=${{ github.event.repository.name }}-${{ inputs.environment || steps.pr.outputs.pr || inputs.tag }}
