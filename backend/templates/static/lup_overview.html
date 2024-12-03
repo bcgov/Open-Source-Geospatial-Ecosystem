@@ -67,7 +67,6 @@
         .then(response => response.json())
         .then(data => {
         if (data.url) {
-            // Use the URL to add a GeoJSON layer to the Leaflet map
             fetch(data.url)
             .then(res => res.json())
             .then(geojsonData => {
@@ -84,19 +83,6 @@
         })
         .catch(error => console.error("Error fetching Gitanyow URL:", error));
 
-        // A simple GeoJSON layer example for AOI (Area of Interest)
-        //var lup_aoi= 
-        //{
-        //    "type": "FeatureCollection",
-        //    "name": "aoi",
-        //    "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::4326" } },
-        //    "features": [
-        //    { "type": "Feature", "properties": { "OBJECTID": 3.0, "SHAPE_Leng": 908959.60400000215, "SHAPE_Area": 51484492817.909615, "X_Max": null, "X_Min": null, "Y_Max": null, "Y_Min": null, "centerx": null, "centery": null, "Lat_Max": -127.12066348938077, "Lat_Min": -130.70713817004415, "Lon_Max": 56.880992958850584, "Lon_Min": 54.658316969110963 }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ -128.877519335263372, 56.854459870751043 ], [ -128.47103084514157, 56.862845226243849 ], [ -127.182976424146929, 56.880987675036366 ], [ -127.120645609878679, 54.734177239127789 ], [ -130.459733007391407, 54.658312163230242 ], [ -130.707118882745391, 56.800867888548048 ], [ -128.877519335263372, 56.854459870751043 ] ] ] ] } }
-        //    ]
-        //};
-        //L.geoJSON(lup_aoi, {
-        //    style: { fillColor: 'transparent', color: 'black', weight: 4 }
-        //}).addTo(map);
 
 
         // Function to create checkboxes dynamically based on jsonData
