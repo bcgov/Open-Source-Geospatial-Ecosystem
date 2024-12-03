@@ -110,7 +110,7 @@ jobs:
           # Release name includes run numbers to ensure uniqueness
           #   - capture the repo name and convert to lowercase
           repo_name=${{ github.event.repository.name }}
-          repo_name=$( echo "${repo_name,,}")          
+          repo_name_lower=$( echo "${repo_name,,}")          
 
           #release=${{ github.event.repository.name }}-${{ inputs.environment || steps.pr.outputs.pr || inputs.tag }}
           release=$repo_name-${{ inputs.environment || steps.pr.outputs.pr || inputs.tag }}
@@ -127,7 +127,7 @@ jobs:
           echo "tag=${tag}" >> $GITHUB_OUTPUT
           echo "release=${release}" >> $GITHUB_OUTPUT
           echo "version=${version}" >> $GITHUB_OUTPUT
-          echo "repo_name_lower=${repo_name}" >> $GITHUB_OUTPUT
+          echo "repo_name_lower=${repo_name_lower}" >> $GITHUB_OUTPUT
 
 
       ### Deploy
@@ -182,7 +182,7 @@ jobs:
             --install --wait --atomic ${{ steps.vars.outputs.repo_name_lower }} \
             --timeout ${{ inputs.timeout-minutes }}m \
             --values ${{ inputs.values }} \
-            ./${{ github.event.repository.name }}-${{ steps.pr.outputs.pr || steps.vars.outputs.version }}.tgz
+            ./${{ steps.vars.outputs.repo_name_lower }}-${{ steps.pr.outputs.pr || steps.vars.outputs.version }}.tgz
 
       # Deploy Helm chart without atomic or timeout
       - if: steps.triggers.outputs.triggered == 'true' && inputs.atomic == 'false'
