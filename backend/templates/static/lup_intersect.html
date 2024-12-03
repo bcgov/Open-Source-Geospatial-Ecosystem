@@ -77,7 +77,7 @@
         }).addTo(map);
         
         // WFS data source URL
-        const SERVICE_URL = "http://localhost:5000/wfs/";
+        const SERVICE_URL = "/wfs/";
         
         let jsonData = [];
         const maplayers = 'intersect';  // Change depending on map and layers.json
@@ -211,7 +211,7 @@
         
         // Function to generate the WFS query URL
         function wfsQuery(dataset, query = null, fields = [], startIndex = 0, count = 5000) {
-            const SERVICE_URL = "http://localhost:5000/wfs"; // Add "?" to properly format the URL
+            const SERVICE_URL = "/wfs"; // Add "?" to properly format the URL
         
             // Base parameters
             const params = new URLSearchParams({
@@ -386,7 +386,7 @@
                 }
             }
         }
-        fetch('http://localhost:5000/get_gdfs')
+        fetch('/get_gdfs')
         .then(response => response.json())
         .then(data => {
             // Human-readable names for layers
