@@ -1,18 +1,18 @@
-{{- if .Values.backendPy.enabled }}
+{{- if .Values.backend.enabled }}
 ---
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   labels:
-    {{- include "backendPy.labels" . | nindent 4 }}
-  name: {{ include "backendPy.fullname" . }}
+    {{- include "backend.labels" . | nindent 4 }}
+  name: {{ include "backend.fullname" . }}
 spec:
-  host: {{ include "backendPy.fullname" . }}.{{ .Values.global.domain }}
+  host: {{ include "backend.fullname" . }}.{{ .Values.global.domain }}
   port:
     targetPort: http
   to:
     kind: Service
-    name: {{ include "backendPy.fullname" . }}
+    name: {{ include "backend.fullname" . }}
     weight: 100
   tls:
     termination: edge
