@@ -108,8 +108,13 @@ jobs:
           tag=${{ inputs.tag || steps.pr.outputs.pr }}
 
           # Release name includes run numbers to ensure uniqueness
-          release=${{ github.event.repository.name }}-${{ inputs.environment || steps.pr.outputs.pr || inputs.tag }}
-          
+          #   - capture the repo name and convert to lowercase
+          repo_name = ${{ github.event.repository.name }}
+          repo_name=$( echo "${repo_name,,}")          
+
+          #release=${{ github.event.repository.name }}-${{ inputs.environment || steps.pr.outputs.pr || inputs.tag }}
+          release=$repo_name-${{ inputs.environment || steps.pr.outputs.pr || inputs.tag }}
+
           # version, to support helm packaging for non-pr based releases (workflow_dispatch). default to 1.0.0+github run number
           version=1.0.0+${{ github.run_number }}
           
@@ -122,6 +127,8 @@ jobs:
           echo "tag=${tag}" >> $GITHUB_OUTPUT
           echo "release=${release}" >> $GITHUB_OUTPUT
           echo "version=${version}" >> $GITHUB_OUTPUT
+          echo "repo_name_lower=${repo_name}" >> $GITHUB_OUTPUT
+
 
       ### Deploy
       - name: Install CLI tools from OpenShift Mirror
@@ -158,7 +165,8 @@ jobs:
         working-directory: ${{ inputs.directory }}
         run: |
           # Helm package
-          sed -i 's/^name:.*/name: ${{ github.event.repository.name }}/' Chart.yaml
+          #sed -i 's/^name:.*/name: ${{ github.event.repository.name }}/' Chart.yaml
+          sed -i 's/^name:.*/name: ${{ steps.vars.outputs.repo_name_lower }}/' Chart.yaml
           helm package -u . --app-version="tag-${{ steps.vars.outputs.tag }}_run-${{ github.run_number }}" --version=${{ steps.pr.outputs.pr || steps.vars.outputs.version }}
 
       # Deploy Helm chart as atomic, with timeout
@@ -171,7 +179,7 @@ jobs:
             --set-string global.tag=${{ steps.vars.outputs.tag }} \
             --set-string global.config.databaseUser=${{ inputs.db_user }} \
             ${{ inputs.params }} \
-            --install --wait --atomic ${{ steps.vars.outputs.release }} \
+            --install --wait --atomic ${{ steps.vars.outputs.repo_name_lower }} \
             --timeout ${{ inputs.timeout-minutes }}m \
             --values ${{ inputs.values }} \
             ./${{ github.event.repository.name }}-${{ steps.pr.outputs.pr || steps.vars.outputs.version }}.tgz
