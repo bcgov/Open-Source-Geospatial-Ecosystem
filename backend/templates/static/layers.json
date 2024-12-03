@@ -24,7 +24,7 @@
             {
                 "dataset": "WHSE_LAND_USE_PLANNING.RMP_PLAN_LEGAL_POLY_SVW",
                 "type": "polygon",
-                "name" :"Current - Polygon: Goshawk Nesting and Fledging Areas",
+                "name" :"Goshawk Nesting and Fledging Areas",
                 "group":"Legal Planning Objectives",
                 "query": "LEGAL_FEAT_OBJECTIVE = 'Goshawk Nesting/Post-Fledging Habitat' And STRGC_LAND_RSRCE_PLAN_NAME IN ('Cranberry Sustainable Resource Management Plan', 'Nass South Sustainable Resource Management Plan')",
                 "fields": "['LEGAL_FEAT_ID','STRGC_LAND_RSRCE_PLAN_NAME', 'LEGAL_FEAT_OBJECTIVE', 'LEGALIZATION_DATE', 'ENABLING_DOCUMENT_TITLE', 'ENABLING_DOCUMENT_URL', 'RSRCE_PLAN_METADATA_LINK','GEOMETRY','OBJECTID']",

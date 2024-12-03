@@ -400,53 +400,61 @@
             }
         }
         fetch('http://localhost:5000/get_gdfs')
-            .then(response => response.json())
-            .then(data => {
-                const legal_polys = "Intersected Current Legal Planning Objective Polygons";
-                const legal_lines = "Intersected Current Legal Planning Objective Lines";
-                const legal_points = "Intersected Current Legal Planning Objective Points";
-                const non_legal_polys = "Intersected Current Non Legal Planning Objective Polygons";
-                const non_legal_lines = "Intersected Current Non Legal Planning Objective Lines";
-                const non_legal_points = "Intersected Current Non Legal Planning Objective Points";
-                const datasetColors = {
-                    legal_polys: getRandomColor(),
-                    legal_lines: getRandomColor(),
-                    legal_points: getRandomColor(),
-                    non_legal_polys: getRandomColor(),
-                    non_legal_lines: getRandomColor(),
-                    non_legal_points: getRandomColor(),
-                    uploaded_data: getRandomColor()
-                };
-        
-                // Loop through each layer in the GeoJSON
-                Object.keys(data).forEach(key => {
-                    const geoJsonLayer = L.geoJSON(data[key], {
-                        onEachFeature: function (feature, layer) {
-                            if (feature.properties) {
-                                let popupContent = "";
-                                for (const [key, value] of Object.entries(feature.properties)) {
-                                    popupContent += `<strong>${key}:</strong> ${value}<br>`;
-                                }
-                                layer.bindPopup(popupContent);
-                            }
-                        },
-                        style: function (feature) {
-                            // Use the color based on the dataset (key)
-                            return { color: datasetColors[key] };
-                        }
-                    });
-        
-                    // Add the GeoJSON layer to the map
-                    geoJsonLayer.addTo(map);
-        
-                    createCheckboxForAddedLayer(geoJsonLayer, key);
-                    updateLegend(datasetColors[key], datasetColors[value], 1, "add");
-                });
-            })
-            .catch(error => {
-                console.error("Error fetching GeoJSON:", error);
-            });
+        .then(response => response.json())
+        .then(data => {
+            // Human-readable names for layers
+            const datasetNames = {
+                legal_polys: "Intersected Current Legal Planning Objective Polygons",
+                legal_lines: "Intersected Current Legal Planning Objective Lines",
+                legal_points: "Intersected Current Legal Planning Objective Points",
+                non_legal_polys: "Intersected Current Non Legal Planning Objective Polygons",
+                non_legal_lines: "Intersected Current Non Legal Planning Objective Lines",
+                non_legal_points: "Intersected Current Non Legal Planning Objective Points",
+                uploaded_data: "Uploaded Data"
+            };
     
+            const datasetColors = {
+                legal_polys: getRandomColor(),
+                legal_lines: getRandomColor(),
+                legal_points: getRandomColor(),
+                non_legal_polys: getRandomColor(),
+                non_legal_lines: getRandomColor(),
+                non_legal_points: getRandomColor(),
+                uploaded_data: getRandomColor()
+            };
+    
+            // Loop through each layer in the GeoJSON
+            Object.keys(data).forEach(key => {
+                const layerName = datasetNames[key] || key; // Fallback to `key` if no name is mapped
+                console.log(`Adding layer: ${layerName}`);
+    
+                const geoJsonLayer = L.geoJSON(data[key], {
+                    onEachFeature: function (feature, layer) {
+                        if (feature.properties) {
+                            let popupContent = "";
+                            for (const [key, value] of Object.entries(feature.properties)) {
+                                popupContent += `<strong>${key}:</strong> ${value}<br>`;
+                            }
+                            layer.bindPopup(popupContent);
+                        }
+                    },
+                    style: function (feature) {
+                        // Use the color based on the dataset (key)
+                        return { color: datasetColors[key] };
+                    }
+                });
+    
+                // Add the GeoJSON layer to the map
+                geoJsonLayer.addTo(map);
+    
+                // Use the human-readable name in the checkbox and legend
+                createCheckboxForAddedLayer(geoJsonLayer, layerName);
+                updateLegend(layerName, datasetColors[key], 1, "add");
+            });
+        })
+        .catch(error => {
+            console.error("Error fetching GeoJSON:", error);
+        });
     </script>
 </body>
 

@@ -113,6 +113,11 @@ def proxy_request(endpoint):
         return Response("Error connecting to WFS server", status=500)
 
 
+    except requests.RequestException as e:
+        print("Request Error:", e)
+        return Response("Error connecting to WFS server", status=500)
+
+
 def _build_cors_preflight_response():
     """Handles the CORS preflight (OPTIONS) request."""
     response = Response(status=204)
