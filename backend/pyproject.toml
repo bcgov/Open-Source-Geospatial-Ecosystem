@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "backend"
+name = "osgeo_app"
 version = "0.1.0"
 description = ""
 authors = ["Cole Folkers <Cole.folkers@gov.bc.ca>"]
 license = "apache"
 readme = "README.md"
-package-mode = false
+package-mode = true
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -16,6 +16,8 @@ requests = "^2.32.3"
 geopandas = "^1.0.1"
 shapely = "^2.0.6"
 geojson = "^3.1.0"
+gpxpy = "^1.6.2"
+gunicorn = "^23.0.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "24.10.0"
