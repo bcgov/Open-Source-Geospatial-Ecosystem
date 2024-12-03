@@ -118,7 +118,7 @@ crunchy:
   enabled: false # make this false and bitnami-pg true to switch from crunchy to bitnami single postgis.
 
 bitnamipg:
-  enabled: false
+  enabled: true
   image:
     registry: ghcr.io
     repository: bcgov/nr-containers/bitnami/postgresql
