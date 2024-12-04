@@ -4,11 +4,11 @@ from flask_caching import Cache
 import requests
 from dotenv import load_dotenv
 import os 
-import os 
 import requests
-import json
-import geojson
 import logging 
+
+from blueprints.overview_map import blueprint as over_map
+from blueprints.intersect import blueprint as intersect
 
 #return link for Gitanyow Land Use Plan Boundary 
 def get_gitanyow():
@@ -40,6 +40,14 @@ def get_gitanyow():
 
 api_key = os.getenv("NL_API")
 
+def _build_cors_preflight_response():
+    """Handles the CORS preflight (OPTIONS) request."""
+    response = Response(status=204)
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+    return response
+
 # Create app
 app = Flask(__name__,
             static_folder='./templates/static',  
@@ -59,8 +67,6 @@ app.secret_key = 'FOSS4G_Test'
 WFS_URL = """https://openmaps.gov.bc.ca/geo/pub/ows?"""
 
 # Register blueprints
-from blueprints.overview_map import blueprint as over_map
-from blueprints.intersect import blueprint as intersect
 app.register_blueprint(over_map)
 app.register_blueprint(intersect)
 
@@ -103,28 +109,20 @@ def proxy_request(endpoint):
         response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
 
         # Debugging
-        print("Request URL:", wfs_response.url)
-        print("Response Status:", wfs_response.status_code)
-        print("Response Content-Type:", wfs_response.headers.get('Content-Type'))
+        logging.info("Request URL:", wfs_response.url)
+        logging.info("Response Status:", wfs_response.status_code)
+        logging.info("Response Content-Type:", wfs_response.headers.get('Content-Type'))
         return response
 
     except requests.RequestException as e:
-        print("Request Error:", e)
+        logging.debug("Request Error:", e)
         return Response("Error connecting to WFS server", status=500)
 
 
     except requests.RequestException as e:
-        print("Request Error:", e)
+        logging.debug("Request Error:", e)
         return Response("Error connecting to WFS server", status=500)
 
-
-def _build_cors_preflight_response():
-    """Handles the CORS preflight (OPTIONS) request."""
-    response = Response(status=204)
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
-    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
-    return response
 
 #route to return Gitanyow area from Native Land API
 @app.route('/api/gitanyow-url', methods=['GET'])
