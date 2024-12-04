@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify, Response, send_from_
 from flask_cors import CORS
 from flask_caching import Cache
 import requests
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 import os 
 import requests
 import logging 
@@ -100,9 +100,9 @@ def create_app():
 
 #return link for Gitanyow Land Use Plan Boundary 
 def get_gitanyow():
-    load_dotenv()
+    #load_dotenv()
     env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),  '../../../backend/.env')
-    load_dotenv(env_path)
+    #load_dotenv(env_path)
 
     api_key = os.getenv("NL_API")
 
