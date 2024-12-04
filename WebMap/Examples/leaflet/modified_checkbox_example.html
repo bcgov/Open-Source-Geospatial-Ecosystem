@@ -1,0 +1,38 @@
+<!-- modified checkbox container -->
+<div id="checkbox-container" style="position: absolute; top: 10px; right: 10px; background-color: white; padding: 10px; z-index: 1000; border: 1px solid #ccc; border-radius: 4px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+    <button id="toggleCheckboxContainer" onclick="toggleCheckboxContainer()" style="background: none; border: none; cursor: pointer; font-size: 16px;">▲</button>
+    <div id="checkboxContent">
+        <!-- Static Checkboxes -->
+        <label><input type="checkbox" onclick="layerToggleWFS(this, 0)" /> Roads</label><br>
+        <label><input type="checkbox" onclick="layerToggleWFS(this, 1)" /> Buildings</label><br>
+        <label><input type="checkbox" onclick="layerToggleWFS(this, 2)" /> Parks</label><br>
+    </div>
+</div>
+
+<!-- modified javascript -->
+<script>
+    function toggleCheckboxContainer() {
+        const checkboxContent = document.getElementById('checkboxContent');
+        const toggleButton = document.getElementById('toggleCheckboxContainer');
+
+        if (checkboxContent.style.display === "none") {
+            checkboxContent.style.display = "block";
+            toggleButton.textContent = "▲"; // Expanded state
+        } else {
+            checkboxContent.style.display = "none";
+            toggleButton.textContent = "▼"; // Minimized state
+        }
+    }
+
+    // Define layerToggleWFS if not already defined
+    function layerToggleWFS(checkbox, layerIndex) {
+        // Example function for toggling layers (implement your logic here)
+        if (checkbox.checked) {
+            console.log(`Layer ${layerIndex} enabled`);
+            // Add the layer to the map
+        } else {
+            console.log(`Layer ${layerIndex} disabled`);
+            // Remove the layer from the map
+        }
+    }
+</script>

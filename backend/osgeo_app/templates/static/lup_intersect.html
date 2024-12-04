@@ -62,7 +62,7 @@
 
     <script>
         // Initialize the map
-        var map = L.map('intersect').setView([55.781113, -128.867888], 7);
+        var map = L.map('intersect').setView([55.6, -128.9], 8);
 
         var CartoDB_Positron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
@@ -77,19 +77,7 @@
         }).addTo(map);
         
         // WFS data source URL
-        const SERVICE_URL = "http://localhost:5000/wfs/";
-
-
-
-        var lup_aoi =
-        {
-            "type": "FeatureCollection",
-            "name": "aoi",
-            "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::4326" } },
-            "features": [
-                { "type": "Feature", "properties": { "OBJECTID": 3.0, "SHAPE_Leng": 908959.60400000215, "SHAPE_Area": 51484492817.909615, "X_Max": null, "X_Min": null, "Y_Max": null, "Y_Min": null, "centerx": null, "centery": null, "Lat_Max": -127.12066348938077, "Lat_Min": -130.70713817004415, "Lon_Max": 56.880992958850584, "Lon_Min": 54.658316969110963 }, "geometry": { "type": "MultiPolygon", "coordinates": [[[[-128.877519335263372, 56.854459870751043], [-128.47103084514157, 56.862845226243849], [-127.182976424146929, 56.880987675036366], [-127.120645609878679, 54.734177239127789], [-130.459733007391407, 54.658312163230242], [-130.707118882745391, 56.800867888548048], [-128.877519335263372, 56.854459870751043]]]] } }
-            ]
-        };
+        const SERVICE_URL = "/wfs/";
         
         let jsonData = [];
         const maplayers = 'intersect';  // Change depending on map and layers.json
@@ -115,10 +103,26 @@
                 console.error('Error loading JSON file:', error);
             });
         
+        // Fetch the Gitanyow GeoJSON URL
+        fetch('/api/gitanyow-url')
+            .then(response => response.json())
+            .then(data => {
+            if (data.url) {
+                fetch(data.url)
+                .then(res => res.json())
+                .then(geojsonData => {
+                    L.geoJSON(geojsonData, {
+                    style: { fillColor: 'transparent', color: 'black', weight: 4 }
+                    }).addTo(map);
 
-        L.geoJSON(lup_aoi, {
-            style: { fillColor: 'transparent', color: 'black', weight: 4 }
-        }).addTo(map);
+                    updateLegend('Gitanyow Land Use Plan Area', 'black', 1, 'add');
+                })
+                .catch(error => console.error("Error loading GeoJSON data:", error));
+            } else {
+                console.error("Error fetching Gitanyow URL:", data.error);
+            }
+        })
+            .catch(error => console.error("Error fetching Gitanyow URL:", error));
 
         const checkboxContainer = document.getElementById('checkbox-container');
 
@@ -207,7 +211,7 @@
         
         // Function to generate the WFS query URL
         function wfsQuery(dataset, query = null, fields = [], startIndex = 0, count = 5000) {
-            const SERVICE_URL = "http://localhost:5000/wfs"; // Add "?" to properly format the URL
+            const SERVICE_URL = "/wfs"; // Add "?" to properly format the URL
         
             // Base parameters
             const params = new URLSearchParams({
@@ -354,6 +358,7 @@
                 if (legendItem) legendContent.removeChild(legendItem);
             }
         }
+
         
         // Toggle layer function updated to pass Popup and Color
         async function layerToggleWFS(checkbox, index) {
@@ -381,7 +386,7 @@
                 }
             }
         }
-        fetch('http://localhost:5000/get_gdfs')
+        fetch('/get_gdfs')
         .then(response => response.json())
         .then(data => {
             // Human-readable names for layers

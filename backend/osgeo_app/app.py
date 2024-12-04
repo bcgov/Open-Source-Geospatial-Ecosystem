@@ -2,13 +2,16 @@ from flask import Flask, render_template, request, jsonify, Response, send_from_
 from flask_cors import CORS
 from flask_caching import Cache
 import requests
+from dotenv import load_dotenv
+import os 
+import requests
+import logging 
 
-from .blueprints.overview_map import blueprint as over_map
-from .blueprints.intersect import blueprint as intersect
+from blueprints.overview_map import blueprint as over_map
+from blueprints.intersect import blueprint as intersect
 
-
+# Create app
 def create_app():
-    # Create app
     app = Flask(__name__,
                 static_folder='./templates/static',  
                 template_folder='./templates/templates')  
@@ -52,7 +55,7 @@ def create_app():
 
         # Handle preflight CORS (OPTIONS request)
         if request.method == 'OPTIONS':
-            return build_cors_preflight_response()
+            return _build_cors_preflight_response()
 
         # Forward GET or POST requests to the WFS server
         try:
@@ -69,22 +72,63 @@ def create_app():
             response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
 
             # Debugging
-            print("Request URL:", wfs_response.url)
-            print("Response Status:", wfs_response.status_code)
-            print("Response Content-Type:", wfs_response.headers.get('Content-Type'))
+            logging.info("Request URL:", wfs_response.url)
+            logging.info("Response Status:", wfs_response.status_code)
+            logging.info("Response Content-Type:", wfs_response.headers.get('Content-Type'))
             return response
 
         except requests.RequestException as e:
-            print("Request Error:", e)
+            logging.debug("Request Error:", e)
             return Response("Error connecting to WFS server", status=500)
 
 
         except requests.RequestException as e:
-            print("Request Error:", e)
+            logging.debug("Request Error:", e)
             return Response("Error connecting to WFS server", status=500)
+
+
+    #route to return Gitanyow area from Native Land API
+    @app.route('/api/gitanyow-url', methods=['GET'])
+    def gitanyow_url():
+        try:
+            response_url = get_gitanyow()
+            return jsonify({"url": response_url})
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+    
     return app
 
-def build_cors_preflight_response():
+#return link for Gitanyow Land Use Plan Boundary 
+def get_gitanyow():
+    load_dotenv()
+    env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),  '../../../backend/.env')
+    load_dotenv(env_path)
+
+    api_key = os.getenv("NL_API")
+
+    # Base URL
+    base_url = "https://native-land.ca/api/index.php"
+
+    # Parameters for the query
+    params = {
+        "maps": "territories",
+        "name": "gitanyow-laxyip",
+        "key": api_key
+    }
+    response = requests.get(base_url, params=params)
+
+    if response.status_code == 200:
+        response_url = response.url
+        logging.debug("Response URL:", response_url)
+    else:
+        logging.error(f"Error: {response.status_code}")
+        logging.debug(response.text)
+        
+    return response_url
+
+api_key = os.getenv("NL_API")
+
+def _build_cors_preflight_response():
     """Handles the CORS preflight (OPTIONS) request."""
     response = Response(status=204)
     response.headers['Access-Control-Allow-Origin'] = '*'
@@ -95,6 +139,3 @@ def build_cors_preflight_response():
 if __name__ == '__main__':
     app = create_app()
     app.run(host='0.0.0.0', port=5000, threaded=True)
-
-    # call from cli
-    # python -m flask run 'osgeo_app.app:create_app()'
