@@ -68,6 +68,9 @@ on:
       oc_token:
         description: OpenShift token
         required: true
+      nl_api:
+        description: map API Key
+        required: true
 
 jobs:
   # deployer-db:
@@ -178,6 +181,7 @@ jobs:
             --set-string global.repository=${{ github.repository }} \
             --set-string global.tag=${{ steps.vars.outputs.tag }} \
             --set-string global.config.databaseUser=${{ inputs.db_user }} \
+            --set apikey=${{ secrets.NL_API }} \
             ${{ inputs.params }} \
             --install --wait --atomic ${{ steps.vars.outputs.release }} \
             --timeout ${{ inputs.timeout-minutes }}m \
@@ -192,6 +196,7 @@ jobs:
           helm upgrade \
             --set-string global.repository=${{ github.repository }} \
             --set-string global.tag=${{ steps.vars.outputs.tag }} \
+            --set apikey=${{ secrets.NL_API }} \
             ${{ inputs.params }} \
             ${{ steps.vars.outputs.release }} \
             --install --wait --values ${{ inputs.values }} \

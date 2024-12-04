@@ -35,6 +35,7 @@ jobs:
     secrets:
       oc_namespace: ${{ secrets.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}
+      nl_api: ${{ secrets.NL_API }}
     with:
       #triggers: ('backend/' 'frontend/' 'migrations/' 'charts/')
       triggers: ('backend/', 'charts/')
