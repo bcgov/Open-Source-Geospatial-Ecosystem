@@ -60,7 +60,7 @@ def wfs_query_to_gdf(dataset, query=None, fields=None, bbox=None, offset=0, max_
 
     all_features = []
     while True:
-        response = requests.get(url, params=params)
+        response = requests.get(url, params=params, timeout=300)
         if response.status_code != 200:
             raise RuntimeError(f"Error fetching WFS data: {response.status_code} - {response.text}")
 
