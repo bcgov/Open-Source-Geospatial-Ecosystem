@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, jsonify, Response, send_from_directory
 from flask_cors import CORS
-from flask_caching import Cache
+from osgeo_app.cache import cache
 import requests
 # from dotenv import load_dotenv
 import os 
@@ -10,17 +10,23 @@ import logging
 from osgeo_app.blueprints.overview_map import blueprint as over_map
 from osgeo_app.blueprints.intersect import blueprint as intersect
 
+# from blueprints.overview_map import blueprint as over_map
+# from blueprints.intersect import blueprint as intersect
+
 # Create app
 def create_app():
     app = Flask(__name__,
                 static_folder='./templates/static',  
                 template_folder='./templates/templates')  
 
+    #caching config
+    app.config["CACHE_TYPE"] = "SimpleCache"
+    app.config["CACHE_DEFAULT_TIMEOUT"] = 2000
     # Enable CORS for all routes
     CORS(app)
 
     # Set up caching
-    cache = Cache(config={'CACHE_TYPE': 'simple'})
+ 
     cache.init_app(app)
 
     # Set the secret key
