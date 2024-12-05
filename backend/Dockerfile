@@ -1,8 +1,8 @@
 FROM python:3.11-alpine as base
 
 ARG DEV=false
-ENV VIRTUAL_ENV=/app/.venv \
-    PATH="/app/.venv/bin:$PATH"
+ENV VIRTUAL_ENV=/osgeo_app/.venv \
+    PATH="/osgeo_app/.venv/bin:$PATH"
 
 RUN apk update && \
     apk add libpq
@@ -18,7 +18,7 @@ ENV POETRY_NO_INTERACTION=1 \
 RUN apk update && \
     apk add musl-dev build-base gcc gfortran openblas-dev gdal gdal-dev proj proj-util proj-dev geos geos-dev
 
-WORKDIR /app
+WORKDIR /osgeo_app
 
 # Install Poetry
 RUN pip install poetry==1.8.4
@@ -38,8 +38,8 @@ ENV PROJ_LIB=/usr/share/proj
 COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 RUN apk add bash gdal proj geos
 
-COPY . ./app
+COPY . ./osgeo_app
 
-WORKDIR /app
+WORKDIR /osgeo_app
 
 ENTRYPOINT ["python", "-m", "gunicorn", "--bind", "0.0.0.0:5000", "osgeo_app.main:gunicorn_app"]
