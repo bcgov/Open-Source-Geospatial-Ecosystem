@@ -7,8 +7,8 @@ import os
 import requests
 import logging 
 
-from blueprints.overview_map import blueprint as over_map
-from blueprints.intersect import blueprint as intersect
+from osgeo_app.blueprints.overview_map import blueprint as over_map
+from osgeo_app.blueprints.intersect import blueprint as intersect
 
 # Create app
 def create_app():
