@@ -42,4 +42,4 @@ COPY . ./osgeo_app
 
 WORKDIR /osgeo_app
 
-ENTRYPOINT ["python", "-m", "gunicorn", "--bind", "0.0.0.0:5000", "osgeo_app.main:gunicorn_app"]
+ENTRYPOINT ["python", "-m", "gunicorn", "--timeout", "2000","--bind", "0.0.0.0:5000", "--workers","4","osgeo_app.main:gunicorn_app"]
