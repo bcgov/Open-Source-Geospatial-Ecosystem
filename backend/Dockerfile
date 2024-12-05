@@ -6,7 +6,7 @@ ENV VIRTUAL_ENV=/osgeo_app/.venv \
 
 RUN apk update && \
     apk add libpq
-
+    
 
 FROM base as builder
 
@@ -31,13 +31,15 @@ RUN if [ $DEV ]; then \
       poetry install --without dev --no-root && rm -rf $POETRY_CACHE_DIR; \
     fi
 
-
 FROM base as runtime
+
+ENV PROJ_LIB=/usr/share/proj
 
 COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 RUN apk add bash gdal proj geos
 
 COPY . ./osgeo_app
 
-ENTRYPOINT ["python", "-m", "gunicorn", "--bind", "0.0.0.0:5000", "osgeo_app.main:gunicorn_app"]
+WORKDIR /osgeo_app
 
+ENTRYPOINT ["python", "-m", "gunicorn", "--timeout", "2000","--bind", "0.0.0.0:5000", "--workers","4","osgeo_app.main:gunicorn_app"]
