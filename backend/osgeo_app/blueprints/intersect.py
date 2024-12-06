@@ -1,19 +1,21 @@
 from flask import Blueprint, render_template, request, jsonify, Response
+from osgeo_app.cache import cache
 import requests
 from shapely.geometry import shape, Point, LineString
 import geojson
 import geopandas as gpd
 import pandas as pd
 import gpxpy
-import io
 import os
 import json
 
-blueprint = Blueprint('intersect',__name__,
-                    static_folder='./templates/static',  
-                    template_folder='./templates/templates')
-
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+blueprint = Blueprint('intersect',__name__,
+                    static_folder=os.path.join(BASE_DIR, '..','templates','static'),  
+                    template_folder=os.path.join(BASE_DIR,'..','templates','templates')
+)
+
 map_path = os.path.join(BASE_DIR, '..','templates','static', 'lup_intersect.html')
 map_path = os.path.join(BASE_DIR, '..','templates','static', 'lup_intersect.html')
 
@@ -58,13 +60,16 @@ def wfs_query_to_gdf(dataset, query=None, fields=None, bbox=None, offset=0, max_
 
     all_features = []
     while True:
-        response = requests.get(url, params=params)
+        response = requests.get(url, params=params, timeout=2000)
         if response.status_code != 200:
             raise RuntimeError(f"Error fetching WFS data: {response.status_code} - {response.text}")
 
         # Load GeoJSON data using geojson library for easier manipulation
-        geojson_data = geojson.loads(response.text)  # Load JSON into GeoJSON format
-        
+        try:
+            geojson_data = geojson.loads(response.text)
+        except ValueError as e:
+            print("Invalid GeoJSON:", response.text)
+            raise e
         # Add features to the list
         all_features.extend(geojson_data["features"])
 
@@ -201,6 +206,7 @@ non_points_gdf = None
 
 
 @blueprint.route('/intersect', methods=['GET', 'POST'])
+# @cache.cached(timeout=120)
 def intersect():
     global legal_polys_gdf, legal_lines_gdf, legal_points_gdf, non_polys_gdf, non_lines_gdf, non_points_gdf, uploaded_gdf
     uploaded_gdf = None
