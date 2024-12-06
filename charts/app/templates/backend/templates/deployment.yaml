@@ -91,11 +91,11 @@ spec:
           #   timeoutSeconds: 5
           resources: # this is optional
             limits:
-              cpu: 500m
-              memory: 500Mi
+              cpu: 900m
+              memory: 900Mi
             requests:
-              cpu: 200m
-              memory: 200Mi
+              cpu: 400m
+              memory: 400Mi
       {{- with .Values.backend.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
