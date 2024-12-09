@@ -6,8 +6,6 @@ metadata:
   labels:
     {{- include "backend.labels" . | nindent 4 }}
   name: {{ include "backend.fullname" . }}
-annotations:
-  haproxy.router.openshift.io/ip_whitelist: {{ .Values.ipWhitelist}}
 spec:
   host: {{ include "backend.fullname" . }}.{{ .Values.global.domain }}
   port:
@@ -19,4 +17,6 @@ spec:
   tls:
     termination: edge
     insecureEdgeTerminationPolicy: Redirect
+  annotations:
+    haproxy.router.openshift.io/ip_whitelist: {{ .Values.ipWhitelist}}
 {{- end }}
