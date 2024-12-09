@@ -164,3 +164,5 @@ cython_debug/
 
 # Secrets file
 super_secrets.py
+charts/app/open-source-geospatial-ecosystem-39.tgz
+charts/app/charts/postgresql-16.2.2.tgz
