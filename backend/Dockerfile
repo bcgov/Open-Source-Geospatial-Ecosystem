@@ -1,44 +1,56 @@
-FROM python:3.11 as python-base
+# FROM python:3.12-alpine as base
+FROM python:3.12-slim-bookworm as base
 
-# https://python-poetry.org/docs#ci-recommendations
-ENV POETRY_VERSION=1.8.4
-ENV POETRY_HOME=/opt/poetry
-ENV POETRY_VENV=/opt/poetry-venv
 
-# Tell Poetry where to place its cache and virtual environment
-ENV POETRY_CACHE_DIR=/opt/.cache
+ARG DEV=false
+ENV VIRTUAL_ENV=/osgeo_app/docker_venv \
+    PATH="/osgeo_app/docker_venv/bin:$PATH"
 
-# Create stage for Poetry installation
-FROM python-base as poetry-base
+    
+# -------------- STAGE 2 --------------
 
-# Creating a virtual environment just for poetry and install it with pip
-RUN python3 -m venv $POETRY_VENV \
-	&& $POETRY_VENV/bin/pip install -U pip setuptools \
-	&& $POETRY_VENV/bin/pip install poetry==${POETRY_VERSION}
+FROM base as builder
 
-# Create a new stage from the base python image
-FROM python-base as example-app
+ENV POETRY_NO_INTERACTION=1 \
+    POETRY_VIRTUALENVS_IN_PROJECT=0 \
+    POETRY_VIRTUALENVS_CREATE=0 \
+    POETRY_CACHE_DIR=/tmp/poetry_cache \
+    VIRTUAL_ENV=/osgeo_app/docker_venv \
+    PATH="/osgeo_app/docker_venv/bin:$PATH"
 
-# Copy Poetry to app image
-COPY --from=poetry-base ${POETRY_VENV} ${POETRY_VENV}
 
-# Add Poetry to PATH
-ENV PATH="${PATH}:${POETRY_VENV}/bin"
+# RUN apk update && \
+#     apk add musl-dev build-base gcc gfortran openblas-dev gdal gdal-dev proj proj-util proj-dev geos geos-dev python3-dev musl-dev
+RUN apt update && \
+    apt install -y --no-install-recommends apt-utils gcc python3-dev libgeos-dev libproj-dev gdal-bin proj-data
 
-WORKDIR /app
+WORKDIR /osgeo_app
 
-# Copy Dependencies
-COPY poetry.lock pyproject.toml ./
+# Install Poetry
+RUN pip install poetry==1.8.5
 
-# [OPTIONAL] Validate the project is properly configured
-# RUN poetry check
+# create the venv in $VIRTUAL_ENV so we can control where it is being created
+#  unfortunately this is the only way that we can control the venv that
+#  poetry will use, is to create it ourselves
+RUN python -m venv $VIRTUAL_ENV; . $VIRTUAL_ENV/bin/activate
 
-# Install Dependencies
-RUN poetry install --no-interaction --no-cache --without dev
+# Install the app
+COPY pyproject.toml poetry.lock ./
+RUN pip install --upgrade pip wheel setuptools
+RUN poetry install --without dev --no-root && rm -rf $POETRY_CACHE_DIR;
 
-# Copy Application
-COPY . /app
+FROM base as runtime
 
-# Run Application
-EXPOSE 5000
-CMD [ "poetry", "run", "python", "-m", "flask", "run", "--host=0.0.0.0" ]
+ENV PROJ_LIB=/usr/share/proj
+
+COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
+# RUN apk add bash gdal proj geos
+RUN apt update && \
+    apt install -y --no-install-recommends gdal-bin gdal-data gdal-plugins proj-bin proj-data geos-bin
+
+
+COPY . ./osgeo_app
+
+WORKDIR /osgeo_app
+
+ENTRYPOINT ["python", "-m", "gunicorn", "--timeout", "2000","--bind", "0.0.0.0:5000", "--workers","4","osgeo_app.main:gunicorn_app"]

@@ -1,7 +1,7 @@
 # Building the Docker image
 
 
-## Building and running the docker image
+## Building and running the docker image locally
 To build the image:\
 `docker build -t flask-app .`
 
@@ -10,7 +10,7 @@ Running the image:\
 
 ## Install Poetry dependencies
 
-If you want to run locally, you will need to install poetry:\
+If you want to run locally outside of a container, you will need to install poetry:\
 `pip install poetry`
 
 ### Installing project dependencies
