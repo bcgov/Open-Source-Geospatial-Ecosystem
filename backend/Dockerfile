@@ -1,4 +1,4 @@
-FROM python:3.11-alpine as base
+FROM python:3.12-alpine as base
 
 ARG DEV=false
 ENV VIRTUAL_ENV=/osgeo_app/.venv \
@@ -16,20 +16,17 @@ ENV POETRY_NO_INTERACTION=1 \
     POETRY_CACHE_DIR=/tmp/poetry_cache
 
 RUN apk update && \
-    apk add musl-dev build-base gcc gfortran openblas-dev gdal gdal-dev proj proj-util proj-dev geos geos-dev
+    apk add musl-dev build-base gcc gfortran openblas-dev gdal gdal-dev proj proj-util proj-dev geos geos-dev python3-dev
 
 WORKDIR /osgeo_app
 
 # Install Poetry
-RUN pip install poetry==1.8.4
+RUN pip install poetry==1.8.5
 
 # Install the app
 COPY pyproject.toml poetry.lock ./
-RUN if [ $DEV ]; then \
-      poetry install --with dev --no-root && rm -rf $POETRY_CACHE_DIR; \
-    else \
-      poetry install --without dev --no-root && rm -rf $POETRY_CACHE_DIR; \
-    fi
+RUN pip install --upgrade pip wheel setuptools
+RUN poetry install --without dev --no-root && rm -rf $POETRY_CACHE_DIR;
 
 FROM base as runtime
 

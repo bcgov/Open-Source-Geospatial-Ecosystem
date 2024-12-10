@@ -8,7 +8,7 @@ readme = "README.md"
 package-mode = true
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.12"
 Flask = "^3.1.0"
 Flask-Cors = "^5.0.0"
 Flask-Caching = "^2.3.0"
@@ -19,12 +19,13 @@ geojson = "^3.1.0"
 gpxpy = "^1.6.2"
 gunicorn = "^23.0.0"
 
+pyproject-hooks = "1.0.0"
 [tool.poetry.group.dev.dependencies]
 black = "24.10.0"
 ruff = "0.8.0"
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.ruff.lint]
