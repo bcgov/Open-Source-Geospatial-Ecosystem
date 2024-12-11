@@ -6,6 +6,8 @@ metadata:
   labels:
     {{- include "backend.labels" . | nindent 4 }}
   name: {{ include "backend.fullname" . }}
+  annotations:
+    haproxy.router.openshift.io/timeout: {{ .Values.backend.route.timeout }}
 spec:
   host: {{ include "backend.fullname" . }}.{{ .Values.global.domain }}
   port:
