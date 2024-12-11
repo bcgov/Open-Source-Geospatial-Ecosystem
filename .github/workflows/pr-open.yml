@@ -38,7 +38,7 @@ jobs:
       nl_api: ${{ secrets.NL_API }}
     with:
       #triggers: ('backend/' 'frontend/' 'migrations/' 'charts/')
-      triggers: ('charts/', 'backend/')
+      triggers: ('backend/' 'charts/')
       db_user: app-${{github.event.number}}
       params: --set global.secrets.persist=false
 
