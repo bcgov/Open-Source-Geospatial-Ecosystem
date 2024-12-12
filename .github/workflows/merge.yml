@@ -71,21 +71,21 @@ jobs:
   #       --set backend.pdb.enabled=true
   #     tag: ${{ needs.vars.outputs.tag }}
 
-  promote:
-    name: Promote Images
-    needs: [deploy-prod, vars]
-    runs-on: ubuntu-24.04
-    permissions:
-      packages: write
-    strategy:
-      matrix:
-        # package: [migrations, backend, frontend]
-        package: [backend]
-    timeout-minutes: 1
-    steps:
-      - uses: shrink/actions-docker-registry-tag@v4
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}/${{ matrix.package }}
-          target: ${{ needs.vars.outputs.tag }}
-          tags: prod
+  # promote:
+  #   name: Promote Images
+  #   needs: [deploy-prod, vars]
+  #   runs-on: ubuntu-24.04
+  #   permissions:
+  #     packages: write
+  #   strategy:
+  #     matrix:
+  #       # package: [migrations, backend, frontend]
+  #       package: [backend]
+  #   timeout-minutes: 1
+  #   steps:
+  #     - uses: shrink/actions-docker-registry-tag@v4
+  #       with:
+  #         registry: ghcr.io
+  #         repository: ${{ github.repository }}/${{ matrix.package }}
+  #         target: ${{ needs.vars.outputs.tag }}
+  #         tags: prod
