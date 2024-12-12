@@ -46,6 +46,7 @@ jobs:
     secrets:
       oc_namespace: ${{ secrets.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}
+      nl_api: ${{ secrets.NL_API }}
     with:
       environment: test
       db_user: app
@@ -58,6 +59,7 @@ jobs:
     secrets:
       oc_namespace: ${{ secrets.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}
+      nl_api: ${{ secrets.NL_API }}
     with:
       environment: prod
       db_user: app
