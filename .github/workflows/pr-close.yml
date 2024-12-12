@@ -18,7 +18,7 @@ jobs:
       oc_token: ${{ secrets.OC_TOKEN }}
     with:
       cleanup: helm
-      packages: backend frontend migrations
+      packages: backend
 
   # cleanup_db: # TODO move it off to another action later.
   #   name: Remove DB User from crunchy
