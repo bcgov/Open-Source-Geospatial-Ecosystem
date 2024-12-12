@@ -52,40 +52,40 @@ jobs:
       db_user: app
       tag: ${{ needs.vars.outputs.tag }}
 
-  deploy-prod:
-    name: Deploy (prod, tag=${{ needs.vars.outputs.tag }})
-    needs: [deploy-test, vars]
-    uses: ./.github/workflows/.deployer.yml
-    secrets:
-      oc_namespace: ${{ secrets.OC_NAMESPACE }}
-      oc_token: ${{ secrets.OC_TOKEN }}
-      nl_api: ${{ secrets.NL_API }}
-    with:
-      environment: prod
-      db_user: app
-      params:
-        --set backend.deploymentStrategy=RollingUpdate
-        --set frontend.deploymentStrategy=RollingUpdate
-        --set global.autoscaling=true
-        --set frontend.pdb.enabled=true
-        --set backend.pdb.enabled=true
-      tag: ${{ needs.vars.outputs.tag }}
+  # deploy-prod:
+  #   name: Deploy (prod, tag=${{ needs.vars.outputs.tag }})
+  #   needs: [deploy-test, vars]
+  #   uses: ./.github/workflows/.deployer.yml
+  #   secrets:
+  #     oc_namespace: ${{ secrets.OC_NAMESPACE }}
+  #     oc_token: ${{ secrets.OC_TOKEN }}
+  #     nl_api: ${{ secrets.NL_API }}
+  #   with:
+  #     environment: prod
+  #     db_user: app
+  #     params:
+  #       --set backend.deploymentStrategy=RollingUpdate
+  #       --set frontend.deploymentStrategy=RollingUpdate
+  #       --set global.autoscaling=true
+  #       --set frontend.pdb.enabled=true
+  #       --set backend.pdb.enabled=true
+  #     tag: ${{ needs.vars.outputs.tag }}
 
-  promote:
-    name: Promote Images
-    needs: [deploy-prod, vars]
-    runs-on: ubuntu-24.04
-    permissions:
-      packages: write
-    strategy:
-      matrix:
-        # package: [migrations, backend, frontend]
-        package: [backend]
-    timeout-minutes: 1
-    steps:
-      - uses: shrink/actions-docker-registry-tag@v4
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}/${{ matrix.package }}
-          target: ${{ needs.vars.outputs.tag }}
-          tags: prod
+  # promote:
+  #   name: Promote Images
+  #   needs: [deploy-prod, vars]
+  #   runs-on: ubuntu-24.04
+  #   permissions:
+  #     packages: write
+  #   strategy:
+  #     matrix:
+  #       # package: [migrations, backend, frontend]
+  #       package: [backend]
+  #   timeout-minutes: 1
+  #   steps:
+  #     - uses: shrink/actions-docker-registry-tag@v4
+  #       with:
+  #         registry: ghcr.io
+  #         repository: ${{ github.repository }}/${{ matrix.package }}
+  #         target: ${{ needs.vars.outputs.tag }}
+  #         tags: prod
