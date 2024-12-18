@@ -164,3 +164,4 @@ bitnamipg:
         memory: 250Mi
 
 apikey: novalueapikey
+ipWhitelist: someipwhitelist
