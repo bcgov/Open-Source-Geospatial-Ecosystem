@@ -51,7 +51,7 @@ body {
 }
 
 .logo {
-    background-image:url(../static/BCID_H_rgb_rev.png);
+    
     background-repeat: no-repeat;
     background-size:contain;
     background-position:0% 50%;
